@@ -1,0 +1,13 @@
+<div class="contents-tabs">
+	<ul class="nav nav-tabs">
+  	<li class="tab-plane <% if @tabinfo == "BTC-MONA" then concat 'active' end %>">
+      <%= link_to "BTC/MONA", @path1 %>
+    </li>
+    <li class="tab-plane <% if @tabinfo == "BTC-LTC" then concat 'active' end %>">
+      <%= link_to "BTC/LTC", @path2 %>
+    </li>
+    <li class="tab-plane <% if @tabinfo == "LTC-MONA" then concat 'active' end %>">
+      <%= link_to "LTC/MONA", @path3 %>
+    </li>
+	</ul>
+</div>

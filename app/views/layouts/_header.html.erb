@@ -1,0 +1,61 @@
+<header>
+  <div class="headertop">
+    <div class="wrapper">
+        <span class="inline-block">Miyamoto Coin Trade </span> <span style="display:inline-block;position:right;">
+          <% if signed_in? %>
+            (<%= current_user.email %>)
+          <% end %>
+          <%= link_to_if params[:locale].present?, '日本語',  
+            url_for(controller: controller.controller_name, 
+            action: controller.action_name, locale: '') %>
+          <%= link_to_if params[:locale] != 'en',  'English',  
+            url_for(controller: controller.controller_name, 
+            action: controller.action_name, locale: 'en') %>
+        </span>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <ul class="nav navbar-nav navbar-left">
+        <li><%= link_to t('header.trade'), orders_btc_mona_path %></a></li>
+        <li><%= link_to t('header.explanation'), static_pages_explanation_path %></li>
+        <li><%= link_to t('header.contact'), static_pages_contact_new_path %></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <% if signed_in? %>
+          <li><%= link_to t('header.order_list'), orders_index_btc_mona_path %></li>     
+          <li><%= link_to t('header.transferIO'), coinios_coinio_btc_path %></li>
+          <li><%= link_to t('header.account'), edit_user_registration_path %></li>
+          <li><%= link_to t('header..logout'), destroy_user_session_path, method: "delete" %></li>
+        <% else %>
+          <li><%= link_to t('header.signup'), new_user_registration_path %></li>
+          <li><%= link_to t('header.login'), new_user_session_path %></li>
+        <% end %>
+      </ul>
+    <div>
+  </nav>
+
+  <% if signed_in? && current_user.admin? then %>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navber-header">
+          <h4 class="navber-text" style="display:inline">Admin menu</h4>
+          <ul class="nav navbar-nav navbar-right">
+            <li><%= link_to "precheck", admins_precheck_service_path %></li>            
+            <li><%= link_to "rails_admin", rails_admin_path %></li>            
+            <li><%= link_to "orders_list", admins_index_order_btc_mona_path %></li>
+            <li><%= link_to "orders_exec", admins_orderbook_exec_path %></li>
+            <li><%= link_to "orders_2acnt", admins_orderbook_trade2acnt_path %></li>
+            <li><%= link_to "orders_plots", admins_orderbook_plot_path %></li>
+            <li><%= link_to "orders_total", admins_orderbook_total_path %></li>
+            <li><%= link_to "prhist_exec", admins_pricehist_exec_path %></li>
+            <li><%= link_to "prhist_plot", admins_pricehist_plot_path %></li>
+            <li><%= link_to "prhist_total", admins_pricehist_total_path %></li>
+            <li><%= link_to "wallet_exec", admins_walletcheck_exec_path %></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  <% end %>
+</header>

@@ -1,0 +1,9 @@
+<tr>
+    <td style="text-align:center;"><%= l(order.created_at, format: :short) %></td>
+    <td style="text-align:center;"><%= order_buysell(order.buysell) %></td>   
+    <td style="text-align:center;"><%= order.rate %></td>
+    <td style="text-align:center;"><%= order.amt_a_org %></td>
+    <td style="text-align:center;"><%= order.amt_a %></td>   
+    <td style="text-align:center;"><%= order.amt_b_org %></td>
+    <td style="text-align:center;"><%= order.amt_b %></td>
+</tr>

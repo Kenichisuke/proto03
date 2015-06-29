@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Proto03</title>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <script language="javascript" type="text/javascript" src="excanvas.js"></script>
+  <![endif]-->
+
+</head>
+<body>
+  <%= render 'layouts/header' %>
+
+  <div class="container">
+    <% if notice %>
+      <p class="alert alert-notice"><%= notice %></p>
+    <% end %>
+    <% if alert %>
+      <p class="alert alert-alert"><%= alert %></p>
+    <% end %>
+<!--     <% flash.each do |key, value| %>
+      <%= content_tag(:div, value, class: "alert alert-#{key}") %>
+    <% end %> -->
+    
+  </div>
+  <div class="container">
+
+      <%= yield %>
+ 
+  </div>
+
+  <div class="footer" >
+    <div class="container">
+      <%= debug(params) if Rails.env.development? %>
+    </div>
+  </div>
+
+</body>
+</html>

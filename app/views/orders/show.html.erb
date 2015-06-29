@@ -1,0 +1,71 @@
+  <h2> <%= t('order.order_detail') %></h2>
+  <table class="table table-bordered table-condensed" >
+    <tr>
+      <th style="text-align:center;"><%= t('order.order_date') %></th>
+      <th style="text-align:center;"><%= @coin_a.ticker %> <%= t('order.sell_buy') %></th>
+      <th style="text-align:center;"><%= t('order.rate') %> <%= @coin_a.ticker %> / <%= @coin_b.ticker %></th>
+      <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_a.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_a.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_b.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_b.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.status') %></th>
+    </tr>
+    <tr>  
+     <td style="text-align:center;"><%= l(@order.created_at, format: :short) %></td>
+     <td style="text-align:center;"><%= order_buysell(@order.buysell) %></td>   
+     <td style="text-align:center;"><%= @order.rate %></td>
+     <td style="text-align:center;"><%= @order.amt_a_org %></td>
+     <td style="text-align:center;"><%= @order.amt_a %></td>   
+     <td style="text-align:center;"><%= @order.amt_b_org %></td>
+     <td style="text-align:center;"><%= @order.amt_b %></td>   
+     <td style="text-align:center;"><%= order_flag(@order.flag) %></td>
+    </tr>
+  </table>
+
+  <% if @trades.any? %>
+    <div class="row container" style="background:pink">
+      <table class="table table-bordered table-condensed" >
+        <tr>
+          <th style="text-align:center;"><%= t('trade.settle_date') %></th>
+          <th style="text-align:center;"><%= t('trade.status') %></th>
+          <th style="text-align:center;"><%= t('trade.amount') %> [<%= @coin_a.ticker %>]</th>
+          <th style="text-align:center;"><%= t('trade.amount') %> [<%= @coin_b.ticker %>]</th>
+          <th style="text-align:center;"><%= t('trade.fee') %> [
+            <% if @order.buysell then %>
+              <%= @coin_b.ticker %>
+            <% else %>
+              <%= @coin_a.ticker %>
+            <% end %>        
+            ]</th>
+        </tr>
+        <% @trades.each do | tr | %>
+          <tr>  
+             <td style="text-align:center;"><%= l(tr.updated_at, format: :short) %></td>
+             <td style="text-align:center;"><%= trade_flag(tr.flag) %></td>   
+             <td style="text-align:center;"><%= tr.amt_a %></td>   
+             <td style="text-align:center;"><%= tr.amt_b %></td>   
+             <td style="text-align:center;"><%= tr.fee %></td>
+          </tr>
+        <% end %>      
+      </table>
+    <%= page_entries_info(@trades) %>
+    <br />
+    <%= paginate @trades %>
+    </div>
+  <% else %>
+    <p><%= t('order.order_open_no_exec') %><p>
+  <% end %>
+
+  <% if @order.flag == "open_new" || @order.flag == "open_per" then %>
+    <br />
+    <h2><%= t('order.cancel_order') %></h2>
+    <p><%= t('order.if_cancel_locked_released') %></p> 
+    <% if @order.buysell then %>
+      <p>  <%= @order.amt_a %>[<%= @coin_a.ticker %>]</p>
+    <% else %>
+      <p>  <%= @order.amt_b %>[<%= @coin_b.ticker %>]</p>
+    <% end %>
+    <%= form_for(@order, { action: :update } ) do | order | %>
+      <%= order.submit t('order.cancel_button') ,class: "btn btn-large btn-primary" %>
+    <% end %>
+  <% end %> 

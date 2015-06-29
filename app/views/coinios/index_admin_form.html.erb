@@ -1,0 +1,32 @@
+<h2>Coin in/out</h2>
+
+<%= render 'layouts/cointab' %>
+
+<h3> <%= @coin.name %></h3>
+
+<div class="row container" style="background:pink">
+  <% if signed_in? && @coinios.any? %>
+    <table class="table table-bordered table-condensed" >
+      <tr>
+        <th style="text-align:center;">order date</th>
+        <th style="text-align:center;">User</th>
+        <th style="text-align:center;">Transaction type</th>
+        <th style="text-align:center;">amount [<%= @coin.ticker %>]</th>
+        <th style="text-align:center;">Status</th>
+      </tr>
+      <% @coinios.each do | co | %>
+        <tr>
+           <td style="text-align:center;"><%= co.created_at %></td>
+           <td style="text-align:center;"><%= co.acnt.user.email %></td>   
+           <td style="text-align:center;"><%= co.amt %></td>
+           <td style="text-align:center;"><%= co.flag %></td>
+        </tr>   
+      <% end %>
+    </table>
+    <%= page_entries_info(@coinios) %>
+    <br />
+    <%= paginate @coinios %>
+  <% else %>
+    <p> Coin I/O pending issues.</p>  
+  <% end %>
+</div>

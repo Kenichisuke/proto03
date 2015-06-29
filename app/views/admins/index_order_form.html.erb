@@ -1,0 +1,44 @@
+<h2>All Orders for admin</h2>
+
+<%= render 'layouts/coin2tab' %>
+
+<div class="row container" style="background:pink">
+  <% if signed_in? && @orders.any? %>
+    <table class="table table-bordered table-condensed" >
+      <tr>
+        <th style="text-align:center;">id</th>
+        <th style="text-align:center;">email</th>
+        <th style="text-align:center;">order date</th>
+        <th style="text-align:center;">sell(T) or buy(F)</th>
+        <th style="text-align:center;">rate <%= @coin_a.ticker %> / <%= @coin_b.ticker %></th>
+        <th style="text-align:center;">Order amount [<%= @coin_a.ticker %>] </th>
+        <th style="text-align:center;">Remaining amt [<%= @coin_a.ticker %>] </th>
+        <th style="text-align:center;">Order amount [<%= @coin_b.ticker %>] </th>
+        <th style="text-align:center;">Remaining amount [<%= @coin_b.ticker %>] </th>
+        <th style="text-align:center;">Status</th>
+        <th style="text-align:center;">Op</th>
+      </tr>
+      <% @orders.each do | order | %>
+        <tr>
+           <td style="text-align:center;"><%= order.id %></td>
+           <td style="text-align:center;"><%= order.user.email %></td>
+           <td style="text-align:center;"><%= order.created_at %></td>
+           <td style="text-align:center;"><%= order.buysell %></td>   
+           <td style="text-align:center;"><%= order.rate %></td>
+           <td style="text-align:center;"><%= order.amt_a_org %></td>
+           <td style="text-align:center;"><%= order.amt_a %></td>   
+           <td style="text-align:center;"><%= order.amt_b_org %></td>
+           <td style="text-align:center;"><%= order.amt_b %></td>   
+           <td style="text-align:center;"><%= order.flag %></td>
+           <td style="text-align:center;">
+               <%= link_to "details", order %></td>           
+        </tr>
+      <% end %>      
+    </table>
+    <%= page_entries_info(@orders) %>
+    <br />
+    <%= paginate @orders %>
+  <% else %>
+    <p> No orders issued </p>  
+  <% end %>
+</div>

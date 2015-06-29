@@ -1,0 +1,29 @@
+ 
+  <h1><%= t('contact.contact') %></h1>
+  <p></p>
+
+  <div class="col-sm-12">
+    <%= form_tag(action: :contact_create) do  %>
+
+      <div class="field" >
+        <%= label_tag :email, t('contact.email') %>
+        <br />
+        <%= email_field_tag :email, '', size: 50 %>
+      </div>
+
+      <div class="field" >
+        <%= label_tag :title, t('contact.title') %>
+        <br />
+        <%= text_field_tag :title, '', size: 50 %>
+      </div>
+
+      <div class="field" >
+        <%= label_tag :content, t('contact.content') %>
+        <br />
+        <%= text_area_tag :content, '' , :size => "60x10" %>
+      </div>
+
+      <%= submit_tag t('contact.send'), class: "btn btn-large btn-primary" %>
+    <% end %>
+  </div>
+

@@ -1,0 +1,371 @@
+---
+en:
+  acnt:
+    bal_not_enough_for_lock: Balance is not enough for locking the amount
+  activerecord:
+    models:
+      user: User
+      order: order
+      coinio: Transfer in/out
+    attributes:
+      user:
+        email: Email
+        password: Password
+        password_confirmation: Password confirmation
+        current_password: Current password  
+        remember_me: Remember me
+      order: 
+        rate: Rate
+        amt_a: Amount
+        amt_b: Total Amount
+      coinio:
+        amt: Amount
+        fee: Fee
+  coinio:
+    coin_inout: "Coin Transfer In/Out"
+    item: Items
+    amount: Amount
+    free_bal: Free balance
+    locked_bal: Locked balance
+    total: Total
+    total_bal: Total balance
+    transferout: Transfer out
+    transferin: Transfer in    
+    destination_addr: Destination address
+    receiving_addr: Receiving address
+    trans_hist: Transfer in/out history
+    no_coinio: No coin transfer in/out
+    no_coin: No coin available to tranfer out
+    date: Date
+    tr_category: Category
+    fee: fee
+    status: Status
+    address: Address
+    coinout_done: Transfer out was done
+    category:
+      tx_receive: Receive
+      tx_immature: Immature
+      tx_generate: Generate
+      tx_send: Send
+    flag:
+      in_done: Received
+      in_yet: Waiting receiving
+      out_sent: sent
+      out_abnormal: Terminated abnormally
+      out_reserve: Reservation
+      out_r_sent: Sent after reservation
+      out_r_n_cncl: Canceled after reservation
+      out_r_n_acnt: Stopped due to shortage
+      out_r_n_addr: Stopped due to wrong address
+  contact:
+    contact: Contact us
+    email: Your email address
+    title: Title
+    content: Content
+    send: send
+    inquiry_accepted: Your inquiy was received
+  date:
+    abbr_day_names:
+    - Sun
+    - Mon
+    - Tue
+    - Wed
+    - Thu
+    - Fri
+    - Sat
+    abbr_month_names:
+    - 
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - May
+    - Jun
+    - Jul
+    - Aug
+    - Sep
+    - Oct
+    - Nov
+    - Dec
+    day_names:
+    - Sunday
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+    formats:
+      default: "%Y-%m-%d"
+      long: "%B %d, %Y"
+      short: "%b %d"
+    month_names:
+    - 
+    - January
+    - February
+    - March
+    - April
+    - May
+    - June
+    - July
+    - August
+    - September
+    - October
+    - November
+    - December
+    order:
+    - :year
+    - :month
+    - :day
+  datetime:
+    distance_in_words:
+      about_x_hours:
+        one: about 1 hour
+        other: about %{count} hours
+      about_x_months:
+        one: about 1 month
+        other: about %{count} months
+      about_x_years:
+        one: about 1 year
+        other: about %{count} years
+      almost_x_years:
+        one: almost 1 year
+        other: almost %{count} years
+      half_a_minute: half a minute
+      less_than_x_minutes:
+        one: less than a minute
+        other: less than %{count} minutes
+      less_than_x_seconds:
+        one: less than 1 second
+        other: less than %{count} seconds
+      over_x_years:
+        one: over 1 year
+        other: over %{count} years
+      x_days:
+        one: 1 day
+        other: "%{count} days"
+      x_minutes:
+        one: 1 minute
+        other: "%{count} minutes"
+      x_months:
+        one: 1 month
+        other: "%{count} months"
+      x_seconds:
+        one: 1 second
+        other: "%{count} seconds"
+    prompts:
+      day: Day
+      hour: Hour
+      minute: Minute
+      month: Month
+      second: Seconds
+      year: Year
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: must be accepted
+      blank: can't be blank
+      present: must be blank
+      confirmation: doesn't match %{attribute}
+      empty: can't be empty
+      equal_to: must be equal to %{count}
+      even: must be even
+      exclusion: is reserved
+      greater_than: must be greater than %{count}
+      greater_than_or_equal_to: must be greater than or equal to %{count}
+      inclusion: is not included in the list
+      invalid: is invalid
+      less_than: must be less than %{count}
+      less_than_or_equal_to: must be less than or equal to %{count}
+      not_a_number: is not a number
+      not_an_integer: must be an integer
+      odd: must be odd
+      record_invalid: 'Validation failed: %{errors}'
+      restrict_dependent_destroy:
+        one: Cannot delete record because a dependent %{record} exists
+        other: Cannot delete record because dependent %{record} exist
+      taken: has already been taken
+      too_long:
+        one: is too long (maximum is 1 character)
+        other: is too long (maximum is %{count} characters)
+      too_short:
+        one: is too short (minimum is 1 character)
+        other: is too short (minimum is %{count} characters)
+      wrong_length:
+        one: is the wrong length (should be 1 character)
+        other: is the wrong length (should be %{count} characters)
+      other_than: must be other than %{count}
+      contain_error: 
+        one: This form contains %{count} error
+        other: This form contains %{count} errors
+      amount_bigger_than_balance: must be equal or smaller than free balance
+      address_invalid: The address is invalid
+      try_later: The request failed. Please try it later.
+      order:
+        zero_or_negative: must be positive
+        free_bal_not_enough: of free balance is not enough
+        try_later: The request failed. Please try it later.
+    template:
+      body: 'There were problems with the following fields:'
+      header:
+        one: 1 error prohibited this %{model} from being saved
+        other: "%{count} errors prohibited this %{model} from being saved"
+  header:
+    trade: Trade
+    explanation: Explanation
+    order_list: Order list
+    transferIO: Transfer In/Out
+    account: Account
+    login: Login
+    logout: Logout
+    signup: Sign Up
+    contact: Contact
+  helpers:
+    page_entries_info:
+      more_pages:
+        display_entries: Displaying %{entry_name} <b>%{first}&nbsp;-&nbsp;%{last}</b> of <b>%{total}</b> in total
+      one_page:
+        display_entries:
+          one: Displaying <b>%{count}</b> %{entry_name}
+          other: Displaying <b>all %{count}</b> %{entry_name}
+          zero: No %{entry_name} found
+    select:
+      prompt: Please select
+    submit:
+      create: Create %{model}
+      submit: Save %{model}
+      update: Update %{model}
+  number:
+    currency:
+      format:
+        delimiter: ","
+        format: "%u%n"
+        precision: 2
+        separator: "."
+        significant: false
+        strip_insignificant_zeros: false
+        unit: "$"
+    format:
+      delimiter: ","
+      precision: 3
+      separator: "."
+      significant: false
+      strip_insignificant_zeros: false
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          billion: Billion
+          million: Million
+          quadrillion: Quadrillion
+          thousand: Thousand
+          trillion: Trillion
+          unit: ''
+      format:
+        delimiter: ''
+        precision: 3
+        significant: true
+        strip_insignificant_zeros: true
+      storage_units:
+        format: "%n %u"
+        units:
+          byte:
+            one: Byte
+            other: Bytes
+          gb: GB
+          kb: KB
+          mb: MB
+          tb: TB
+    percentage:
+      format:
+        delimiter: ''
+        format: "%n%"
+    precision:
+      format:
+        delimiter: ''
+  support:
+    array:
+      last_word_connector: ", and "
+      two_words_connector: " and "
+      words_connector: ", "
+  order:
+    chart_and_time: "CHART,  japan time(+9:00)"
+    trade: Trade
+    buy: Buy
+    sell: Sell
+    sell_buy: Sell/Buy
+    rate: Rate2
+    amount: Amount
+    balance: Balance 
+    free_balance: Free Balance
+    order: Order
+    order_date: Order Date
+    order_amount: Order amount
+    order_book: Order book
+    order_detail: Order detail
+    remaining_amount: Remaining amount     
+    status: Status
+    buy_button: "Issue Order 'Buy %{ticker1} / Sell %{ticker2}'"
+    sell_button: "Issue Order 'Sell %{ticker1} / Buy %{ticker2}'"
+    price: Price
+    autocal: Auto-calculated
+    ops: Ops
+    detail: Detail
+    open_order: Open orders (Both of Buy and Sell)
+    no_order: No order issuesd
+    order_open_no_exec: "Order Open, no executions"
+    cancel_order: Cancel order
+    if_cancel_locked_released: "If you cancel the remaining order, locked amount below will be released."
+    cancel_button: Cancel remaining order
+    order_submit: Order submitted
+    only_owner_can_see: "Only owner of the order can see it"
+    only_owner_can_cancel: "Only owner of the order can cancel it"
+    not_open: Already closed. Not to change.
+    canceled: Canceled
+    flag:
+      open_new: New order
+      open_per: "Pertially executed, open"
+      noex_cncl: "Canceled"
+      exec_cncl: "Pertially executed & canceled"
+      noex_expr: "Expired"
+      exec_expr: "Pertially execution & expired"
+      exec_exec: "Executed"
+  time:
+    am: am
+    formats:
+      default: "%a, %d %b %Y %H:%M:%S %z"
+      long: "%B %d, %Y %H:%M"
+      short: "%d %b %H:%M"
+    pm: pm
+  trade:
+    settle_date: Settled date
+    status: Status
+    amount: Amount
+    fee: Fee
+    flag:
+      tr_close: Executed
+      tr_cncl: Canceled
+      tr_expr: Expired
+  view:
+    devise:
+      signup: Sign up
+      min_length: "characters minimum"
+      login: Log in
+      forgot_password: Forgot your password?
+      send_me_reset_pw: Send me reset password instructions
+      not_rec_unlock_inst: Didn't receive unlock instructions?
+      resend_unlock_inst: Resend unlock instructions
+      edit_user: Edit user information
+      new: New
+      leave_blanck_not_change: leave blank if you don't want to change it
+      need_current_pw: we need your current password to confirm your changes
+      back: Back
+      didnot_receive_confirmation: "Didn't receive confirmation instructions?"
+      resend_confirmation: Resend confirmation instructions
+  views:
+    pagination:
+      first: "&laquo; First"
+      last: Last &raquo;
+      next: Next &rsaquo;
+      previous: "&lsaquo; Prev"
+      truncate: "&hellip;"
