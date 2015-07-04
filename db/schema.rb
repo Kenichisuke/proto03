@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150625095225) do
+ActiveRecord::Schema.define(version: 20150702061457) do
 
   create_table "acnts", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -131,7 +131,7 @@ ActiveRecord::Schema.define(version: 20150625095225) do
     t.datetime "locked_at"
     t.datetime "created_at",                                         null: false
     t.datetime "updated_at",                                         null: false
-    t.integer  "usernum",                limit: 4,   default: 0
+    t.string   "user_num",               limit: 255, default: "0"
     t.boolean  "admin",                  limit: 1,   default: false
   end
 

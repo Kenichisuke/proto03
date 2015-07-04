@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: acnts
+#
+#  id          :integer          not null, primary key
+#  user_id     :integer
+#  cointype_id :integer
+#  balance     :decimal(32, 8)   default(0.0), not null
+#  locked_bal  :decimal(32, 8)   default(0.0), not null
+#  addr_in     :string(255)
+#  addr_out    :string(255)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  acnt_num    :string(255)
+#
+
 class Acnt < ActiveRecord::Base
   include CoinUtil
 
@@ -13,18 +29,16 @@ class Acnt < ActiveRecord::Base
  
   def self.registration(user_id, coin_t, user_num)
     coin = Cointype.find_by(ticker: coin_t)
-    acnt_num = user_num.to_s
-    addr = Coinrpc.getnewaddr(coin.ticker, acnt_num)
+    addr = Coinrpc.getnewaddr(coin.ticker, user_num)
     Acnt.create!(user_id: user_id, cointype_id: coin.id,
-      balance:  0, locked_bal: 0, addr_in: addr, acnt_num: acnt_num)
+      balance:  0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
   end
 
   def self.registration_w_addr(user_id, coin_t, user_num, addr)
     # 新しく address を取らない。
     coin = Cointype.find_by(ticker: coin_t)
-    acnt_num = user_num.to_s
     Acnt.create!(user_id: user_id, cointype_id: coin.id,
-      balance:  0, locked_bal: 0, addr_in: addr, acnt_num: acnt_num)
+      balance:  0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
   end
 
   def lock_amt(amt)

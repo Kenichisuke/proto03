@@ -1,7 +1,7 @@
 namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
-    # make_cointypes
+    make_cointypes
     make_users
     # make_coinios
   end
@@ -36,42 +36,42 @@ end
 
 def make_users
   password = "ffffffff"
-  # usr1 = User.create!(email: "example@abc.co.jp",
-  #             password: password,
-  #             password_confirmation: password, 
-  #             confirmed_at: Time.now,
-  #             confirmation_sent_at: Time.now,
-  #             usernum: 100051,
-  #             admin: true)
-  # Acnt.create!(user_id: usr1.id,
-  #             cointype_id: Cointype.find_by(ticker: "BTC").id,
-  #             balance:  0,
-  #             locked_bal: 0,
-  #             acnt_num: "100051A")
-  # Acnt.create(user_id: usr1.id,
-  #             cointype_id: Cointype.find_by(ticker: "LTC").id,
-  #             balance:  0,
-  #             locked_bal: 0,
-  #             acnt_num: "100051B",
-  #             addr_in: "mw1NjCQDYTyRddtKCziDQhwTyWXQVqqcTB")
-  # Acnt.create(user_id: usr1.id,
-  #             cointype_id: Cointype.find_by(ticker: "MONA").id,
-  #             balance:  0,
-  #             locked_bal: 0,
-  #             acnt_num: "100051C",
-  #             addr_in: "mrBJG4KZjawmHUsPnq2hP4LrWbcuqnsBEv")
+  usr1 = User.create!(email: "example@abc.co.jp",
+              password: password,
+              password_confirmation: password, 
+              confirmed_at: Time.now,
+              confirmation_sent_at: Time.now,
+              user_num: "100101",
+              admin: true)
+  Acnt.create!(user_id: usr1.id,
+              cointype_id: Cointype.find_by(ticker: "BTC").id,
+              balance:  0,
+              locked_bal: 0,
+              acnt_num: "100101",
+              addr_in: "mpLXmL6khttHADCxahX3rUC6Xqk3pPyTHH")
+  Acnt.create(user_id: usr1.id,
+              cointype_id: Cointype.find_by(ticker: "LTC").id,
+              balance:  0,
+              locked_bal: 0,
+              acnt_num: "100101",
+              addr_in: "mrzEgHDTbquUXQ5rvGBDQEK3uwPx4MmTBM")
+  Acnt.create(user_id: usr1.id,
+              cointype_id: Cointype.find_by(ticker: "MONA").id,
+              balance:  0,
+              locked_bal: 0,
+              acnt_num: "100101",
+              addr_in: "miutjZxYsDfmER49GWenvxfoq5fzzNfxAz")
 
   # create open orders
   
-
   # 4.times do | n |
   #   make_order(usr1.id, "BTC", "MONA", true, 1, n + 100)
   #   make_order(usr1.id, "LTC", "MONA", true, 10, n + 10)
   #   make_order(usr1.id, "LTC", "MONA", true, 10, n + 10)
   # end
 
-  usr1 = User.find(1)
-  usr2 = User.find(5)
+  # usr1 = User.find(1)
+  # usr2 = User.find(5)
 
   # usr2 = User.create!(email: "example-4@abc.co.jp",
   #             password: password,
@@ -93,23 +93,23 @@ def make_users
   #             locked_bal: 420,
   #             acnt_num: "154330")
 
-  4.times do | n |
-    make_order(usr2.id, "BTC", "MONA", false, 1, 99 - n)
-    make_order(usr2.id, "LTC", "MONA", false, 10, 9 - n)
-  end
+  # 4.times do | n |
+  #   make_order(usr2.id, "BTC", "MONA", false, 1, 99 - n)
+  #   make_order(usr2.id, "LTC", "MONA", false, 10, 9 - n)
+  # end
 
-  pr = 100
-  vl = 1.0
-  tm = Time.local(2015, 6, 27, 14, 2, 0) 
-  (12 * 72 + 1).times do | n |  # 3日と5分　分
-    make_order_tr(usr1.id, usr2.id, 'BTC', 'MONA', true, vl, pr, tm)
-    pr = pr + (rand(21) - 10)/10.0
-    if pr < 1.0 then
-      pr = 1.0
-    end
-    vl = (rand(20) + 1) / 10.0
-    tm = tm + (5 * 60)  # 5分ずらす
-  end
+  # pr = 100
+  # vl = 1.0
+  # tm = Time.local(2015, 6, 27, 14, 2, 0) 
+  # (12 * 72 + 1).times do | n |  # 3日と5分　分
+  #   make_order_tr(usr1.id, usr2.id, 'BTC', 'MONA', true, vl, pr, tm)
+  #   pr = pr + (rand(21) - 10)/10.0
+  #   if pr < 1.0 then
+  #     pr = 1.0
+  #   end
+  #   vl = (rand(20) + 1) / 10.0
+  #   tm = tm + (5 * 60)  # 5分ずらす
+  # end
 end
 
 # create open order

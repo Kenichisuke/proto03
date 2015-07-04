@@ -145,7 +145,7 @@ class Pricehistproc
         } )();
 EOF
     filename = Cointype.find(coin1).ticker + '-' + Cointype.find(coin2).ticker + '_candle.js'
-    File.open("./app/assets/javascripts/plotdata/#{filename}", "w+") do |f|
+    File.open("./public/plotdata/#{filename}", "w+") do |f|
     # File.open('./app/views/layouts/_plot.html.erb', "w+") do |f|
       f.write(filecont)
     end

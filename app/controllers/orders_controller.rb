@@ -42,7 +42,7 @@ class OrdersController < ApplicationController
     # TODO
     # 自分のopen order と約定が発生しないかチェック。
 
-    binding.pry
+    # binding.pry
 
     if flag_err >0
       common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
@@ -92,7 +92,7 @@ class OrdersController < ApplicationController
       # redirect_back_or(root_path) and return
     end
 
-    flash[ :notice ] = I18n.t('order.submit')
+    flash[ :notice ] = I18n.t('order.order_submit')
     common_new(@order.coin_a.ticker, @order.coin_b.ticker, true)
     # redirect_back_or(root_path)
   end

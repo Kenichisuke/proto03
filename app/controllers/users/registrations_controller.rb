@@ -9,15 +9,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    num = User.last.id + 100_051 
+    num = User.last.id + 100_100 
     super do | user |
-      binding.pry
       unless user.errors.any? then # エラーがない場合のみ、Acntを作る。
-        user.usernum = num # 重ならないようにするロジック必要, 後でDBのindexを加える。
+        user.usernum = num.to_s # 重ならないようにするロジック必要, 後でDBのindexを加える。
 
+        Acnt.registration(user.id, "BTC", num)
         Acnt.registration(user.id, "MONA", num)
         Acnt.registration(user.id, "LTC", num)
-        Acnt.registration_w_addr(user.id, "BTC", num, num.to_s + "A") 
+
+        # Acnt.registration_w_addr(user.id, "BTC", num, num.to_s + "A") 
 
       #   Acnt.registration_w_addr(user.id, "MONA", num, num.to_s + "C") 
       #   Acnt.registration_w_addr(user.id, "LTC", num, num.to_s + "B")

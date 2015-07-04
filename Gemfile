@@ -17,7 +17,7 @@ gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.1.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
+gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -39,7 +39,7 @@ gem 'bootstrap-sass', '~> 3.3.5'
 gem 'sprockets'
 gem 'devise'
 gem 'whenever', :require => false
-gem 'active_decorator'
+gem 'active_decorator' # 使っていない
 gem 'kaminari'
 gem 'rails-i18n'
 gem 'rails_admin'
@@ -72,6 +72,8 @@ group :development, :test do
   
   gem 'better_errors' # errorの時に多くの情報が表示される
   gem 'binding_of_caller' # エラー時のコマンド操作ができる
+
+  gem 'annotate' # schema や routing の情報をファイルに書き加えてくれる。
 
 end
 

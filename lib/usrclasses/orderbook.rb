@@ -259,6 +259,7 @@ class Orderbook
       pr1 = Order.openor.coins(coin1, coin2).where(buysell: false).maximum(:rate)
       pr2 = Order.openor.coins(coin1, coin2).where(buysell: false).minimum(:rate)
       index = 0
+      mx = -1
       tmp = ((pr1 * 10).ceil/10.0)
       begin
         rsubs = Order.openor.coins(coin1, coin2).where(buysell: false).where('? < rate AND rate <= ?', tmp - 0.1, tmp)
@@ -279,7 +280,7 @@ class Orderbook
     lang = ['en', 'ja']  
     for la in lang
       filename = Cointype.find(coin1).ticker + '-' + Cointype.find(coin2).ticker + '_hist_' + la + '.html'
-      fl = File.open("./app/assets/javascripts/plotdata/#{filename}", "w+")
+      fl = File.open("./public/plotdata/#{filename}", "w+")
       if (subss.any? || subbs.any?) then
         fl.puts %Q[<table>]
         if subss.any? then

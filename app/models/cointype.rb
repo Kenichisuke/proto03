@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: cointypes
+#
+#  id         :integer          not null, primary key
+#  name       :string(255)
+#  ticker     :string(255)
+#  rank       :integer
+#  min_in     :float(24)
+#  fee_out    :float(24)
+#  fee_trd    :float(24)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  init_amt   :decimal(32, 10)  default(0.0), not null
+#
+
 class Cointype < ActiveRecord::Base
   has_many :order, foreign_key: "coin_a_id"
   has_many :order, foreign_key: "coin_b_id"
