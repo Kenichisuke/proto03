@@ -9,16 +9,28 @@ class OrdersController < ApplicationController
       :settle] 
   before_action :admin_user, only: :settle
 
-  def btc_mona
-    common_new('BTC', 'MONA', true)
-  end
-
   def btc_ltc
     common_new('BTC', 'LTC', true)
   end
 
+  def btc_mona
+    common_new('BTC', 'MONA', true)
+  end
+
+  def btc_doge
+    common_new('BTC', 'DOGE', true)
+  end
+
   def ltc_mona
     common_new('LTC', 'MONA', true)
+  end
+
+  def ltc_doge
+    common_new('LTC', 'DOGE', true)
+  end
+
+  def mona_doge
+    common_new('MONA', 'DOGE', true)
   end
 
   def create
@@ -97,16 +109,28 @@ class OrdersController < ApplicationController
     # redirect_back_or(root_path)
   end
 
-  def index_btc_mona
-    common_index('BTC', 'MONA')
-  end
-
   def index_btc_ltc
     common_index('BTC', 'LTC')
   end
 
+  def index_btc_mona
+    common_index('BTC', 'MONA')
+  end
+
+  def index_btc_doge
+    common_index('BTC', 'DOGE')
+  end
+
   def index_ltc_mona
     common_index('LTC', 'MONA')
+  end
+
+  def index_ltc_doge
+    common_index('LTC', 'DOGE')
+  end
+
+  def index_mona_doge
+    common_index('MONA', 'DOGE')
   end
 
   def show
@@ -166,7 +190,7 @@ class OrdersController < ApplicationController
       if new_flag then
         @order = Order.new(coin_a_id: @coin_a.id, coin_b_id: @coin_b.id)
       end
-
+      @headinfo = "trade"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
       @candleplot = "\'" + @tabinfo + '_candle' + "\'"
       @histplot = "\'" + @tabinfo + "_hist_" + I18n.locale.to_s + "\'"
@@ -180,24 +204,28 @@ class OrdersController < ApplicationController
         @coin_b_freebal = b.balance - b.locked_bal
         @op_orders = current_user.order.openor.coins(@coin_a.id, @coin_b.id)
                     .order('created_at DESC').page(params[:page]).per(5)
-     end
-     @path1 = orders_btc_mona_path
-     @path2 = orders_btc_ltc_path
-     @path3 = orders_ltc_mona_path
-     store_location
-
-     # binding.pry
-     
-     render 'new_form'
+      end
+      @path12 = orders_btc_ltc_path
+      @path13 = orders_btc_mona_path
+      @path14 = orders_btc_doge_path
+      @path23 = orders_ltc_mona_path
+      @path24 = orders_ltc_doge_path
+      @path34 = orders_mona_doge_path
+      store_location
+      render 'new_form'
     end
 
     def common_index(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
       @orders = current_user.order.coins(@coin_a.id, @coin_b.id).order('created_at DESC').page(params[:page]) 
+      @headinfo = "order_list"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
-      @path1 = orders_index_btc_mona_path
-      @path2 = orders_index_btc_ltc_path
-      @path3 = orders_index_ltc_mona_path
+      @path12 = orders_btc_ltc_path
+      @path13 = orders_btc_mona_path
+      @path14 = orders_btc_doge_path
+      @path23 = orders_ltc_mona_path
+      @path24 = orders_ltc_doge_path
+      @path34 = orders_mona_doge_path
       store_location
       render 'index_form'
     end
@@ -205,7 +233,6 @@ class OrdersController < ApplicationController
     def order_params
       params.require(:order).permit(:coin_a_id, :coin_b_id, :rate, :amt_a)
     end
-
 
 end
 

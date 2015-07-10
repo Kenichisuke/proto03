@@ -5,54 +5,55 @@
 
 <%= render 'layouts/cointab' %>
 
-<h3> <%= @coin.name %></h3>
+<div style="background:white;margin:0px 2px 20px;padding:10px;">
+  <h3> <%= @coin.name %></h3>
 
-<table class="table table-bordered table-condensed" >
-  <tr>
-    <th style="text-align:center;"><%= t('coinio.item') %></th>
-    <th style="text-align:center;"><%= t('coinio.amount') %>  [<%= @coin.ticker %>]</th>
-  </tr>
-  <tr>
-    <th style="text-align:center;"><%= t('coinio.free_bal') %></th>
-    <th style="text-align:center;"><%= (@acnt.balance - @acnt.locked_bal) %></th>
-  </tr>
-  <tr>
-    <th style="text-align:center;"><%= t('coinio.locked_bal') %></th>
-    <th style="text-align:center;"><%= @acnt.locked_bal %></th>
-  </tr>
-  <tr>
-    <th style="text-align:center;"><%= t('coinio.total_bal') %></th>
-    <th style="text-align:center;"><%= @acnt.balance %></th>
-  </tr>
-</table>
+  <table class="table table-bordered table-condensed" >
+    <tr>
+      <th style="text-align:center;"><%= t('coinio.item') %></th>
+      <th style="text-align:center;"><%= t('coinio.amount') %>  [<%= @coin.ticker %>]</th>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><%= t('coinio.free_bal') %></td>
+      <td style="text-align:center;"><%= (@acnt.balance - @acnt.locked_bal) %></td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><%= t('coinio.locked_bal') %></td>
+      <td style="text-align:center;"><%= @acnt.locked_bal %></td>
+    </tr>
+    <tr>
+      <td style="text-align:center;"><%= t('coinio.total_bal') %></td>
+      <td style="text-align:center;"><%= @acnt.balance %></td>
+    </tr>
+  </table>
 
-<h4><%= t('coinio.transferout') %></h4>
-<% if (@acnt.balance - @acnt.locked_bal) > 0 then %>
-  <%= form_for(@coinio, :url => {:action => 'create'} ) do |f| %>
-    <%= f.label :addr, t('coinio.destination_addr') %>: 
-    <%= f.text_field :addr, :size => 45 %>
-    <br />
-    <%= f.hidden_field :cointype_id %>
-    <%= f.hidden_field :acnt_id %>
-    <%= f.label :amt %>: 
-    <%= f.number_field :amt, min: 0, step: 0.0001, :onkeyup => "update_amt_coinio()" %>
-    <%= f.label :fee %>: 
-    <%= f.number_field :fee, :readonly => true, :value => @coin.fee_out, style: "border-width:1px;background:lightgray"%>
-    <%= f.label :flag, t('coinio.total') %>: 
-    <%= f.number_field :flag, :readonly => true, style: "border-width:1px;background:lightgray"%>[<%= @coin.ticker %>]
-    <br />
-    <%= f.submit t('coinio.transferout') , class: "btn btn-large btn-primary" %>
+  <h4><%= t('coinio.transferout') %></h4>
+  <% if (@acnt.balance - @acnt.locked_bal) > 0 then %>
+    <%= form_for(@coinio, :url => {:action => 'create'} ) do |f| %>
+      <%= f.label :addr, t('coinio.destination_addr') %>: 
+      <%= f.text_field :addr, :size => 45 %>
+      <br />
+      <%= f.hidden_field :cointype_id %>
+      <%= f.hidden_field :acnt_id %>
+      <%= f.label :amt %>: 
+      <%= f.number_field :amt, min: 0, step: 0.0001, :onkeyup => "update_amt_coinio()" %>
+      <%= f.label :fee %>: 
+      <%= f.number_field :fee, :readonly => true, :value => @coin.fee_out, style: "border-width:1px;background:lightgray"%>
+      <%= f.label :flag, t('coinio.total') %>: 
+      <%= f.number_field :flag, :readonly => true, style: "border-width:1px;background:lightgray"%>[<%= @coin.ticker %>]
+      <br />
+      <%= f.submit t('coinio.transferout') , class: "btn btn-large btn-primary" %>
+    <% end %>
+  <% else %>
+    <p><%= t('coinio.no_coin') %></p>
   <% end %>
-<% else %>
-  <p><%= t('coinio.no_coin') %></p>
-<% end %>
-<br />
-<h4><%= t('coinio.transferin') %></h4>
-<p><%= t('coinio.receiving_addr') %>: <%= @acnt.addr_in %></P>
+  <br />
+  <h4><%= t('coinio.transferin') %></h4>
+  <p><%= t('coinio.receiving_addr') %>: <%= @acnt.addr_in %></P>
 
-<br />
-<h4><%= t('coinio.trans_hist') %></h4>
-<div class="row container" style="background:white">
+  <br />
+  <h4><%= t('coinio.trans_hist') %></h4>
+
   <% if signed_in? && @coinios.any? %>
     <table class="table table-bordered table-condensed" >
       <tr>

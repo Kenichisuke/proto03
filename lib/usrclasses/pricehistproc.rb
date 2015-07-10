@@ -9,8 +9,10 @@ class Pricehistproc
     logger.info('Pricehistporc.totalprcess start:' + Time.now.to_s)
     coincomb = [["BTC", "MONA"], 
             ["BTC", "LTC"],
-            ["LTC", "MONA"]]
-
+            ["BTC", "DOGE"],
+            ["LTC", "MONA"],
+            ["LTC", "DOGE"],
+            ["MONA", "DOGE"]]
     coincomb.each do | c |
       coin_a, coin_b = coin_order(c[0], c[1])
       execute(coin_a.id, coin_b.id)

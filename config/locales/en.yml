@@ -348,6 +348,7 @@ en:
       tr_expr: Expired
   view:
     devise:
+      account: Account
       signup: Sign up
       min_length: "characters minimum"
       login: Log in

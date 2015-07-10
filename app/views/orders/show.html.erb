@@ -1,4 +1,5 @@
-  <h2> <%= t('order.order_detail') %></h2>
+<h2> <%= t('order.order_detail') %></h2>
+<div style="padding:10px;background:white;margin:10px 10px 15px;">
   <table class="table table-bordered table-condensed" >
     <tr>
       <th style="text-align:center;"><%= t('order.order_date') %></th>
@@ -23,7 +24,7 @@
   </table>
 
   <% if @trades.any? %>
-    <div class="row container" style="background:pink">
+    <div class="row">
       <table class="table table-bordered table-condensed" >
         <tr>
           <th style="text-align:center;"><%= t('trade.settle_date') %></th>
@@ -69,3 +70,4 @@
       <%= order.submit t('order.cancel_button') ,class: "btn btn-large btn-primary" %>
     <% end %>
   <% end %> 
+</div>

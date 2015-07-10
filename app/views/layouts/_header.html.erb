@@ -1,36 +1,48 @@
 <header>
-  <div class="headertop">
-    <div class="wrapper">
-        <span class="inline-block">Miyamoto Coin Trade </span> <span style="display:inline-block;position:right;">
-          <% if signed_in? %>
-            (<%= current_user.email %>)
-          <% end %>
-          <%= link_to_if params[:locale].present?, '日本語',  
-            url_for(controller: controller.controller_name, 
-            action: controller.action_name, locale: '') %>
-          <%= link_to_if params[:locale] != 'en',  'English',  
-            url_for(controller: controller.controller_name, 
-            action: controller.action_name, locale: 'en') %>
-        </span>
-    </div>
+
+  <div class="wrapper">
+    <span>&nbsp;&nbsp;&nbsp;&nbsp; Coin Trade </span> 
+    <span style="position:relative;float:right;">
+      <% if signed_in? %>
+        <%= current_user.email %>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <% end %>
+      <%= link_to_if params[:locale].present?, '日本語',  
+        url_for(controller: controller.controller_name, 
+        action: controller.action_name, locale: '') %>
+      <%= link_to_if params[:locale] != 'en',  'English',  
+        url_for(controller: controller.controller_name, 
+        action: controller.action_name, locale: 'en') %>
+        &nbsp;&nbsp;&nbsp;&nbsp; 
+    </span>
   </div>
 
   <nav class="navbar navbar-default">
     <div class="container">
       <ul class="nav navbar-nav navbar-left">
-        <li><%= link_to t('header.trade'), orders_btc_mona_path %></a></li>
-        <li><%= link_to t('header.explanation'), static_pages_explanation_path %></li>
-        <li><%= link_to t('header.contact'), static_pages_contact_new_path %></li>
+        <li <% if @headinfo == "trade" then concat raw("class='active'") end %> >
+          <%= link_to t('header.trade'), orders_btc_mona_path %></li>
+        <% if signed_in? %>
+          <li <% if @headinfo == "order_list" then concat raw("class='active'") end %> >
+            <%= link_to t('header.order_list'), orders_index_btc_mona_path %></li>     
+          <li <% if @headinfo == "transferIO" then concat raw("class='active'") end %> >
+            <%= link_to t('header.transferIO'), coinios_coinio_btc_path %></li>
+        <% end %>
+        <li <% if @headinfo == "explanation" then concat raw("class='active'") end %> >
+          <%= link_to t('header.explanation'), static_pages_explanation_path %></li>
+        <li <% if @headinfo == "contact" then concat raw("class='active'") end %> >
+          <%= link_to t('header.contact'), static_pages_contact_new_path %></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <% if signed_in? %>
-          <li><%= link_to t('header.order_list'), orders_index_btc_mona_path %></li>     
-          <li><%= link_to t('header.transferIO'), coinios_coinio_btc_path %></li>
-          <li><%= link_to t('header.account'), edit_user_registration_path %></li>
-          <li><%= link_to t('header..logout'), destroy_user_session_path, method: "delete" %></li>
+          <li <% if @headinfo == "account" then concat raw("class='active'") end %> >
+            <%= link_to t('header.account'), edit_user_registration_path %></li>
+          <li><%= link_to t('header.logout'), destroy_user_session_path, method: "delete" %></li>
         <% else %>
-          <li><%= link_to t('header.signup'), new_user_registration_path %></li>
-          <li><%= link_to t('header.login'), new_user_session_path %></li>
+          <li <% if @headinfo == "signup" then concat raw("class='active'") end %> >
+            <%= link_to t('header.signup'), new_user_registration_path %></li>
+          <li <% if @headinfo == "login" then concat raw("class='active'") end %> >
+            <%= link_to t('header.login'), new_user_session_path %></li>
         <% end %>
       </ul>
     <div>

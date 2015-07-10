@@ -10,7 +10,10 @@ class Orderbook
     logger.info('Orderbook.totalprcess start: ' + Time.now.to_s)
     coincomb = [["BTC", "MONA"], 
 		        ["BTC", "LTC"],
-		        ["LTC", "MONA"]]
+            ["BTC", "DOGE"],
+		        ["LTC", "MONA"],
+            ["LTC", "DOGE"],
+            ["MONA", "DOGE"]]
     coincomb.each do | c |
       coin_a, coin_b = coin_order( c[0], c[1] )
       execute(coin_a.id, coin_b.id)
@@ -224,15 +227,14 @@ class Orderbook
   def self.makeplot(coin1, coin2)  # receive coin_id
     logger.debug('Orderbook.makeplot start:' + coin1.to_s + ':' + coin2.to_s )
 
-
     subss = []
+    mx = -1
 
     if Order.openor.coins(coin1, coin2).where(buysell: true).count > 0 then
       pr1 = Order.openor.coins(coin1, coin2).where(buysell: true).minimum(:rate)
       pr2 = Order.openor.coins(coin1, coin2).where(buysell: true).maximum(:rate)
 
       index = 0
-      mx = -1
       tmp = ((pr1 * 10).floor/10.0)
       begin
         rsubs = Order.openor.coins(coin1, coin2).where(buysell: true).where('? <= rate AND rate < ?', tmp, tmp + 0.1)
@@ -259,7 +261,6 @@ class Orderbook
       pr1 = Order.openor.coins(coin1, coin2).where(buysell: false).maximum(:rate)
       pr2 = Order.openor.coins(coin1, coin2).where(buysell: false).minimum(:rate)
       index = 0
-      mx = -1
       tmp = ((pr1 * 10).ceil/10.0)
       begin
         rsubs = Order.openor.coins(coin1, coin2).where(buysell: false).where('? < rate AND rate <= ?', tmp - 0.1, tmp)
@@ -291,7 +292,7 @@ class Orderbook
           end
           subss.reverse_each do |x|
             fl.puts %Q[<tr>
-              <td><div class="graph"><span class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%">#{x[1]}</span></div></td>
+              <td><div class="graph"><div class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
               <td>#{x[0].round(1)}</td>
               <td></td>
               </tr>]
@@ -302,7 +303,7 @@ class Orderbook
             fl.puts %Q[<tr>
               <td></td>
               <td>#{x[0].round(1)}</td>            
-              <td><div class="graph"><span class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%">#{x[1]}</span></div></td>
+              <td><div class="graph"><div class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
               </tr>]
           end
         end
@@ -314,5 +315,99 @@ class Orderbook
     logger.debug('Orderbook histgram created :' + filename)   
     logger.debug('Orderbook.makeplot end:' )
   end
+
+  # def self.makeplot(coin1, coin2)  # receive coin_id
+  #   logger.debug('Orderbook.makeplot start:' + coin1.to_s + ':' + coin2.to_s )
+
+
+  #   subss = []
+
+  #   if Order.openor.coins(coin1, coin2).where(buysell: true).count > 0 then
+  #     pr1 = Order.openor.coins(coin1, coin2).where(buysell: true).minimum(:rate)
+  #     pr2 = Order.openor.coins(coin1, coin2).where(buysell: true).maximum(:rate)
+
+  #     index = 0
+  #     mx = -1
+  #     tmp = ((pr1 * 10).floor/10.0)
+  #     begin
+  #       rsubs = Order.openor.coins(coin1, coin2).where(buysell: true).where('? <= rate AND rate < ?', tmp, tmp + 0.1)
+  #       # binding.pry
+  #       if rsubs.count > 0 then
+  #         sum = rsubs.sum(:amt_a)
+  #         subss << [tmp, sum]
+  #         index += 1
+  #         if sum > mx then
+  #           mx = sum
+  #         end
+  #       end
+  #       tmp += 0.1
+  #       tmp = tmp.round(1)
+
+  #       # binding.pry
+  #     end while (index < 10) && (tmp <= pr2)
+  #   end
+
+  #   subbs = []
+
+  #   if Order.openor.coins(coin1, coin2).where(buysell: false).count > 0 then
+
+  #     pr1 = Order.openor.coins(coin1, coin2).where(buysell: false).maximum(:rate)
+  #     pr2 = Order.openor.coins(coin1, coin2).where(buysell: false).minimum(:rate)
+  #     index = 0
+  #     mx = -1
+  #     tmp = ((pr1 * 10).ceil/10.0)
+  #     begin
+  #       rsubs = Order.openor.coins(coin1, coin2).where(buysell: false).where('? < rate AND rate <= ?', tmp - 0.1, tmp)
+
+  #       if rsubs.count > 0 then
+  #         sum = rsubs.sum(:amt_a)
+  #         subbs << [tmp, sum]
+  #         index += 1
+  #         if sum > mx then
+  #           mx = sum
+  #         end
+  #       end
+  #       tmp -= 0.1
+  #       tmp = tmp.round(1)
+  #     end while (index < 10) && (tmp >= pr2)
+  #   end
+
+  #   lang = ['en', 'ja']  
+  #   for la in lang
+  #     filename = Cointype.find(coin1).ticker + '-' + Cointype.find(coin2).ticker + '_hist_' + la + '.html'
+  #     fl = File.open("./public/plotdata/#{filename}", "w+")
+  #     if (subss.any? || subbs.any?) then
+  #       fl.puts %Q[<table>]
+  #       if subss.any? then
+  #         if la == 'ja' then
+  #           fl.puts %Q[<tr><th width="40%">売注文数量</th><th width="20%">レート</th><th width="40%">買注文数量</th></tr>]
+  #         elsif la == 'en' then
+  #           fl.puts %Q[<tr><th width="40%">Ask size</th><th width="20%">Rate</th><th width="40%">Bit size</th></tr>]
+  #         end
+  #         subss.reverse_each do |x|
+  #           fl.puts %Q[<tr>
+  #             <td><div class="graph"><span class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%">#{x[1]}</span></div></td>
+  #             <td>#{x[0].round(1)}</td>
+  #             <td></td>
+  #             </tr>]
+  #         end
+  #       end
+  #       if subbs.any? then
+  #         subbs.each do |x|
+  #           fl.puts %Q[<tr>
+  #             <td></td>
+  #             <td>#{x[0].round(1)}</td>            
+  #             <td><div class="graph"><span class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%">#{x[1]}</span></div></td>
+  #             </tr>]
+  #         end
+  #       end
+  #       fl.puts %Q[</table>]
+  #     end
+  #     fl.close
+  #   end
+
+  #   logger.debug('Orderbook histgram created :' + filename)   
+  #   logger.debug('Orderbook.makeplot end:' )
+  # end
 
 end

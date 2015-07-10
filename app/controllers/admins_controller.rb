@@ -57,7 +57,7 @@ class AdminsController < ApplicationController
  
   def precheck_service
 #    tickers = Cointype.tickers
-    tickers = %w(BTC MONA LTC)
+    tickers = Cointype.tickers
     @results = []
     tickers.each do | t |
       coin_id = coin_t2i(t)
@@ -84,27 +84,41 @@ class AdminsController < ApplicationController
     # walletcheck のcronが動いているか
   end
 
+  def index_order_btc_ltc
+    common_index_order('BTC', 'LTC')
+  end
+
   def index_order_btc_mona
     common_index_order('BTC', 'MONA')
   end
 
-  def index_order_btc_ltc
-    common_index_order('BTC', 'LTC')
+  def index_order_btc_doge
+    common_index_order('BTC', 'DOGE')
   end
 
   def index_order_ltc_mona
     common_index_order('LTC', 'MONA')
   end
 
+  def index_order_ltc_doge
+    common_index_order('LTC', 'DOGE')
+  end
+
+  def index_order_mona_doge
+    common_index_order('MONA', 'DOGE')
+  end
 
 private
     def common_index_order(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
       @orders = Order.coins(@coin_a.id, @coin_b.id).order('created_at DESC').page(params[:page]) 
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
-      @path1 = orders_index_btc_mona_path
-      @path2 = orders_index_btc_ltc_path
-      @path3 = orders_index_ltc_mona_path
+      @path12 = admins_index_order_btc_ltc_path
+      @path13 = admins_index_order_btc_mona_path
+      @path14 = admins_index_order_btc_doge_path
+      @path23 = admins_index_order_ltc_mona_path
+      @path24 = admins_index_order_ltc_doge_path
+      @path34 = admins_index_order_mona_doge_path
       store_location
       render 'index_order_form'
     end

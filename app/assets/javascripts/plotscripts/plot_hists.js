@@ -12,9 +12,10 @@ $(document).on('ready page:change', function() {
     })();
   } 
   else if ($('#BTC-MONA_hist_en').get(0)) {
+    console.log('debug');
     (function showg2() {
       clearTimeout(g_timer2);
-      $('#BTC-MONA_hist_en').load('/plotdata/BTC-LTC_hist_en.html');
+      $('#BTC-MONA_hist_en').load('/plotdata/BTC-MONA_hist_en.html');
       g_timer2 = setTimeout(function() {
         showg2();
       }, 100 * 1000);

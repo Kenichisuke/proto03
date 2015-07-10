@@ -1,39 +1,35 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-# before_filter :configure_sign_up_params, only: [:create]
+before_filter :configure_sign_up_params, only: [:create]
 # before_filter :configure_account_update_params, only: [:update]
 
   # GET /resource/sign_up
-  # def new
-  #   super
-  # end
+  def new
+    # super
+    build_resource({})
+    set_minimum_password_length
+    @headinfo="signup"
+  end
 
   # POST /resource
   def create
     num = User.last.id + 100_100 
     super do | user |
       unless user.errors.any? then # エラーがない場合のみ、Acntを作る。
-        user.usernum = num.to_s # 重ならないようにするロジック必要, 後でDBのindexを加える。
-
-        Acnt.registration(user.id, "BTC", num)
-        Acnt.registration(user.id, "MONA", num)
-        Acnt.registration(user.id, "LTC", num)
-
-        # Acnt.registration_w_addr(user.id, "BTC", num, num.to_s + "A") 
-
-      #   Acnt.registration_w_addr(user.id, "MONA", num, num.to_s + "C") 
-      #   Acnt.registration_w_addr(user.id, "LTC", num, num.to_s + "B")
-      # #tickers = Cointype.tickers
-      # for t in tickers
-      #   Acnt.registration(usr.id, t, num)
-      # end
+        user.user_num = num.to_s # 重ならないようにするロジック必要, 後でDBのindexを加える。
+        coin_ts = Cointype.tickers
+        coin_ts.each do | co |
+          Acnt.registration(user.id, co, num.to_s)
+        end
       end
     end
   end
 
   # GET /resource/edit
-  # def edit
-  #   super
-  # end
+  def edit
+    # super
+    @headinfo="account"
+    render :edit
+  end
 
   # PUT /resource
   # def update

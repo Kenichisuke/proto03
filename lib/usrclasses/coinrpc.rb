@@ -14,15 +14,6 @@ class Coinrpc
   }
   @@cointype = @@coinuri.keys
 
-  # @@coinuri = {
-  #   'BTC' => URI.parse('http://test1st:1sttest@127.0.0.1:9300'),
-  #   'LTC' => URI.parse('http://test1st:1sttest@127.0.0.1:9301'),
-  #   'MONA' => URI.parse('http://test1st:1sttest@127.0.0.1:9302'),
-  #   'DOGE' => URI.parse('http://test1st:1sttest@127.0.0.1:9303')
-  # }
-  # @@cointype = ['BTC','LTC','MONA','DOGE']
-
-
   #   アドレスを作る　getaccountaddress
   def self.getnewaddr(coin_t, accnt)
     com_mthds(coin_t, 'getnewaddress', accnt)

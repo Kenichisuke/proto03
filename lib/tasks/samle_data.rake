@@ -1,8 +1,9 @@
 namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
-    make_cointypes
+#    make_cointypes
     make_users
+
     # make_coinios
   end
 end
@@ -26,12 +27,12 @@ def make_cointypes
                 min_in: 0.001,
                 fee_out: 0.001,
                 fee_trd: 0.001)
-  # Cointype.create!(name: "Dogecoin",
-  #               ticker: "DOGE",
-  #               rank:   40,
-  #               min_in: 0.1,
-  #               fee_out: 1,
-  #               fee_trd: 0.001)
+  Cointype.create!(name: "Dogecoin",
+                ticker: "DOGE",
+                rank:   40,
+                min_in: 0.1,
+                fee_out: 1,
+                fee_trd: 0.001)
 end
 
 def make_users
@@ -54,23 +55,29 @@ def make_users
               balance:  0,
               locked_bal: 0,
               acnt_num: "100101",
-              addr_in: "mrzEgHDTbquUXQ5rvGBDQEK3uwPx4MmTBM")
+              addr_in: "mjAhow8fmN9W1gNyVNBUD2Jt6NMRiBj34M")
   Acnt.create(user_id: usr1.id,
               cointype_id: Cointype.find_by(ticker: "MONA").id,
               balance:  0,
               locked_bal: 0,
               acnt_num: "100101",
-              addr_in: "miutjZxYsDfmER49GWenvxfoq5fzzNfxAz")
+              addr_in: "mqyakP8kmBLJRodUu4HFuMwibwSxAFSqUq")
+  Acnt.create(user_id: usr1.id,
+              cointype_id: Cointype.find_by(ticker: "DOGE").id,
+              balance:  0,
+              locked_bal: 0,
+              acnt_num: "100101",
+              addr_in: "nmMpAoMGqJvx2bGS3L8bZvs1FZ9TBvGzNW")
 
   # create open orders
   
+  # usr1 = User.find(1)
   # 4.times do | n |
   #   make_order(usr1.id, "BTC", "MONA", true, 1, n + 100)
   #   make_order(usr1.id, "LTC", "MONA", true, 10, n + 10)
   #   make_order(usr1.id, "LTC", "MONA", true, 10, n + 10)
   # end
 
-  # usr1 = User.find(1)
   # usr2 = User.find(5)
 
   # usr2 = User.create!(email: "example-4@abc.co.jp",
@@ -94,8 +101,8 @@ def make_users
   #             acnt_num: "154330")
 
   # 4.times do | n |
-  #   make_order(usr2.id, "BTC", "MONA", false, 1, 99 - n)
-  #   make_order(usr2.id, "LTC", "MONA", false, 10, 9 - n)
+  #   make_order(usr1.id, "BTC", "MONA", false, 1, 99 - n)
+  #   make_order(usr1.id, "LTC", "MONA", false, 10, 9 - n)
   # end
 
   # pr = 100

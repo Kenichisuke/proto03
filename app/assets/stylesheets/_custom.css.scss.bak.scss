@@ -7,41 +7,34 @@ table tr th {
 }
 .graph {
     position: relative; /* IE is dumb */
+    width: 40px;
 }
 
 .graph .bar1 {
-    position: absolute;
-    top: -8px;
-    right: 0;
-    z-index:1;
-    height:14px;
     display: block;
-    background: #FA5858;
-
-    // background: #B04440;   /*(redぽい)*/
+    position: relative;
+    background: #B04440;   /*(redぽい)*/
+    text-align: right;
+    color: #000000;
+    height: 1em;
+    line-height: 1em;
+    float: right;
+    font-size: 10pt;
 }
 
 .graph .bar2 {
-    position: absolute;
-    top: -8px;
-    left: 0;
-    z-index:1;
-    height:14px;
     display: block;
-    background: #81BEF7;   /* (blueぽい) */
-
-    // background: #40B440;   /* (greenぽい) */
+    position: relative;
+    background: #40B440;   /*(greenぽい)*/
+    text-align: right;
+    color: #000000;
+    height: 1em;
+    line-height: 1em;
+    font-size: 10pt;
 }
 
-.graph p {
-  position:absolute;
-  top:-9px;
-  right:0;
-  z-index:3;
-  height:14px;
-  font-size:10pt;
-}
-
+.graph .bar1 span { position: absolute;}
+.graph .bar2 span { position: absolute;}
 
 .alert-notice {
   color: green;

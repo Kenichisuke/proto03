@@ -1,9 +1,11 @@
 class StaticPagesController < ApplicationController
 
   def explanation
+    @headinfo="explanation"
   end
 
   def contact_new
+    @headinfo="contact"
   end
 
   def contact_create

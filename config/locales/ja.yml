@@ -336,6 +336,7 @@ ja:
       tr_expr: 期限切れ
   view:
     devise:
+      account: アカウント
       signup: 登録
       min_length: 文字以上
       login: ログイン

@@ -29,7 +29,7 @@ class Cointype < ActiveRecord::Base
 
   def self.tickers
     ret = []
-    coins = Cointype.all
+    coins = Cointype.all.order('rank DESC')
     coins.each do | co |
       ret << co.ticker
     end

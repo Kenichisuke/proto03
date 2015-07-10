@@ -1,13 +1,16 @@
 <div class="contents-tabs">
 	<ul class="nav nav-tabs">
-  	<li class="tab-plane <% if @tabinfo == "BTC" then concat 'active' end %>">
+  	<li class="tab-plane <% if @tabinfo == "BTC" then concat 'active' end %>" style="width:25%;" >
       <%= link_to "BTC", @path1 %>
     </li>
-    <li class="tab-plane <% if @tabinfo == "LTC" then concat 'active' end %>">
+    <li class="tab-plane <% if @tabinfo == "LTC" then concat 'active' end %>" style="width:25%;" >
       <%= link_to "LTC", @path2 %>
     </li>
-    <li class="tab-plane <% if @tabinfo == "MONA" then concat 'active' end %>">
+    <li class="tab-plane <% if @tabinfo == "MONA" then concat 'active' end %>" style="width:25%;" >
       <%= link_to "MONA", @path3 %>
+    </li>
+    <li class="tab-plane <% if @tabinfo == "DOGE" then concat 'active' end %>" style="width:25%;" >
+      <%= link_to "DOGE", @path4 %>
     </li>
 	</ul>
 </div>

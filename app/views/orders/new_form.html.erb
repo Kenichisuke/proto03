@@ -4,99 +4,155 @@
 
 <%= render 'layouts/coin2tab' %>
 
-<div class="row">
+<div class="row" style="background:#A9F5F2">
+
   <div class="col-sm-8">
-    <h4><%= t('order.chart_and_time') %></h4>
-    <div id=<%= raw(@candleplot) %> style="height:350px;width:480px">plot</div>
+<!--   <div class="col-sm-8" style="background:#EFFBFB" #CEF6F5>
+ -->
+<!--   <div class="col-sm-8" style="background:#E81F781">
+ -->
 
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#buy_order" data-toggle="tab"><%= t('order.buy') %></a></li>
-      <li><a href="#sell_order" data-toggle="tab"><%= t('order.sell') %></a></li>
-    </ul>
+    <div style="padding:10px;margin:10px 0px 10px;background:white">
+      <h4><%= t('order.chart_and_time') %></h4>
+      <div id=<%= raw(@candleplot) %> style="height:350px;width:450px;">plot</div>
+    </div>
 
-    <div class="tab-content">
-      <div class="tab-pane active" id="buy_order" >
-        <%= form_for(@order, :url => {:action => 'create'}, :method => "post" ) do |f| %>
+    <div style="padding:10px 0px 10px;">
 
-          <%= f.label :rate %>: 1 <%= @coin_a.ticker %>=
-          <%= f.number_field :rate, min: 0, step: 0.00001, :onkeyup => "update_amt()" %><%= @coin_b.ticker %>
-          <br />
+      <ul class="nav nav-tabs">
+        <li class="active" style="width:50%" ><a href="#buy_order" data-toggle="tab"><%= t('order.buy') %></a></li>
+        <li style="width:50%"><a href="#sell_order" data-toggle="tab" ><%= t('order.sell') %></a></li>
+      </ul>
 
-          <%= f.label :amt_a %>: 
-          <%= f.number_field :amt_a, min: 0, step: 0.00001, :onkeyup => "update_amt()" %><%= @coin_a.ticker %> 
-          <br />
+      <div class="tab-content">
+        <div class="tab-pane active" id="buy_order" >
+          <%= form_for(@order, :url => {:action => 'create'}, :method => "post", html: { :class => "new_order form-horizontal", :style => "background:white;padding:10px;" } ) do |f| %>
 
-          <%= f.label :amt_b %>(<%= t('order.autocal') %>):
-          <%= f.number_field :amt_b, :readonly => true, style: "border-width:1px;background:lightgray" %>
-          <%= @coin_b.ticker %>
+            <div class="form-group">
+              <div class="col-sm-4 control-label">
+                <%= f.label :rate %>: 1 <%= @coin_a.ticker %> =</div>
+              <div class="col-sm-5"> 
+                <%= f.number_field :rate, min: 0, step: 0.00001, :onkeyup => "update_amt()", class: "form-control" %>
+              </div>
+              <div class="col-sm-3 form-control-static"><%= @coin_b.ticker %></div>
+            </div>
 
-          <br /><br />
+            <div class="form-group">
+              <div class="col-sm-4  control-label">
+                <%= f.label :amt_a %>:</div>
+              <div class="col-sm-5"> 
+                <%= f.number_field :amt_a, min: 0, step: 0.00001, :onkeyup => "update_amt()", class: "form-control" %>
+              </div>
+              <div class="col-sm-3 form-control-static"><%= @coin_a.ticker %></div> 
+            </div> 
+            <div class="form-group">
+              <div class="col-sm-4 control-label">           
+                <%= f.label :amt_b %>(<%= t('order.autocal') %>): </div>
+              <div class="col-sm-5">
+                <%= f.number_field :amt_b, :readonly => true, style: "border-width:1px;background:lightgray", class: "form-control" %>
+              </div>
+              <div class="col-sm-3 form-control-static"><%= @coin_b.ticker %></div>
+            </div>
+            <%= f.hidden_field :coin_a_id %>
+            <%= f.hidden_field :coin_b_id %>
+            <div class="row">
+              <div class="col-sm-offset-4 col-sm-8">
+                <%= f.submit t('order.buy_button', ticker1: @coin_a.ticker, ticker2: @coin_b.ticker), :name =>"buy", class: "btn btn-primary" %>
+              </div>
+            </div>
+          <% end %>
+        </div>  
 
-          <%= f.hidden_field :coin_a_id %>
-          <%= f.hidden_field :coin_b_id %>
-
-          <%= f.submit t('order.buy_button', ticker1: @coin_a.ticker, ticker2: @coin_b.ticker), :name =>"buy", class: "btn btn-large btn-primary" %>
-        <% end %>
-      </div>
-
-      <div class="tab-pane" id="sell_order">
-        <%= form_for(@order, :url => {:action => 'create'}) do |f| %>
-
-          <%= f.label :rate %>: 1 <%= @coin_a.ticker %>=
-          <%= f.number_field :rate, min: 0, step: 0.00001, :id => 'order_rate_s', :onkeyup => "update_amt()" %><%= @coin_b.ticker %>
-          <br />
-
-          <%= f.label :amt_a %>
-          <%= f.number_field :amt_a, min: 0, step: 0.00001, :id => 'order_amt_a_s', :onkeyup => "update_amt()" %><%= @coin_a.ticker %> 
-          <br />
-
-          <%= f.label :amt_b %>(<%= t('order.autocal') %>):
-          <%= f.number_field :amt_b, :id => 'order_amt_b_s', :onkeyup => "update_amt()", :readonly => true, style: "border-width:1px;background:lightgray" %><%= @coin_b.ticker %>
-          <br /><br />
-
-          <%= f.hidden_field :coin_a_id %>
-          <%= f.hidden_field :coin_b_id %>
-
-          <%= f.submit t('order.sell_button', ticker1: @coin_a.ticker, ticker2: @coin_b.ticker), :name =>"sell", class: "btn btn-large btn-primary" %>
-        <% end %>
-      </div>
+        <div class="tab-pane" id="sell_order">
+          <%= form_for(@order, :url => {:action => 'create'}, html: { :class => "new_order form-horizontal", :style => "background:white;padding:10px;" } ) do |f| %>
+            <div class="form-group">
+              <div class="col-sm-4 control-label">
+                <%= f.label :rate %>: 1 <%= @coin_a.ticker %> =</div>
+              <div class="col-sm-5"> 
+                <%= f.number_field :rate, min: 0, step: 0.00001, :id => 'order_rate_s', :onkeyup => "update_amt()", class: "form-control" %>
+              </div>
+              <div class="col-sm-3 form-control-static">
+                <%= @coin_b.ticker %>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-4 control-label">
+                <%= f.label :amt_a %>:</div>
+              <div class="col-sm-5">
+                <%= f.number_field :amt_a, min: 0, step: 0.00001, :id => 'order_amt_a_s', :onkeyup => "update_amt()" , class: "form-control" %>
+              </div>
+              <div class="col-sm-3 form-control-static">
+                <%= @coin_a.ticker %> 
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-4 control-label">
+                <%= f.label :amt_b %>(<%= t('order.autocal') %>):
+              </div>
+              <div class="col-sm-5">
+                <%= f.number_field :amt_b, :id => 'order_amt_b_s', :onkeyup => "update_amt()", :readonly => true, style: "border-width:1px;background:lightgray", class: "form-control" %>
+              </div>
+              <div class="col-sm-3 form-control-static">
+                <%= @coin_b.ticker %>
+              </div>
+            </div>
+            <%= f.hidden_field :coin_a_id %>
+            <%= f.hidden_field :coin_b_id %>
+            <div class="row">
+              <div class="col-sm-offset-4 col-sm-8">
+                <%= f.submit t('order.sell_button', ticker1: @coin_a.ticker, ticker2: @coin_b.ticker), :name =>"sell", class: "btn btn-danger" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div> 
     </div>
   </div>
 
-  <div class="col-sm-4">    
-    <% if signed_in? then %>
-      <table border="1" cellspacing="10" cellpadding="5"  width="220">
-        <tr><td><%= t('order.balance') %> [<%= @coin_a.ticker %>]</td><td><%= @coin_a_bal %></tr> 
-        <tr><td><%= t('order.free_balance') %> [<%= @coin_a.ticker %>]</td><td><%= @coin_a_freebal %></tr> 
-        <tr><td><%= t('order.balance') %> [<%= @coin_b.ticker %>]</td><td><%= @coin_b_bal %></tr> 
-        <tr><td><%= t('order.free_balance') %> [<%= @coin_b.ticker %>]</td><td><%= @coin_b_freebal %></tr>
-      </table>
-    <% end %>
-    <h4><%= t('order.order') %> [<%= @coin_a.ticker %>/<%= @coin_b.ticker %>]</h4>
+  <div class="col-sm-4" style="padding:0px 10px 0px 0px">
+    <div style="margin:10px 0px 10px;padding:5px;background:white">
+      <% if signed_in? then %>
+        <table border="1" cellspacing="10" cellpadding="5"  width="190">
+          <tr><td><%= t('order.balance') %> [<%= @coin_a.ticker %>]</td><td><%= @coin_a_bal %></tr> 
+          <tr><td><%= t('order.free_balance') %> [<%= @coin_a.ticker %>]</td><td><%= @coin_a_freebal %></tr> 
+          <tr><td><%= t('order.balance') %> [<%= @coin_b.ticker %>]</td><td><%= @coin_b_bal %></tr> 
+          <tr><td><%= t('order.free_balance') %> [<%= @coin_b.ticker %>]</td><td><%= @coin_b_freebal %></tr>
+        </table>
+        <br />
+      <% end %>
+      <h4><%= t('order.order') %> [<%= @coin_a.ticker %>/<%= @coin_b.ticker %>]</h4>
 
-    <div id=<%= raw(@histplot) %> ></div>
+      <div id=<%= raw(@histplot) %> ></div>
 
+    </div>
   </div>
 </div>
 
-<div class="row container" style="background:pink">
-  <% if signed_in? && @op_orders.any? %>  
-    <table class="table table-bordered table-condensed" >
+<div class="row container" style="background:#A9F5F2">
+  <% if signed_in? then %>
+    <div style="margin:10px 0px 10px;padding:5px 10px 0px;background:white">
       <h3><%= t('order.open_order') %></h3>
-      <tr>
-        <th style="text-align:center;"><%= t('order.order_date') %></th>
-        <th style="text-align:center;"><%= @coin_a.ticker %> <%= t('order.sell_buy') %></th>
-        <th style="text-align:center;"><%= t('order.rate') %> <%= @coin_a.ticker %>/<%= @coin_b.ticker %></th>
-        <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_a.ticker %>] </th>
-        <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_a.ticker %>] </th>
-        <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_b.ticker %>] </th>
-        <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_b.ticker %>] </th>
-      </tr>
-      <%= render(@op_orders) %>
-    </table>
-    <%= page_entries_info(@op_orders) %>
-    <br />
-    <%= paginate @op_orders %>
+      <% if@op_orders.any? then %>
+        <table class="table table-bordered table-condensed" >
+          <tr>
+            <th style="text-align:center;"><%= t('order.order_date') %></th>
+            <th style="text-align:center;"><%= @coin_a.ticker %> <%= t('order.sell_buy') %></th>
+            <th style="text-align:center;"><%= t('order.rate') %> <%= @coin_a.ticker %>/<%= @coin_b.ticker %></th>
+            <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_a.ticker %>] </th>
+            <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_a.ticker %>] </th>
+            <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_b.ticker %>] </th>
+            <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_b.ticker %>] </th>
+          </tr>
+          <%= render(@op_orders) %>
+        </table>
+        <%= page_entries_info(@op_orders) %>
+        <br />
+        <%= paginate @op_orders %>
+      <% else %>
+        <h4><%= t('order.no_order') %></h4>
+      <% end %>
+    </div>
+
   <% end %>
 </div>
 

@@ -8,8 +8,7 @@ class Walletcheck
   def self.totalprocess
     logger.info('Walletcheck.totalprcess start: ' + Time.now.to_s)
 
-    # coin_ts = Cointype.tickers
-    coin_ts = ["LTC", "MONA"]    
+    coin_ts = Cointype.tickers
     coin_ts.each do | co |
       execute( coin_t2i( co ) )
     end

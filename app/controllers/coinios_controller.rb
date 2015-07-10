@@ -15,6 +15,10 @@ class CoiniosController < ApplicationController
     common_new('MONA', true)
   end
 
+  def coinio_doge
+    common_new('DOGE', true)
+  end
+
   def create
   	@coinio = Coinio.new(coinio_params)
 
@@ -34,13 +38,10 @@ class CoiniosController < ApplicationController
       flag_err += 1
     end
 
-    binding.pry
-
     if flag_err >0
       common_new(@coinio.cointype.ticker, false)
       return
     end
-    binding.pry
 
     begin
       #coin address check
@@ -88,21 +89,6 @@ class CoiniosController < ApplicationController
     common_new(@coinio.cointype.ticker, true)
   end
 
-
-  # def index_btc_admin
-  # end
-
-  # def index_ltc_admin
-  #   common_new_admin('LTC')
-  # end
-
-  # def index_mona_admin
-  #   common_new_admin('MONA')
-  # end
-
-  # def update
-  # end
-
   private
     def common_new(coin_t, new_flag)   
       # 同じ画面から再度呼び出しの場合、flagに１を入れる。
@@ -114,11 +100,13 @@ class CoiniosController < ApplicationController
         @coinio = Coinio.new(cointype_id: @coin.id, acnt_id: @acnt.id)
       end
       @coinios = @acnt.coinio.order('created_at DESC').page(params[:page])
+      @headinfo = "transferIO"
       @tabinfo = @coin.ticker
 
       @path1 = coinios_coinio_btc_path
       @path2 = coinios_coinio_ltc_path
       @path3 = coinios_coinio_mona_path
+      @path4 = coinios_coinio_doge_path
 	    render 'new_form' and return
     end
 
@@ -126,16 +114,5 @@ class CoiniosController < ApplicationController
       params.require(:coinio).permit(:cointype_id, :amt, :addr, :acnt_id)
       # Viewの中でflagを一時的にTotalで使っている。取り込まないこと！
     end
-
-    # def common_new_admin(coin_t)
-    #   @coin = Cointype.find_by(ticker: coin_t)
-    #   @coinios = Coinio.where(cointype_id: @coino.id).action_coinio.page(params[:page])
-    #   @tabinfo = @coin.ticker
-    #   @path1 = coinios_new_btc_admin_path
-    #   @path2 = coinios_index_ltc_admin_path
-    #   @path3 = coinios_index_mona_admin_path
-    #   store_location
-    #   render 'index_admin_form'
-    # end
 end
 
