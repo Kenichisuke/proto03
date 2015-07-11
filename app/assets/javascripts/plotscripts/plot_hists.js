@@ -1,7 +1,27 @@
 g_timer2 = null
 
 $(document).on('ready page:change', function() {
-  if ($('#BTC-MONA_hist_ja').get(0)) {
+  if ($('#BTC-LTC_hist_ja').get(0)) {
+    (function showg3() {
+      clearTimeout(g_timer2);
+      $('#BTC-LTC_hist_ja').load('/plotdata/BTC-LTC_hist_ja.html');
+      g_timer2 = setTimeout(function() {
+        showg3();
+      }, 100 * 1000);
+      console.log("g_timer2: " + g_timer2)
+    })();
+  } 
+  else if ($('#BTC-LTC_hist_en').get(0)) {
+    (function showg4() {
+      clearTimeout(g_timer2);
+      $('#BTC-LTC_hist_en').load('/plotdata/BTC-LTC_hist_en.html');
+      g_timer2 = setTimeout(function() {
+        showg4();
+      }, 100 * 1000);
+      console.log("g_timer2: " + g_timer2)
+    })();
+  } 
+  else if ($('#BTC-MONA_hist_ja').get(0)) {
     (function showg1() {
       clearTimeout(g_timer2);
       $('#BTC-MONA_hist_ja').load('/plotdata/BTC-MONA_hist_ja.html');
@@ -22,22 +42,24 @@ $(document).on('ready page:change', function() {
       console.log("g_timer2: " + g_timer2)
     })();
   } 
-  else if ($('#BTC-LTC_hist_ja').get(0)) {
-    (function showg3() {
+  else if ($('#BTC-DOGE_hist_ja').get(0)) {
+    console.log('debug');
+    (function showg2() {
       clearTimeout(g_timer2);
-      $('#BTC-LTC_hist_ja').load('/plotdata/BTC-LTC_hist_ja.html');
+      $('#BTC-DOGE_hist_ja').load('/plotdata/BTC-DOGE_hist_ja.html');
       g_timer2 = setTimeout(function() {
-        showg3();
+        showg2();
       }, 100 * 1000);
       console.log("g_timer2: " + g_timer2)
     })();
-  } 
-  else if ($('#BTC-LTC_hist_en').get(0)) {
-    (function showg4() {
+  }   
+  else if ($('#BTC-DOGE_hist_en').get(0)) {
+    console.log('debug');
+    (function showg2() {
       clearTimeout(g_timer2);
-      $('#BTC-LTC_hist_en').load('/plotdata/BTC-LTC_hist_en.html');
+      $('#BTC-DOGE_hist_en').load('/plotdata/BTC-DOGE_hist_en.html');
       g_timer2 = setTimeout(function() {
-        showg4();
+        showg2();
       }, 100 * 1000);
       console.log("g_timer2: " + g_timer2)
     })();
@@ -56,6 +78,46 @@ $(document).on('ready page:change', function() {
     (function showg6() {
       clearTimeout(g_timer2);
       $('#LTC-MONA_hist_en').load('/plotdata/LTC-MONA_hist_en.html');
+      g_timer2 = setTimeout(function() {
+        showg6();
+      }, 100 * 1000);
+      console.log("g_timer2: " + g_timer2)
+    })();
+  } 
+  else if ($('#LTC-DOGE_hist_ja').get(0)) {
+    (function showg5() {
+      clearTimeout(g_timer2);
+      $('#LTC-DOGE_hist_ja').load('/plotdata/LTC-DOGE_hist_ja.html');
+      g_timer2 = setTimeout(function() {
+        showg5();
+      }, 100 * 1000);
+      console.log("g_timer2: " + g_timer2)
+    })();
+  } 
+  else if ($('#LTC-DOGE_hist_en').get(0)) {
+    (function showg6() {
+      clearTimeout(g_timer2);
+      $('#LTC-DOGE_hist_en').load('/plotdata/LTC-DOGE_hist_en.html');
+      g_timer2 = setTimeout(function() {
+        showg6();
+      }, 100 * 1000);
+      console.log("g_timer2: " + g_timer2)
+    })();
+  } 
+  else if ($('#MONA-DOGE_hist_ja').get(0)) {
+    (function showg5() {
+      clearTimeout(g_timer2);
+      $('#MONA-DOGE_hist_ja').load('/plotdata/MONA-DOGE_hist_ja.html');
+      g_timer2 = setTimeout(function() {
+        showg5();
+      }, 100 * 1000);
+      console.log("g_timer2: " + g_timer2)
+    })();
+  } 
+  else if ($('#MONA-DOGE_hist_en').get(0)) {
+    (function showg6() {
+      clearTimeout(g_timer2);
+      $('#MONA-DOGE_hist_en').load('/plotdata/MONA-DOGE_hist_en.html');
       g_timer2 = setTimeout(function() {
         showg6();
       }, 100 * 1000);
