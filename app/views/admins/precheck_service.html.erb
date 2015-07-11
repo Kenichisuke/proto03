@@ -14,13 +14,13 @@
     </tr>
     <% @results.each do | r | %>
       <tr>
-         <td style="text-align:center;"><%= r.ticker %></td>
-         <td style="text-align:center;"><%= r.init_bal %></td>
-         <td style="text-align:center;"><%= r.db_bal %></td>
-         <td style="text-align:center;"><%= r.db_diff_bal %></td>
-         <td style="text-align:center;"><%= r.db_locked_bal %></td>
-         <td style="text-align:center;"><%= r.status %></td>
-         <td style="text-align:center;"><%= r.wallet_bal %></td>   
+        <td style="text-align:center;"><%= r.ticker %></td>
+        <td style="text-align:center;"><%= number_with_delimiter(r.init_bal) %></td>
+        <td style="text-align:center;"><%= number_with_delimiter(r.db_bal) %></td>
+        <td style="text-align:center;"><%= number_with_delimiter(r.db_diff_bal) %></td>
+        <td style="text-align:center;"><%= number_with_delimiter(r.db_locked_bal) %></td>
+        <td style="text-align:center;"><%= r.status %></td>
+        <td style="text-align:center;"><%= number_with_delimiter(r.wallet_bal) %></td>   
       </tr>
     <% end %>      
   </table>

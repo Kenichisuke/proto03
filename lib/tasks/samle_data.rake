@@ -36,47 +36,57 @@ def make_cointypes
 end
 
 def make_users
-  password = "ffffffff"
-  usr1 = User.create!(email: "example@abc.co.jp",
-              password: password,
-              password_confirmation: password, 
-              confirmed_at: Time.now,
-              confirmation_sent_at: Time.now,
-              user_num: "100101",
-              admin: true)
-  Acnt.create!(user_id: usr1.id,
-              cointype_id: Cointype.find_by(ticker: "BTC").id,
-              balance:  0,
-              locked_bal: 0,
-              acnt_num: "100101",
-              addr_in: "mpLXmL6khttHADCxahX3rUC6Xqk3pPyTHH")
-  Acnt.create(user_id: usr1.id,
-              cointype_id: Cointype.find_by(ticker: "LTC").id,
-              balance:  0,
-              locked_bal: 0,
-              acnt_num: "100101",
-              addr_in: "mjAhow8fmN9W1gNyVNBUD2Jt6NMRiBj34M")
-  Acnt.create(user_id: usr1.id,
-              cointype_id: Cointype.find_by(ticker: "MONA").id,
-              balance:  0,
-              locked_bal: 0,
-              acnt_num: "100101",
-              addr_in: "mqyakP8kmBLJRodUu4HFuMwibwSxAFSqUq")
-  Acnt.create(user_id: usr1.id,
-              cointype_id: Cointype.find_by(ticker: "DOGE").id,
-              balance:  0,
-              locked_bal: 0,
-              acnt_num: "100101",
-              addr_in: "nmMpAoMGqJvx2bGS3L8bZvs1FZ9TBvGzNW")
+  # password = "ffffffff"
+  # usr1 = User.create!(email: "example@abc.co.jp",
+  #             password: password,
+  #             password_confirmation: password, 
+  #             confirmed_at: Time.now,
+  #             confirmation_sent_at: Time.now,
+  #             user_num: "100101",
+  #             admin: true)
+  # Acnt.create!(user_id: usr1.id,
+  #             cointype_id: Cointype.find_by(ticker: "BTC").id,
+  #             balance:  0,
+  #             locked_bal: 0,
+  #             acnt_num: "100101",
+  #             addr_in: "mpLXmL6khttHADCxahX3rUC6Xqk3pPyTHH")
+  # Acnt.create(user_id: usr1.id,
+  #             cointype_id: Cointype.find_by(ticker: "LTC").id,
+  #             balance:  0,
+  #             locked_bal: 0,
+  #             acnt_num: "100101",
+  #             addr_in: "mjAhow8fmN9W1gNyVNBUD2Jt6NMRiBj34M")
+  # Acnt.create(user_id: usr1.id,
+  #             cointype_id: Cointype.find_by(ticker: "MONA").id,
+  #             balance:  0,
+  #             locked_bal: 0,
+  #             acnt_num: "100101",
+  #             addr_in: "mqyakP8kmBLJRodUu4HFuMwibwSxAFSqUq")
+  # Acnt.create(user_id: usr1.id,
+  #             cointype_id: Cointype.find_by(ticker: "DOGE").id,
+  #             balance:  0,
+  #             locked_bal: 0,
+  #             acnt_num: "100101",
+  #             addr_in: "nmMpAoMGqJvx2bGS3L8bZvs1FZ9TBvGzNW")
 
   # create open orders
   
-  # usr1 = User.find(1)
-  # 4.times do | n |
-  #   make_order(usr1.id, "BTC", "MONA", true, 1, n + 100)
-  #   make_order(usr1.id, "LTC", "MONA", true, 10, n + 10)
-  #   make_order(usr1.id, "LTC", "MONA", true, 10, n + 10)
-  # end
+  usr1 = User.find(6)
+  10.times do | n |
+    make_order(usr1.id, "BTC", "LTC", true, (rand(10)+1)*0.01, n*0.2 + 60.3)
+    make_order(usr1.id, "BTC", "MONA", true, (rand(10)+1)*0.1, n + 1810)
+    make_order(usr1.id, "BTC", "DOGE", true, (rand(10)+1)*1, n + 1467406)    
+    make_order(usr1.id, "LTC", "MONA", true, (rand(10)+1)*0.1, n*0.1 + 29.9)
+    make_order(usr1.id, "LTC", "DOGE", true, (rand(10)+1)*1, n + 242031)
+    make_order(usr1.id, "MONA", "DOGE", true, (rand(10)+1)*1, n + 810)    
+  
+    make_order(usr1.id, "BTC", "LTC", false, (rand(10)+1)*0.01, -(n+1)*0.2 + 60.3)
+    make_order(usr1.id, "BTC", "MONA", false, (rand(10)+1)*0.1, -(n+1) + 1810)
+    make_order(usr1.id, "BTC", "DOGE", false, (rand(10)+1)*1, -(n+1) + 1467406)    
+    make_order(usr1.id, "LTC", "MONA", false, (rand(10)+1)*0.1, -(n+1)*0.1 + 29.9)
+    make_order(usr1.id, "LTC", "DOGE", false, (rand(10)+1)*1, -(n+1) + 242031)
+    make_order(usr1.id, "MONA", "DOGE", false, (rand(10)+1)*1, -(n+1) + 810)    
+  end
 
   # usr2 = User.find(5)
 
