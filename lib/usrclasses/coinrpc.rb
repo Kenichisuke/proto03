@@ -37,8 +37,7 @@ class Coinrpc
 
   # 出金 sendtoaddress
   def self.sendaddr(coin_t, addr, amt )
-    params = [addr, amt]
-
+    params = [addr, Float( amt )]
     #    params = [method: addr, params: amt]
     # binding.pry
     com_mthds(coin_t, 'sendtoaddress', params)
@@ -54,6 +53,28 @@ class Coinrpc
     # binding.pry
     com_mthds(coin_t, 'getbalance', nil)
   end
+
+  def self.getinfo(coin_t)
+    # binding.pry
+    com_mthds(coin_t, 'getinfo', nil)
+  end
+
+  def self.status(coin_t)
+    # return "acutal", "Test" or "Dead"
+    begin
+      ret = getinfo(coin_t)
+    rescue => e
+      return "Dead"
+    else
+      if ret['testnet'] then
+        return "Test"
+      else
+        return "Alive"
+      end
+    end
+  end
+
+
 
   # for debug
   def check_keys

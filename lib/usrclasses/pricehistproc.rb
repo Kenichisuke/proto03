@@ -7,12 +7,7 @@ class Pricehistproc
 
   def self.totalprocess
     logger.info('Pricehistporc.totalprcess start:' + Time.now.to_s)
-    coincomb = [["BTC", "MONA"], 
-            ["BTC", "LTC"],
-            ["BTC", "DOGE"],
-            ["LTC", "MONA"],
-            ["LTC", "DOGE"],
-            ["MONA", "DOGE"]]
+    coincomb = Cointype.tickercomb
     coincomb.each do | c |
       coin_a, coin_b = coin_order(c[0], c[1])
       execute(coin_a.id, coin_b.id)
@@ -39,12 +34,14 @@ class Pricehistproc
       time_e = pricehist_last.dattim.to_i
       last_time = Time.at(time_e)
     elsif Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).count > 0 then
-      time_e = Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).order('updated_at ASC').first.updated_at.to_i
+      time_e = Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).order('updated_at ASC').first.updated_at.to_i      
     else
 
       logger.info('No transction yet: ' + coin1.to_s + ':' + coin2.to_s )
       return
     end
+
+    logger.debug('Pricehistproc.execute time_e: ' + Time.at(time_e).to_s )
 
     hr_e = time_e / (60 * 60)
     from_e = hr_e * (60 * 60)  # make epoc time
@@ -102,8 +99,8 @@ class Pricehistproc
     ticker1 = Cointype.find(coin1).ticker
     ticker2 = Cointype.find(coin2).ticker
     filename = ticker1 + '-' + ticker2 + '_candle'
-    min = from.strftime("%m/%d-%H:%M")
-    max = (tnow + (60*59)).strftime("%m/%d-%H:%M")
+    min = from.strftime("%m/%d-%H:00")
+    max = (tnow + (60*59)).strftime("%m/%d-%H:00")
     plottitle = min + ' ~ '+ max
     plotmin = (from - (60 * 60)).strftime("%Y-%m-%d %H:00")
     plotmax = (tnow + (60 * 59)).strftime("%Y-%m-%d %H:00")

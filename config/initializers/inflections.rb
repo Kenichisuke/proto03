@@ -14,3 +14,20 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym 'RESTful'
 # end
+
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.plural(/^.*[^A-Za-z]$/, '\0')
+  inflect.singular(/^.*[^A-Za-z]$/, '\0')
+end
+
+ActiveSupport::Inflector.inflections(:ja) do |inflect|
+  inflect.plural(/^.*[^A-Za-z]$/, '\0')
+  inflect.singular(/^.*[^A-Za-z]$/, '\0')
+end
+
+#   inflect.plural /^(ox)$/i, '\1en'
+#   inflect.singular /^(ox)en/i, '\1'
+#   inflect.irregular 'person', 'people'
+#   inflect.uncountable %w( fish sheep )
+# end
+

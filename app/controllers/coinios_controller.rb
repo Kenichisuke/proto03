@@ -59,10 +59,11 @@ class CoiniosController < ApplicationController
 
         @coinio.errors.add(:base, I18n.t('errors.messages.try_later'))
         common_new(@coinio.cointype.ticker, false) and return
-        # ログに残すこと！
-
+        logger.error('Coinio send cannot access wallet ' + @coinio.cointype.ticker )
+        logger.error( e )
+        return
       ## end
-    end  
+    end
 
     if !addr_valid["isvalid"] then
       @coinio.errors.add(:addr, I18n.t('errors.messages.address_invalid'))
@@ -73,12 +74,13 @@ class CoiniosController < ApplicationController
     end
 
     # if addr_valid is true
-    acnt.balance -= (@coinio.amt + acnt.cointype.fee_out) 
+    acnt.balance -= (@coinio.amt + acnt.cointype.fee_out)
+
     if acnt.save then
       @coinio.txid = Coinrpc.sendaddr(@coinio.cointype.ticker, @coinio.addr, @coinio.amt)
-      @coinio.txtype = :tx_send
+      @coinio.tx_category = :tx_send
       @coinio.fee = acnt.cointype.fee_out
-      @coinio.flag = :out_sent      
+      @coinio.flag = :out_sent
       flash[ :notice ] = I18n.t('coinio.coinout_done')
     else
       coinio.flag = :out_abnormal

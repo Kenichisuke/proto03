@@ -36,4 +36,16 @@ class Cointype < ActiveRecord::Base
     return ret
   end
 
+  def self.tickercomb
+    ticks = tickers
+    ret = []
+    n = ticks.count - 1
+    for i in 0...n
+      for j in (i + 1)..n
+        ret << [ticks[i], ticks[j]]
+      end
+    end
+    return ret
+  end
+  
 end

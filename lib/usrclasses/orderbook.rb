@@ -8,12 +8,7 @@ class Orderbook
 
   def self.totalprocess
     logger.info('Orderbook.totalprcess start: ' + Time.now.to_s)
-    coincomb = [["BTC", "MONA"], 
-		        ["BTC", "LTC"],
-            ["BTC", "DOGE"],
-		        ["LTC", "MONA"],
-            ["LTC", "DOGE"],
-            ["MONA", "DOGE"]]
+    coincomb = Cointype.tickercomb
     coincomb.each do | c |
       coin_a, coin_b = coin_order( c[0], c[1] )
       execute(coin_a.id, coin_b.id)
@@ -51,7 +46,7 @@ class Orderbook
     nsells = sells.count     
     nbuys  = buys.count
 
-    # binding.pry
+#    binding.pry
 
     # 付き合わせ
     i = 0
@@ -69,7 +64,7 @@ class Orderbook
           ActiveRecord::Base.transaction do
             create_trade(sells[i].id, buys[j].id, coin1, coin2, coinamt_a, coinamt_a * sells[i].rate, Trade.flags[:tr_new])
             create_trade(buys[j].id, sells[i].id, coin1, coin2, coinamt_a, buys[j].amt_b, Trade.flags[:tr_new])
-            create_trade(sells[i].id, buys[j].id, coin1, coin2, 0, buys[j].amt_b - coinamt_a * sells[i].rate, Trade.flags[:tr_diffwip])
+            # create_trade(sells[i].id, buys[j].id, coin1, coin2, 0, buys[j].amt_b - coinamt_a * sells[i].rate, Trade.flags[:tr_diffwip])
 
             sells[i].amt_a -= coinamt_a
             sells[i].amt_b -= coinamt_a * sells[i].rate
@@ -83,9 +78,8 @@ class Orderbook
             buys[j].save!
           end
         rescue => e
-          # エラーを書くロジック
-          # log に書き出すロジック
-          # 戻る
+          logger.error('cannot save Trades and Orders properly Orders id: ' + sells[i].id.to_s + ':' + buys[j].id.to_s )
+          return
         end
         j += 1
 
@@ -94,15 +88,18 @@ class Orderbook
       elsif sells[i].amt_a < buys[j].amt_a then
 
         coinamt_a = sells[i].amt_a
+
         begin
           ActiveRecord::Base.transaction do
             create_trade(sells[i].id, buys[j].id, coin1, coin2, coinamt_a, sells[i].amt_b, Trade.flags[:tr_new])
             create_trade(buys[j].id, sells[i].id, coin1, coin2, coinamt_a, coinamt_a * buys[j].rate, Trade.flags[:tr_new])
-            create_trade(sells[i].id, buys[j].id, coin1, coin2, 0, coinamt_a * buys[j].rate - sells[i].amt_b, Trade.flags[:tr_diffwip])
+            # create_trade(sells[i].id, buys[j].id, coin1, coin2, 0, coinamt_a * buys[j].rate - sells[i].amt_b, Trade.flags[:tr_diffwip])
 
             buys[j].amt_a -= coinamt_a
             buys[j].amt_b -= coinamt_a * buys[j].rate
             buys[j].flag = Order.flags[:open_per]
+
+            # binding.pry
 
             sells[i].amt_a = 0    # -= sells[i].amt_a
             sells[i].amt_b = 0    # -= sells[i].amt_b 
@@ -111,7 +108,8 @@ class Orderbook
             buys[j].save!
           end
         rescue => e
-          # log に書き出すロジック
+          logger.error('cannot save Trades and Orders properly Orders id: ' + sells[i].id.to_s + ':' + buys[j].id.to_s )
+          return
         end
 
         i += 1
@@ -119,10 +117,11 @@ class Orderbook
       else   # sells[i].amt_a == buys[j].amt_a
         coinamt_a = sells[i].amt_a
         begin
+          # binding.pry
           ActiveRecord::Base.transaction do
             create_trade(sells[i].id, buys[j].id, coin1, coin2, coinamt_a, sells[i].amt_b, Trade.flags[:tr_new])
             create_trade(buys[j].id, sells[i].id, coin1, coin2, coinamt_a, buys[j].amt_b, Trade.flags[:tr_new])
-            create_trade(sells[i].id, buys[j].id, coin1, coin2, 0, buys[j].amt_b - sells[i].amt_b, Trade.flags[:tr_diffwip])
+            # create_trade(sells[i].id, buys[j].id, coin1, coin2, 0, buys[j].amt_b - sells[i].amt_b, Trade.flags[:tr_diffwip])
 
             sells[i].amt_a = 0
             sells[i].amt_b = 0 
@@ -149,18 +148,24 @@ class Orderbook
   def self.create_trade(id1, id2, coin1, coin2, amt_a, amt_b, flag)
 
     order = Order.find(id1)
+    amt_a_diff = 0
+    amt_b_diff = 0
     if order.buysell then
       txrate = order.coin_b.fee_trd
       fee = amt_b * txrate
       amt_b -= fee
+      amt_b_diff = fee
     else
       txrate = order.coin_a.fee_trd
       fee = amt_a * txrate
       amt_a -= fee
+      amt_a_diff = fee
     end
+  #  binding.pry
 
 #      Trade.create!(order_id: id1,  opps_id: id2, amt_a: amt_a, amt_b: amt_b, fee: fee, flag: flag)
     Trade.create!(order_id: id1, coin_a_id: coin1, coin_b_id: coin2, amt_a: amt_a, amt_b: amt_b, fee: fee, flag: flag)
+    Trade.create!(order_id: id1, coin_a_id: coin1, coin_b_id: coin2, amt_a: amt_a_diff, amt_b: amt_b_diff, fee: 0, flag: Trade.flags[:tr_diffwip])
   end
 
   def self.trade2acnt
@@ -168,61 +173,72 @@ class Orderbook
     logger.debug('Orderbook.trade2acnt start:')
 
     count = Trade.where(flag: Trade.flags[:tr_new]).count
-    if count <= 0 then return end
-    trades = Trade.where(flag: Trade.flags[:tr_new])
+    if count > 0 then
+      trades = Trade.where(flag: Trade.flags[:tr_new])
 
-    # binding.pry
+      # binding.pry
 
-    trades.each do | tr |
-      usrid = tr.order.user_id
-      coin1 = tr.order.coin_a_id
-      coin2 = tr.order.coin_b_id
+      trades.each do | tr |
+        usrid = tr.order.user_id
+        coin1 = tr.order.coin_a_id
+        coin2 = tr.order.coin_b_id
 
-      ActiveRecord::Base.transaction do
+        ActiveRecord::Base.transaction do
 
-        # binding.pry
+          # binding.pry
 
-        acntA = Acnt.lock.find_by(user_id: usrid, cointype_id: coin1)
-        acntB = Acnt.lock.find_by(user_id: usrid, cointype_id: coin2)
-        if tr.order.buysell then
-          acntA.balance -= tr.amt_a
-          acntA.locked_bal -= tr.amt_a
-          acntB.balance += tr.amt_b
-        else
-          acntA.balance += tr.amt_a
-          acntB.balance -= tr.amt_b
-          acntB.locked_bal -= tr.amt_b
+          acntA = Acnt.lock.find_by(user_id: usrid, cointype_id: coin1)
+          acntB = Acnt.lock.find_by(user_id: usrid, cointype_id: coin2)
+          if tr.order.buysell then
+            acntA.balance -= tr.amt_a
+            acntA.locked_bal -= tr.amt_a
+            acntB.balance += tr.amt_b
+          else
+            acntA.balance += tr.amt_a
+            acntB.balance -= tr.amt_b
+            acntB.locked_bal -= tr.amt_b
+          end
+          # binding.pry
+
+          tr.flag = Trade.flags[:tr_close]
+          acntA.save!
+          acntB.save!
+          tr.save!
         end
-        # binding.pry
-
-        tr.flag = Trade.flags[:tr_close]
-        acntA.save!
-        acntB.save!
-        tr.save!
       end
     end
 
-    trades = Trade.where(flag: Trade.flags[:tr_diffwip])
-    trades.each do | tr |
-      usrid = User.first.id   # 修正必要
-      coin2 = tr.order.coin_b_id
+    count = Trade.where(flag: Trade.flags[:tr_diffwip]).count
+    if count > 0 then
 
-      ActiveRecord::Base.transaction do
-        acntB = Acnt.lock.find_by(user_id: usrid, cointype_id: coin2)
-        acntB.balance += tr.amt_b
-        tr.flag = :tr_diffdone
-        actB.save!
-        tr.save!
-      end 
+      trades = Trade.where(flag: Trade.flags[:tr_diffwip])
+
+      trades.each do | tr |
+        usrid = User.first.id   # TODO 修正必要
+        coin1 = tr.order.coin_a_id
+        coin2 = tr.order.coin_b_id
+
+        ActiveRecord::Base.transaction do
+          acntA = Acnt.lock.find_by(user_id: usrid, cointype_id: coin1)
+          acntB = Acnt.lock.find_by(user_id: usrid, cointype_id: coin2)
+          acntA.balance += tr.amt_a
+          acntB.balance += tr.amt_b
+          tr.flag = :tr_diffdone
+          acntA.save!
+          acntB.save!
+          tr.save!
+        end 
+      end
     end
 
     logger.debug('Orderbook.trade2acnt end:')
 
   rescue => e
     logger.error('cannot save data at Transaction')
-    logger.error('class:' + e.class)
+    logger.error('class:' + e.class.to_s)
     logger.error('msg' + e.message)
   end
+
 
   def self.makeplot(coin1, coin2)  # receive coin_id
     logger.debug('Orderbook.makeplot start:' + coin1.to_s + ':' + coin2.to_s )
@@ -284,16 +300,16 @@ class Orderbook
       fl = File.open("./public/plotdata/#{filename}", "w+")
       if (subss.any? || subbs.any?) then
         fl.puts %Q[<table>]
+        if la == 'ja' then
+          fl.puts %Q[<tr><th width="35%">売注文数量</th><th width="30%">レート</th><th width="35%">買注文数量</th></tr>]
+        elsif la == 'en' then
+          fl.puts %Q[<tr><th width="35%">Ask size</th><th width="30%">Rate</th><th width="35%">Bit size</th></tr>]
+        end
         if subss.any? then
-          if la == 'ja' then
-            fl.puts %Q[<tr><th width="40%">売注文数量</th><th width="20%">レート</th><th width="40%">買注文数量</th></tr>]
-          elsif la == 'en' then
-            fl.puts %Q[<tr><th width="40%">Ask size</th><th width="20%">Rate</th><th width="40%">Bit size</th></tr>]
-          end
           subss.reverse_each do |x|
             fl.puts %Q[<tr>
               <td><div class="graph"><div class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
-              <td>#{x[0].round(1)}</td>
+              <td>#{ x[0].round(1) }</td>
               <td></td>
               </tr>]
           end
@@ -302,7 +318,7 @@ class Orderbook
           subbs.each do |x|
             fl.puts %Q[<tr>
               <td></td>
-              <td>#{x[0].round(1)}</td>            
+              <td>#{ x[0].round(1) }</td>            
               <td><div class="graph"><div class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
               </tr>]
           end

@@ -28,10 +28,17 @@ class Acnt < ActiveRecord::Base
   validate :balance_tobe_bigger_than_locked_bal
  
   def self.registration(user_id, coin_t, user_num)
-    coin = Cointype.find_by(ticker: coin_t)
-    addr = Coinrpc.getnewaddr(coin.ticker, user_num)
-    Acnt.create!(user_id: user_id, cointype_id: coin.id,
-      balance:  0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
+    begin
+      coin = Cointype.find_by(ticker: coin_t)
+      addr = Coinrpc.getnewaddr(coin.ticker, user_num)
+    rescue => e 
+      logger.error('User registration: acnt registration cannot access wallet ' + coin.ticker )
+      logger.error( e )
+      addr = ""
+    ensure
+      Acnt.create!(user_id: user_id, cointype_id: coin.id,
+        balance:  0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
+    end
   end
 
   def self.registration_w_addr(user_id, coin_t, user_num, addr)

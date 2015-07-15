@@ -12,14 +12,15 @@ before_filter :configure_sign_up_params, only: [:create]
 
   # POST /resource
   def create
-    num = User.last.id + 100_100 
     super do | user |
-      unless user.errors.any? then # エラーがない場合のみ、Acntを作る。
+      unless user.errors.any? then # エラーがない場合のみ、Acntを作る。これは必要！
+        num = user.id + 100_100        
         user.user_num = num.to_s # 重ならないようにするロジック必要, 後でDBのindexを加える。
         coin_ts = Cointype.tickers
         coin_ts.each do | co |
           Acnt.registration(user.id, co, num.to_s)
         end
+        user.save
       end
     end
   end

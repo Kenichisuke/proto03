@@ -46,8 +46,14 @@ class Walletcheck
           # このelsif文の条件には引っかからないはず！
           # to do
         end
-
-        list = Coinrpc.listtrxs(coin.ticker, n_pickup)
+        
+        begin
+          list = Coinrpc.listtrxs(coin.ticker, n_pickup)
+        rescue => e
+          logger.error('Walletcheck.execute cannot access wallet ' + coin.ticker )
+          logger.error( e )          
+          return
+        end
 
         list.each do | l | 
           if l['txid']  == coinio_l.txid then
@@ -82,7 +88,13 @@ class Walletcheck
           # このelsif文の条件には引っかからないはず！          
         end
         
-        list = Coinrpc.listtrxs(coin.ticker, n_pickup) 
+        begin
+          list = Coinrpc.listtrxs(coin.ticker, n_pickup)
+        rescue => e
+          logger.error('Walletcheck.execute cannot access wallet ' + coin.ticker )
+          logger.error( e )          
+          return
+        end
 
       end while (list.count >= n_pickup) # 取りに行ったデータ数より、実際の数が小さくなるまでループが回る。
     end
@@ -119,6 +131,15 @@ class Walletcheck
     end
 
     logger.debug('Walletcheck.execute end:' )
+  end
+
+  def self.listwexcep(coin_t, n)
+    begin
+      list = Coinrpc.listtrxs(coin_t, n) 
+    rescue => e
+      logger.error('Walletcheck.execute cannot access wallet ' + coin_t )
+      raise NoWalletAccess
+    end
   end
 
   def self.coinio_savedata(l, coin)  # coinios_controller とまとめてヘルパーにするべき？s

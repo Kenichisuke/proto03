@@ -181,8 +181,6 @@ class OrdersController < ApplicationController
     redirect_back_or(root_path)
   end
 
-
-
   private
     def common_new(coin1, coin2, new_flag)
       @coin_a, @coin_b = coin_order(coin1, coin2)
@@ -203,7 +201,7 @@ class OrdersController < ApplicationController
         @coin_b_bal = b.balance
         @coin_b_freebal = b.balance - b.locked_bal
         @op_orders = current_user.order.openor.coins(@coin_a.id, @coin_b.id)
-                    .order('created_at DESC').page(params[:page]).per(5)
+                    .order('created_at DESC', 'rate DESC').page(params[:page]).per(5)
       end
       @path12 = orders_btc_ltc_path
       @path13 = orders_btc_mona_path
@@ -217,15 +215,15 @@ class OrdersController < ApplicationController
 
     def common_index(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
-      @orders = current_user.order.coins(@coin_a.id, @coin_b.id).order('created_at DESC').page(params[:page]) 
+      @orders = current_user.order.coins(@coin_a.id, @coin_b.id).order('created_at DESC', 'rate DESC').page(params[:page]) 
       @headinfo = "order_list"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
-      @path12 = orders_btc_ltc_path
-      @path13 = orders_btc_mona_path
-      @path14 = orders_btc_doge_path
-      @path23 = orders_ltc_mona_path
-      @path24 = orders_ltc_doge_path
-      @path34 = orders_mona_doge_path
+      @path12 = orders_index_btc_ltc_path
+      @path13 = orders_index_btc_mona_path
+      @path14 = orders_index_btc_doge_path
+      @path23 = orders_index_ltc_mona_path
+      @path24 = orders_index_ltc_doge_path
+      @path34 = orders_index_mona_doge_path
       store_location
       render 'index_form'
     end

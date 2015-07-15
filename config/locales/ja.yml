@@ -41,7 +41,7 @@ ja:
     fee: 手数料
     status: 状態
     address: アドレス
-    coiniout_done: 出金が行われました
+    coinout_done: 出金が行われました
     category:
       tx_receive: 入金
       tx_immature: 認証待
