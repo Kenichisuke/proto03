@@ -1,3 +1,5 @@
+require 'rqrcode'
+
 class CoiniosController < ApplicationController
 
   before_action :authenticate_user!
@@ -102,6 +104,7 @@ class CoiniosController < ApplicationController
         @coinio = Coinio.new(cointype_id: @coin.id, acnt_id: @acnt.id)
       end
       @coinios = @acnt.coinio.order('created_at DESC').page(params[:page])
+      @qr = RQRCode::QRCode.new(@acnt.addr_in, :size => 4, :level => :h )
       @headinfo = "transferIO"
       @tabinfo = @coin.ticker
 

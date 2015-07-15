@@ -48,10 +48,14 @@
     <p><%= t('coinio.no_coin') %></p>
   <% end %>
   <br />
+
   <h4><%= t('coinio.transferin') %></h4>
   <p><%= t('coinio.receiving_addr') %>: <%= @acnt.addr_in %></P>
-
+  <div id="qrcode" >
+    <%= raw @qr.as_html %> 
+  </div>
   <br />
+
   <h4><%= t('coinio.trans_hist') %></h4>
 
   <% if signed_in? && @coinios.any? %>
