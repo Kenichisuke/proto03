@@ -21,3 +21,6 @@ doc/
 .project
 .DS_Store
 .idea
+
+# Ignore orderbook tables and candle plots created by cron
+/public/plotdata/*
