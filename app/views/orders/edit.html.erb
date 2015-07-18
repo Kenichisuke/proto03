@@ -24,6 +24,8 @@
   </table>
 
   <% if @trades.any? %>
+    <br />
+    <h4><%= t('trade.closed_trade', count: @trades.count) %></h4>
     <table class="table table-bordered table-condensed" >
       <tr>
         <th style="text-align:center;"><%= t('trade.settle_date') %></th>

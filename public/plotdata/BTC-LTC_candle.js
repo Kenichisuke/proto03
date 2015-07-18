@@ -6,7 +6,7 @@
             [["2015-07-17 16:00", 10.0, 10.0, 10.0, 10.0], ["2015-07-17 17:00", 10.0, 10.0, 10.0, 10.0]] 
           ],
           {
-            title: '07/16-14:00 ~ 07/18-14:00',
+            title: '07/16-21:00 ~ 07/18-21:00',
             seriesDefaults: {
               renderer: jQuery . jqplot . OHLCRenderer,
               rendererOptions: {
@@ -20,8 +20,8 @@
             axes:{
               xaxis:{
                   renderer: jQuery . jqplot . DateAxisRenderer,
-                  min: '2015-07-16 13:00',
-                  max: '2015-07-18 14:00',
+                  min: '2015-07-16 20:00',
+                  max: '2015-07-18 21:00',
                   tickInterval: '2 hours',
                   tickOptions:{
                       formatString: '%H'

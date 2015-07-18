@@ -7,6 +7,7 @@ ja:
       user: ユーザ
       order: 注文
       coinio: 入出金
+      trade: 取引
     attributes:
       user:
         email: メールアドレス
@@ -213,12 +214,12 @@ ja:
   helpers:
     page_entries_info:
       more_pages:
-        display_entries: "<b>%{total}</b>中の%{entry_name}を表示しています <b>%{first} - %{last}</b>"
+        display_entries: "<b>%{total}</b> 中 <b>%{first} - %{last}</b> の%{entry_name}を表示しています "
       one_page:
         display_entries:
-          one: "<b>%{count}</b>レコード表示中です %{entry_name}"
-          other: "<b>%{count}</b>レコード表示中です %{entry_name}"
-          zero: "レコードが見つかりませんでした %{entry_name}"
+          one: "<b>%{count}</b>レコード表示中です (%{entry_name})"
+          other: "<b>%{count}</b>レコード表示中です (%{entry_name})"
+          zero: "レコードが見つかりませんでした (%{entry_name})"
     select:
       prompt: 選択してください。
     submit:
@@ -331,6 +332,7 @@ ja:
     status: 状態
     amount: 数量
     fee: 手数料
+    closed_trade: 終了取引
     flag:
       tr_close: 約定済
       tr_cncl: キャンセル
