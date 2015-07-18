@@ -20,8 +20,15 @@
     <div style="padding:10px 0px 10px;">
 
       <ul class="nav nav-tabs">
+<<<<<<< HEAD
         <li class="active" style="width:50%" ><a href="#buy_order" data-toggle="tab"><%= @coin_a.ticker %> <%= t('order.buy') %></a></li>
         <li style="width:50%"><a href="#sell_order" data-toggle="tab" ><%= @coin_a.ticker %> <%= t('order.sell') %></a></li>
+=======
+        <li class="<% if @buysellinfo == "buy" then concat 'active' end %>" style="width:50%" >
+          <a href="#buy_order" data-toggle="tab"><%= t('order.buy') %></a></li>
+        <li class="<% if @buysellinfo == "sell" then concat 'active' end %>" style="width:50%">
+          <a href="#sell_order" data-toggle="tab" ><%= t('order.sell') %></a></li>
+>>>>>>> prgpattern
       </ul>
 
       <div class="tab-content">

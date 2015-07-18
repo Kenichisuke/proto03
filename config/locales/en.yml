@@ -331,6 +331,7 @@ en:
     only_owner_can_cancel: "Only owner of the order can cancel it"
     not_open: Already closed. Not to change.
     canceled: Canceled
+    back: Back
     flag:
       open_new: New order
       open_per: "Pertially executed, open"
@@ -351,9 +352,15 @@ en:
     status: Status
     amount: Amount
     fee: Fee
+<<<<<<< HEAD
     closed_trade: 
       one: Closed trade
       other: Closed trades
+=======
+    closed_trade:
+      one: Closed Trade
+      other: Closed Trades 
+>>>>>>> prgpattern
     flag:
       tr_close: Executed
       tr_cncl: Canceled
