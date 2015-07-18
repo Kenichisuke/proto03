@@ -5,12 +5,8 @@ class OrdersController < ApplicationController
   include CoinUtil
 
   before_action :authenticate_user!, only: [:create, :show, :update,
-<<<<<<< HEAD
-      :index_btc_mona, :index_btc_ltc, :index_ltc_mona] 
-=======
      :index_btc_ltc,  :index_btc_mona, :index_btc_doge, 
      :index_ltc_mona, :index_ltc_doge, :index_mona_doge] 
->>>>>>> prgpattern
 
   def btc_ltc
     common_new('BTC', 'LTC')
@@ -41,10 +37,12 @@ class OrdersController < ApplicationController
     @coin_a = @order.coin_a
     @coin_b = @order.coin_b
 
-    if params[:buy] then # buy
-      @buysellinfo = "buy"      
-    elsif params[:sell] then # sell
+    if params[:sell] then # sell
       @buysellinfo = "sell"
+      @order.buysell = true
+    elsif params[:buy] then # buy
+      @buysellinfo = "buy"
+      @order.buysell = false
     else
       raise StandardError, 'neither buy nor sell !'
       # TODO あとでちゃんと書く
@@ -66,8 +64,7 @@ class OrdersController < ApplicationController
       flag_err += 1
     end
 
-    # TODO
-    # 自分のopen order と約定が発生しないかチェック。
+    # TODO  自分のopen order と約定が発生しないかチェック。
 
     if flag_err >0
       render 'new_form'
@@ -80,16 +77,7 @@ class OrdersController < ApplicationController
     @order.flag = Order.flags[:open_new]
 
     # check whether buy or sell
-    if params[:buy] then # buy
-      @order.buysell = false
-      @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
-      if @order.amt_b > (@acnt.balance - @acnt.locked_bal) then
-        @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-        render 'new_form'
-        return
-      end
-      @acnt.lock_amt(@order.amt_b)
-    elsif params[:sell] then # sell
+    if params[:sell] then # sell
       @order.buysell = true
       @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
       if @order.amt_a > (@acnt.balance - @acnt.locked_bal) then
@@ -98,9 +86,15 @@ class OrdersController < ApplicationController
         return
       end
       @acnt.lock_amt(@order.amt_a)
-    else
-      raise StandardError, 'neither buy nor sell !'
-      # to do あとでちゃんと書く
+    elsif params[:buy] then # buy
+      @order.buysell = false
+      @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
+      if @order.amt_b > (@acnt.balance - @acnt.locked_bal) then
+        @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
+        render 'new_form'
+        return
+      end
+      @acnt.lock_amt(@order.amt_b)
     end
 
     begin
@@ -112,11 +106,6 @@ class OrdersController < ApplicationController
     end
 
     flash[ :notice ] = I18n.t('order.order_submit')
-<<<<<<< HEAD
-    common_new(@order.coin_a.ticker, @order.coin_b.ticker, true)
-
-    # redirect_back_or(root_path)
-=======
     redirect_to @order    
   end
 
@@ -129,7 +118,6 @@ class OrdersController < ApplicationController
     action_s = coina_s + '_' + coinb_s
     @path = url_for(locale: I18n.locale, controller: :orders, action: action_s, only_path: true)
     @headinfo = "trade"
->>>>>>> prgpattern
   end
 
   def index_btc_ltc
@@ -156,12 +144,11 @@ class OrdersController < ApplicationController
     common_index('MONA', 'DOGE')
   end
 
-<<<<<<< HEAD
-  def show
+  def edit
     begin
       @order = Order.find(params[:id])
     rescue => e  # データが存在しない時の処理
-      logger.warn('cannot get order data from DB')
+      logger.warn('Order controller edit: cannot get order data from DB')
       logger.warn('class:' + e.class.to_s)
       logger.warn('msg' + e.message)
       flash[ :alert ] = I18n.t('order.only_owner_can_see')
@@ -169,10 +156,6 @@ class OrdersController < ApplicationController
     end
 
    # 他人のオーダーを変更できないようにする。チェック！！
-=======
-  def edit
-    @order = Order.find(params[:id])
->>>>>>> prgpattern
     if @order.user.id != current_user.id then
       flash[ :alert ] = I18n.t('order.only_owner_can_see')
       redirect_to root_path
@@ -184,13 +167,11 @@ class OrdersController < ApplicationController
     store_location
   end
 
-<<<<<<< HEAD
-
   def update
     begin
-      order = Order.find(params[:id])
+      @order = Order.find(params[:id])
     rescue => e  # データが存在しない時の処理
-      logger.warn('cannot get order data from DB')
+      logger.warn('Order controller Update: cannot get order data from DB')
       logger.warn('class:' + e.class.to_s)
       logger.warn('msg' + e.message)
       flash[ :alert ] = I18n.t('order.only_owner_can_see')
@@ -198,12 +179,7 @@ class OrdersController < ApplicationController
     end
 
    # 他人のオーダーを変更できないようにする。チェック！！
-    if order.user.id != current_user.id then
-=======
-  def update # 他人のオーダーを変更できないようにする。チェック！！
-    @order = Order.find(params[:id])
     if @order.user.id != current_user.id then
->>>>>>> prgpattern
       flash[ :alert ] = I18n.t('order.only_owner_can_cancel')
       redirect_to root_path and return
     end
@@ -243,26 +219,15 @@ class OrdersController < ApplicationController
   private
     def common_new(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
-<<<<<<< HEAD
-        # defined in lib/usrmodules/coin_util
-      if new_flag then
-        @order = Order.new(coin_a_id: @coin_a.id, coin_b_id: @coin_b.id)
-      end
-
-      binding.pry
-
-=======
       @order = Order.new(coin_a_id: @coin_a.id, coin_b_id: @coin_b.id)
       @buysellinfo = "buy"
-
       common_new_set
-
       store_location
       render 'new_form'
     end
 
+
     def common_new_set
->>>>>>> prgpattern
       @headinfo = "trade"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
       @candleplot = "\'" + @tabinfo + '_candle' + "\'"
@@ -314,7 +279,6 @@ class OrdersController < ApplicationController
       raise
     end
 
-
     def save_order_cancellation!
       ActiveRecord::Base.transaction do
         @order.save!
@@ -331,10 +295,6 @@ class OrdersController < ApplicationController
 
     def order_params
       params.require(:order).permit(:coin_a_id, :coin_b_id, :rate, :amt_a)
-    end
-
-    def dummy_get
-
     end
 
 end

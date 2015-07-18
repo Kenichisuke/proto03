@@ -20,15 +20,10 @@
     <div style="padding:10px 0px 10px;">
 
       <ul class="nav nav-tabs">
-<<<<<<< HEAD
-        <li class="active" style="width:50%" ><a href="#buy_order" data-toggle="tab"><%= @coin_a.ticker %> <%= t('order.buy') %></a></li>
-        <li style="width:50%"><a href="#sell_order" data-toggle="tab" ><%= @coin_a.ticker %> <%= t('order.sell') %></a></li>
-=======
         <li class="<% if @buysellinfo == "buy" then concat 'active' end %>" style="width:50%" >
-          <a href="#buy_order" data-toggle="tab"><%= t('order.buy') %></a></li>
+          <a href="#buy_order" data-toggle="tab"><%= t('order.buy_tab', ticker: @coin_a.ticker) %></a></li>
         <li class="<% if @buysellinfo == "sell" then concat 'active' end %>" style="width:50%">
-          <a href="#sell_order" data-toggle="tab" ><%= t('order.sell') %></a></li>
->>>>>>> prgpattern
+          <a href="#sell_order" data-toggle="tab" ><%= t('order.sell_tab', ticker: @coin_a.ticker) %></a></li>
       </ul>
 
       <div class="tab-content">
@@ -54,7 +49,7 @@
             </div> 
             <div class="form-group">
               <div class="col-sm-4 control-label">           
-                <%= f.label :amt_b %>(<%= t('order.autocal') %>): </div>
+                <%= f.label :amt_b %> (<%= t('order.autocal') %>): </div>
               <div class="col-sm-5">
                 <%= f.number_field :amt_b, :readonly => true, style: "border-width:1px;background:lightgray", class: "form-control" %>
               </div>
@@ -94,7 +89,7 @@
             </div>
             <div class="form-group">
               <div class="col-sm-4 control-label">
-                <%= f.label :amt_b %>(<%= t('order.autocal') %>):
+                <%= f.label :amt_b %> (<%= t('order.autocal') %>):
               </div>
               <div class="col-sm-5">
                 <%= f.number_field :amt_b, :id => 'order_amt_b_s', :onkeyup => "update_amt()", :readonly => true, style: "border-width:1px;background:lightgray", class: "form-control" %>
@@ -107,7 +102,7 @@
             <%= f.hidden_field :coin_b_id %>
             <div class="row">
               <div class="col-sm-offset-4 col-sm-8">
-                <%= f.submit t('order.sell_button', ticker1: @coin_a.ticker, ticker2: @coin_b.ticker), :name =>"sell", data: { confirm: t('order.confirm') } , class: "btn btn-danger" %>
+                <%= f.submit t('order.sell_button', ticker1: @coin_a.ticker, ticker2: @coin_b.ticker), :name =>"sell", data: { confirm: t('order.confirm'), commit: t('order.commit'), cancel: t('order.cancel') }, title: t('order.confirm_title'), class: "btn btn-danger" %>
               </div>
             </div>
           <% end %>

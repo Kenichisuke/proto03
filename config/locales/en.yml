@@ -298,6 +298,8 @@ en:
     trade: Trade
     buy: Buy
     sell: Sell
+    buy_tab: Buy %{ticker}
+    sell_tab: Sell %{ticker}
     sell_buy: Sell/Buy
     rate: Rate2
     amount: Amount
@@ -326,6 +328,9 @@ en:
     cancel_order: Cancel order
     if_cancel_locked_released: "If you cancel the remaining order, locked amount below will be released."
     cancel_button: Cancel remaining order
+    confirm_cancel: Cancel order. Are you ok?
+    commit_cancel: Cancel
+    cancel_cancel: Do not cancel
     order_submit: Order submitted
     only_owner_can_see: "Only owner of the order can see it"
     only_owner_can_cancel: "Only owner of the order can cancel it"
@@ -352,15 +357,9 @@ en:
     status: Status
     amount: Amount
     fee: Fee
-<<<<<<< HEAD
     closed_trade: 
       one: Closed trade
       other: Closed trades
-=======
-    closed_trade:
-      one: Closed Trade
-      other: Closed Trades 
->>>>>>> prgpattern
     flag:
       tr_close: Executed
       tr_cncl: Canceled

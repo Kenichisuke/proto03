@@ -67,7 +67,7 @@
       <p>  <%= @order.amt_b %>[<%= @coin_b.ticker %>]</p>
     <% end %>
     <%= form_for(@order, { action: :update } ) do | order | %>
-      <%= order.submit t('order.cancel_button') ,class: "btn btn-large btn-primary" %>
+      <%= order.submit t('order.cancel_button'), data: { confirm: t('order.confirm_cancel'), commit: t('order.commit_cancel'), cancel: t('order.cancel_cancel') }, title: t('order.confirm_title'), class: "btn btn-large btn-primary" %>
     <% end %>
   <% end %> 
 </div>

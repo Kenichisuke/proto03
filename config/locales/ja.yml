@@ -286,6 +286,8 @@ ja:
     trade: 取引
     buy: 買い
     sell: 売り
+    buy_tab: "%{ticker} 買い"
+    sell_tab: "%{ticker} 売り"    
     sell_buy: 売り/買い
     rate: レート
     amount: 額
@@ -314,6 +316,9 @@ ja:
     cancel_order: 注文のキャンセル
     if_cancel_locked_released: 残存の注文をキャンセルすると、下記のロックされた金額が解除されます。
     cancel_button: この残存注文をキャンセル
+    confirm_cancel: キャンセルします。よろしいですか？
+    commit_cancel: キャンセルする
+    cancel_cancel: キャンセルしない
     order_submit: 注文しました
     only_owner_can_see: この注文の所有者のみが閲覧できます
     only_owner_can_cancel: この注文の所有者のみがキャンセルできます
