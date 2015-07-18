@@ -23,7 +23,10 @@
     </tr>
   </table>
 
+  <br />
+
   <% if @trades.any? %>
+    <h4><%= t('trade.closed_trade', count: @trades.count ) %></h4>
     <table class="table table-bordered table-condensed" >
       <tr>
         <th style="text-align:center;"><%= t('trade.settle_date') %></th>
@@ -67,5 +70,6 @@
     <%= form_for(@order, { action: :update } ) do | order | %>
       <%= order.submit t('order.cancel_button') ,class: "btn btn-large btn-primary" %>
     <% end %>
-  <% end %> 
+  <% end %>
+  <br /> 
 </div>

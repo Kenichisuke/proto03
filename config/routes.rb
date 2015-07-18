@@ -92,6 +92,8 @@ Rails.application.routes.draw do
     get  'orders/ltc_doge'
     get  'orders/mona_doge'
  
+    get  'acnts/show'
+
     get  'static_pages/explanation'
     get  'static_pages/contact_new'
     post  'static_pages/contact_create'

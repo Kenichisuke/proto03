@@ -27,6 +27,8 @@
             <%= link_to t('header.order_list'), orders_index_btc_mona_path %></li>     
           <li <% if @headinfo == "transferIO" then concat raw("class='active'") end %> >
             <%= link_to t('header.transferIO'), coinios_coinio_btc_path %></li>
+          <li <% if @headinfo == "balance" then concat raw("class='active'") end %> >
+            <%= link_to t('header.balance'), acnts_show_path %></li>            
         <% end %>
         <li <% if @headinfo == "explanation" then concat raw("class='active'") end %> >
           <%= link_to t('header.explanation'), static_pages_explanation_path %></li>

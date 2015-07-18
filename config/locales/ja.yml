@@ -2,11 +2,15 @@
 ja:
   acnt:
     bal_not_enough_for_lock: 引当額は残高を超えられません
+    balance: 残高
+    currency: 通貨
+    free_balance: 取引余力
   activerecord:
     models:
       user: ユーザ
       order: 注文
       coinio: 入出金
+      trade: 取引
     attributes:
       user:
         email: メールアドレス
@@ -205,6 +209,7 @@ ja:
     explanation: 説明
     order_list: 注文一覧
     transferIO: 入出金
+    balance: 残高
     account: アカウント
     login: ログイン
     logout: ログアウト
@@ -216,9 +221,9 @@ ja:
         display_entries: "<b>%{total}</b>中の%{entry_name}を表示しています <b>%{first} - %{last}</b>"
       one_page:
         display_entries:
-          one: "<b>%{count}</b>レコード表示中です %{entry_name}"
-          other: "<b>%{count}</b>レコード表示中です %{entry_name}"
-          zero: "レコードが見つかりませんでした %{entry_name}"
+          one: "<b>%{count}</b>レコード表示中です (%{entry_name})"
+          other: "<b>%{count}</b>レコード表示中です (%{entry_name})"
+          zero: "レコードが見つかりませんでした (%{entry_name})"
     select:
       prompt: 選択してください。
     submit:
@@ -295,6 +300,10 @@ ja:
     status: 状態
     buy_button: "「%{ticker1}買い/%{ticker2}売り」を注文する"
     sell_button: "「%{ticker1}売り/%{ticker2}買い」を注文する"
+    confirm: 注文します。よろしいですか？
+    confirm_title: 確認画面
+    commit: 注文する
+    cancel: キャンセルする
     price: 価格
     autocal: 自動計算
     ops: 操作
@@ -330,6 +339,7 @@ ja:
     status: 状態
     amount: 数量
     fee: 手数料
+    closed_trade: 終了取引
     flag:
       tr_close: 約定済
       tr_cncl: キャンセル

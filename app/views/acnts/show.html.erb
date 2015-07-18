@@ -1,0 +1,19 @@
+<h2> <%= t('acnt.balance') %></h2>
+
+<div style="background:white;margin:0px 2px 20px;padding:10px;">
+
+  <table class="table table-bordered table-condensed" >
+    <tr>
+      <th style="text-align:center;"><%= t('acnt.currency') %></th>
+      <th style="text-align:center;"><%= t('acnt.balance') %></th>
+      <th style="text-align:center;"><%= t('acnt.free_balance') %></th>
+    </tr>
+    <% @acnts.each do | ac | %>
+      <tr>  
+        <td style="text-align:center;"><%= ac.cointype.ticker %></td>
+        <td style="text-align:center;"><%= number_with_delimiter( ac.balance ) %></td>
+        <td style="text-align:center;"><%= number_with_delimiter( ac.balance - ac.locked_bal) %></td>        
+      </tr>
+    <% end %>
+  </table>
+  

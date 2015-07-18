@@ -2,11 +2,15 @@
 en:
   acnt:
     bal_not_enough_for_lock: Balance is not enough for locking the amount
+    balance: Balance
+    currency: Currency
+    free_balance: Free balance
   activerecord:
     models:
       user: User
       order: order
       coinio: Transfer in/out
+      trade: Trade
     attributes:
       user:
         email: Email
@@ -215,6 +219,7 @@ en:
     explanation: Explanation
     order_list: Order list
     transferIO: Transfer In/Out
+    balance: Balance
     account: Account
     login: Login
     logout: Logout
@@ -307,6 +312,10 @@ en:
     status: Status
     buy_button: "Issue Order 'Buy %{ticker1} / Sell %{ticker2}'"
     sell_button: "Issue Order 'Sell %{ticker1} / Buy %{ticker2}'"
+    confirm: Issuing an order. Are you ok?
+    confirm_title: Confirmation Screen
+    commit: Issue order
+    cancel: Cancel order
     price: Price
     autocal: Auto-calculated
     ops: Ops
@@ -342,6 +351,9 @@ en:
     status: Status
     amount: Amount
     fee: Fee
+    closed_trade: 
+      one: Closed trade
+      other: Closed trades
     flag:
       tr_close: Executed
       tr_cncl: Canceled

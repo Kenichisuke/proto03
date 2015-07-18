@@ -19,15 +19,14 @@ every 2.minutes do
   runner "Orderbook.totalprocess"
 end
 
-# every 7.minutes do  
-#   # PriceHistのデータを作り、Plotを作る
-#   runner "Pricehistproc.totalprocess"
-# end
+every 7.minutes do  
+  # PriceHistのデータを作り、Plotを作る
+  runner "Pricehistproc.totalprocess"
+end
 
 every 2.minutes do 
   # Walletをチェックし、AcntをUpdateする。
   runner "Walletcheck.totalprocess"
 end
-
 
 # Learn more: http://github.com/javan/whenever

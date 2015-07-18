@@ -18,4 +18,4 @@
 //= require_tree ./plugins
 //= require_tree ./plotscripts
 //= require_tree ./calscripts
-
+//= require data-confirm-modal

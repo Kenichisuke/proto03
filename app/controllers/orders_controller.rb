@@ -5,9 +5,7 @@ class OrdersController < ApplicationController
   include CoinUtil
 
   before_action :authenticate_user!, only: [:create, :show, :update,
-      :index_btc_mona, :index_btc_ltc, :index_ltc_mona,
-      :settle] 
-  before_action :admin_user, only: :settle
+      :index_btc_mona, :index_btc_ltc, :index_ltc_mona] 
 
   def btc_ltc
     common_new('BTC', 'LTC', true)
@@ -106,6 +104,7 @@ class OrdersController < ApplicationController
 
     flash[ :notice ] = I18n.t('order.order_submit')
     common_new(@order.coin_a.ticker, @order.coin_b.ticker, true)
+
     # redirect_back_or(root_path)
   end
 
@@ -134,7 +133,17 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order = Order.find(params[:id])
+    begin
+      @order = Order.find(params[:id])
+    rescue => e  # データが存在しない時の処理
+      logger.warn('cannot get order data from DB')
+      logger.warn('class:' + e.class.to_s)
+      logger.warn('msg' + e.message)
+      flash[ :alert ] = I18n.t('order.only_owner_can_see')
+      redirect_to root_path and return
+    end
+
+   # 他人のオーダーを変更できないようにする。チェック！！
     if @order.user.id != current_user.id then
       flash[ :alert ] = I18n.t('order.only_owner_can_see')
       redirect_to root_path
@@ -146,8 +155,19 @@ class OrdersController < ApplicationController
     store_location
   end
 
-  def update # 他人のオーダーを変更できないようにする。チェック！！
-    order = Order.find(params[:id])
+
+  def update
+    begin
+      order = Order.find(params[:id])
+    rescue => e  # データが存在しない時の処理
+      logger.warn('cannot get order data from DB')
+      logger.warn('class:' + e.class.to_s)
+      logger.warn('msg' + e.message)
+      flash[ :alert ] = I18n.t('order.only_owner_can_see')
+      redirect_to root_path and return
+    end
+
+   # 他人のオーダーを変更できないようにする。チェック！！
     if order.user.id != current_user.id then
       flash[ :alert ] = I18n.t('order.only_owner_can_cancel')
       redirect_to root_path
@@ -188,6 +208,9 @@ class OrdersController < ApplicationController
       if new_flag then
         @order = Order.new(coin_a_id: @coin_a.id, coin_b_id: @coin_b.id)
       end
+
+      binding.pry
+
       @headinfo = "trade"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
       @candleplot = "\'" + @tabinfo + '_candle' + "\'"
@@ -230,6 +253,10 @@ class OrdersController < ApplicationController
 
     def order_params
       params.require(:order).permit(:coin_a_id, :coin_b_id, :rate, :amt_a)
+    end
+
+    def dummy_get
+
     end
 
 end

@@ -44,7 +44,11 @@ gem 'kaminari'
 gem 'rails-i18n'
 gem 'rails_admin'
 
-gem 'rqrcode'
+gem 'rqrcode'  # QR code を作る。
+
+gem 'data-confirm-modal', github: 'ifad/data-confirm-modal'
+
+
 
 group :development, :test do
   # # Call 'byebug' anywhere in the code to stop execution and get a debugger console

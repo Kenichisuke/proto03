@@ -3,8 +3,8 @@ namespace :db do
   task populate: :environment do
 #    make_cointypes
 #    make_users
-#    make_open_orders
-     make_close_orders
+    make_open_orders
+    make_close_orders
     # make_coinios
   end
 end
@@ -108,8 +108,8 @@ end
 
 def make_close_orders
   usr1 = User.find(6)
-  tmstr = Time.local(2015, 7, 11, 17, 2, 0)
-  tmend = Time.local(2015, 7, 13, 17, 22, 0) 
+  tmstr = Time.local(2015, 7, 15, 6, 22, 0)
+  tmend = Time.local(2015, 7, 17, 8, 22, 0) 
 
   make_close_order_coins(usr1.id, "BTC", "LTC",       60.3, tmstr, tmend, 5)
   make_close_order_coins(usr1.id, "BTC", "MONA",     1_810, tmstr, tmend, 5)
