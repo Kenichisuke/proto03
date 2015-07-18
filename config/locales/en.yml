@@ -322,6 +322,7 @@ en:
     only_owner_can_cancel: "Only owner of the order can cancel it"
     not_open: Already closed. Not to change.
     canceled: Canceled
+    back: Back
     flag:
       open_new: New order
       open_per: "Pertially executed, open"

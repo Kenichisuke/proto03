@@ -27,7 +27,7 @@
            <td style="text-align:center;"><%= order.amt_b %></td>   
            <td style="text-align:center;"><%= order_flag(order.flag) %></td>
            <td style="text-align:center;">
-               <%= link_to t('order.detail'), order %></td>           
+               <%= link_to t('order.detail'), edit_order_path(order) %></td>           
         </tr>
       <% end %>      
     </table>

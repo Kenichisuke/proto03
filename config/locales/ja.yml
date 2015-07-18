@@ -310,6 +310,7 @@ ja:
     only_owner_can_cancel: この注文の所有者のみがキャンセルできます
     not_open: 注文は終了しています
     canceled: キャンセルされました
+    back: 戻る
     flag:
       open_new: 新規
       open_per: 部分約定

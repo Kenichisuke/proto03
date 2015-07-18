@@ -5,32 +5,31 @@ class OrdersController < ApplicationController
   include CoinUtil
 
   before_action :authenticate_user!, only: [:create, :show, :update,
-      :index_btc_mona, :index_btc_ltc, :index_ltc_mona,
-      :settle] 
-  before_action :admin_user, only: :settle
+     :index_btc_ltc,  :index_btc_mona, :index_btc_doge, 
+     :index_ltc_mona, :index_ltc_doge, :index_mona_doge] 
 
   def btc_ltc
-    common_new('BTC', 'LTC', true)
+    common_new('BTC', 'LTC')
   end
 
   def btc_mona
-    common_new('BTC', 'MONA', true)
+    common_new('BTC', 'MONA')
   end
 
   def btc_doge
-    common_new('BTC', 'DOGE', true)
+    common_new('BTC', 'DOGE')
   end
 
   def ltc_mona
-    common_new('LTC', 'MONA', true)
+    common_new('LTC', 'MONA')
   end
 
   def ltc_doge
-    common_new('LTC', 'DOGE', true)
+    common_new('LTC', 'DOGE')
   end
 
   def mona_doge
-    common_new('MONA', 'DOGE', true)
+    common_new('MONA', 'DOGE')
   end
 
   def create
@@ -54,11 +53,17 @@ class OrdersController < ApplicationController
     # TODO
     # 自分のopen order と約定が発生しないかチェック。
 
-    # binding.pry
+    @coin_a = @order.coin_a
+    @coin_b = @order.coin_b
+        @op_orders = current_user.order.openor.coins(@coin_a.id, @coin_b.id)
+                    .order('created_at DESC', 'rate DESC').page(params[:page]).per(5)
+
+    binding.pry
 
     if flag_err >0
-      common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
+      # common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
       # redirect_back_or(root_path)
+      render 'new_form'
       return
     end
     @order.amt_b     = @order.rate * @order.amt_a    
@@ -74,7 +79,9 @@ class OrdersController < ApplicationController
       acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
       if @order.amt_b > (acnt.balance - acnt.locked_bal) then
         @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-        common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
+        # common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
+        @buysellinfo = "buy"
+        render 'new_form'
         return
       end
       acnt.lock_amt(@order.amt_b)
@@ -83,7 +90,9 @@ class OrdersController < ApplicationController
       acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
       if @order.amt_a > (acnt.balance - acnt.locked_bal) then
         @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))      
-        common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
+        # common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
+        @buysellinfo = "sell"
+        render 'new_form'
         return
       end
       acnt.lock_amt(@order.amt_a)
@@ -102,12 +111,27 @@ class OrdersController < ApplicationController
       common_new(@order.coin_a.ticker, @order.coin_b.ticker, false)
       # flash[ :alert ] = "Order was canceled. Please input the order again"
       # redirect_back_or(root_path) and return
+      render 'new_form'
+      return
     end
 
     flash[ :notice ] = I18n.t('order.order_submit')
-    common_new(@order.coin_a.ticker, @order.coin_b.ticker, true)
+    redirect_to @order    
+    #common_new(@order.coin_a.ticker, @order.coin_b.ticker, true)
     # redirect_back_or(root_path)
   end
+
+  def show
+    @order = Order.find(params[:id])
+    @coin_a = @order.coin_a
+    @coin_b = @order.coin_b
+    coina_s = @coin_a.ticker.downcase
+    coinb_s = @coin_b.ticker.downcase
+    action_s = coina_s + '_' + coinb_s
+    @path = url_for(locale: I18n.locale, controller: :orders, action: action_s, only_path: true)
+    @headinfo = "trade"
+  end
+
 
   def index_btc_ltc
     common_index('BTC', 'LTC')
@@ -133,7 +157,7 @@ class OrdersController < ApplicationController
     common_index('MONA', 'DOGE')
   end
 
-  def show
+  def edit
     @order = Order.find(params[:id])
     if @order.user.id != current_user.id then
       flash[ :alert ] = I18n.t('order.only_owner_can_see')
@@ -150,7 +174,7 @@ class OrdersController < ApplicationController
     order = Order.find(params[:id])
     if order.user.id != current_user.id then
       flash[ :alert ] = I18n.t('order.only_owner_can_cancel')
-      redirect_to root_path
+      redirect_to root_path and return
     end
 
     if order.buysell
@@ -166,7 +190,7 @@ class OrdersController < ApplicationController
 
     if ((order.flag != "open_new") && (order.flag != "open_per")) then 
       flash[ :alert ] = I18n.t('order.not_open')
-      redirect_to root_path
+      redirect_to root_path and return
     end
     flag = (order.flag == "open_new") ? Order.flags[:noex_cncl] : Order.flags[:exec_cncl]
     order.amt_a = 0
@@ -182,14 +206,15 @@ class OrdersController < ApplicationController
   end
 
   private
-    def common_new(coin1, coin2, new_flag)
+    def common_new(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
         # defined in lib/usrmodules/coin_util
-      if new_flag then
+      # if new_flag then
         @order = Order.new(coin_a_id: @coin_a.id, coin_b_id: @coin_b.id)
-      end
+      # end
       @headinfo = "trade"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
+      @buysellinfo = "buy"
       @candleplot = "\'" + @tabinfo + '_candle' + "\'"
       @histplot = "\'" + @tabinfo + "_hist_" + I18n.locale.to_s + "\'"
 
@@ -212,6 +237,7 @@ class OrdersController < ApplicationController
       store_location
       render 'new_form'
     end
+
 
     def common_index(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
