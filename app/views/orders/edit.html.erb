@@ -3,12 +3,12 @@
   <table class="table table-bordered table-condensed" >
     <tr>
       <th style="text-align:center;"><%= t('order.order_date') %></th>
-      <th style="text-align:center;"><%= @coin_a.ticker %> <%= t('order.sell_buy') %></th>
-      <th style="text-align:center;"><%= t('order.rate') %> <%= @coin_a.ticker %> / <%= @coin_b.ticker %></th>
-      <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_a.ticker %>] </th>
-      <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_a.ticker %>] </th>
-      <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @coin_b.ticker %>] </th>
-      <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @coin_b.ticker %>] </th>
+      <th style="text-align:center;"><%= @order.coin_a.ticker %> <%= t('order.sell_buy') %></th>
+      <th style="text-align:center;"><%= t('order.rate') %> <%= @order.coin_a.ticker %> / <%= @order.coin_b.ticker %></th>
+      <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @order.coin_a.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @order.coin_a.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.order_amount') %> [<%= @order.coin_b.ticker %>] </th>
+      <th style="text-align:center;"><%= t('order.remaining_amount') %> [<%= @order.coin_b.ticker %>] </th>
       <th style="text-align:center;"><%= t('order.status') %></th>
     </tr>
     <tr>  
@@ -30,13 +30,13 @@
       <tr>
         <th style="text-align:center;"><%= t('trade.settle_date') %></th>
         <th style="text-align:center;"><%= t('trade.status') %></th>
-        <th style="text-align:center;"><%= t('trade.amount') %> [<%= @coin_a.ticker %>]</th>
-        <th style="text-align:center;"><%= t('trade.amount') %> [<%= @coin_b.ticker %>]</th>
+        <th style="text-align:center;"><%= t('trade.amount') %> [<%= @order.coin_a.ticker %>]</th>
+        <th style="text-align:center;"><%= t('trade.amount') %> [<%= @order.coin_b.ticker %>]</th>
         <th style="text-align:center;"><%= t('trade.fee') %> [
           <% if @order.buysell then %>
-            <%= @coin_b.ticker %>
+            <%= @order.coin_b.ticker %>
           <% else %>
-            <%= @coin_a.ticker %>
+            <%= @order.coin_a.ticker %>
           <% end %>        
           ]</th>
       </tr>
@@ -62,9 +62,9 @@
     <h2><%= t('order.cancel_order') %></h2>
     <p><%= t('order.if_cancel_locked_released') %></p> 
     <% if @order.buysell then %>
-      <p>  <%= @order.amt_a %>[<%= @coin_a.ticker %>]</p>
+      <p>  <%= @order.amt_a %>[<%= @order.coin_a.ticker %>]</p>
     <% else %>
-      <p>  <%= @order.amt_b %>[<%= @coin_b.ticker %>]</p>
+      <p>  <%= @order.amt_b %>[<%= @order.coin_b.ticker %>]</p>
     <% end %>
     <%= form_for(@order, { action: :update } ) do | order | %>
       <%= order.submit t('order.cancel_button'), data: { confirm: t('order.confirm_cancel'), commit: t('order.commit_cancel'), cancel: t('order.cancel_cancel') }, title: t('order.confirm_title'), class: "btn btn-large btn-primary" %>

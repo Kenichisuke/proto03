@@ -7,13 +7,21 @@
         <%= current_user.email %>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <% end %>
-      <%= link_to_if params[:locale].present?, '日本語',  
-        url_for(controller: controller.controller_name, 
-        action: controller.action_name, locale: '') %>
-      <%= link_to_if params[:locale] != 'en',  'English',  
-        url_for(controller: controller.controller_name, 
-        action: controller.action_name, locale: 'en') %>
-        &nbsp;&nbsp;&nbsp;&nbsp; 
+      <% if @lang_link %>
+        <%= link_to_if params[:locale].present?, '日本語',  
+          @japanese_path %>
+        <%= link_to_if params[:locale] != 'en',  'English',  
+          @english_path %>
+          &nbsp;&nbsp;&nbsp;&nbsp; 
+      <% else %>
+        <%= link_to_if params[:locale].present?, '日本語',  
+          url_for(controller: controller.controller_name, 
+          action: controller.action_name, locale: '') %>
+        <%= link_to_if params[:locale] != 'en',  'English',  
+          url_for(controller: controller.controller_name, 
+          action: controller.action_name, locale: 'en') %>
+          &nbsp;&nbsp;&nbsp;&nbsp; 
+      <% end %>
     </span>
   </div>
 
@@ -21,10 +29,10 @@
     <div class="container">
       <ul class="nav navbar-nav navbar-left">
         <li <% if @headinfo == "trade" then concat raw("class='active'") end %> >
-          <%= link_to t('header.trade'), orders_btc_mona_path %></li>
+          <%= link_to t('header.trade'), orders_btc_ltc_path %></li>
         <% if signed_in? %>
           <li <% if @headinfo == "order_list" then concat raw("class='active'") end %> >
-            <%= link_to t('header.order_list'), orders_index_btc_mona_path %></li>     
+            <%= link_to t('header.order_list'), orders_index_btc_ltc_path %></li>     
           <li <% if @headinfo == "transferIO" then concat raw("class='active'") end %> >
             <%= link_to t('header.transferIO'), coinios_coinio_btc_path %></li>
           <li <% if @headinfo == "balance" then concat raw("class='active'") end %> >

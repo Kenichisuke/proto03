@@ -3,35 +3,50 @@ require 'rqrcode'
 class CoiniosController < ApplicationController
 
   before_action :authenticate_user!
-  before_action :admin_user, only: [ :update, :checkalive ]
+  before_action :admin_user, only: [ :update ]
 
   def coinio_btc
-    common_new('BTC', true)
+    common_new('BTC')
   end
 
   def coinio_ltc
-    common_new('LTC', true)
+    common_new('LTC')
   end
 
   def coinio_mona
-    common_new('MONA', true)
+    common_new('MONA')
   end
 
   def coinio_doge
-    common_new('DOGE', true)
+    common_new('DOGE')
   end
 
   def create
   	@coinio = Coinio.new(coinio_params)
+    @coin = @coinio.cointype
+    @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @coin.id)
 
-  	flag_err = 0
+    # エラーでrenderするための用意！
+    common_new_set
+    action_s = 'coinio_' + @coin.ticker.downcase
+    @lang_link = false
+    @japanese_path = url_for(locale: 'ja', controller: :coinios, action: action_s, only_path: true)
+    @english_path = url_for(locale: 'en', controller: :coinios, action: action_s, only_path: true)
+
     # 数字であるかチェックするのロジック
+    unless @coinio.amt.is_a?(Numeric) then
+      @coinio.errors.add(:amt, I18n.t('errors.messages.not_a_number'))
+      @lang_link = true
+      render 'common_new' and return 
+    end
+
+    flag_err = 0
 
     # inputted amount check
-    #  if coinio.amt <= 0 then
-    #    flash[ :alert ] = "Amount should be positive. Please input positive amounts"
-    #    flag_err += 1
-    # end
+     if @coinio.amt <= 0 then
+      @coinio.errors.add(:amt, I18n.t('errors.messages.greater_than', count: 0))
+      flag_err += 1
+    end
 
     # acount amount check
     acnt = @coinio.acnt
@@ -40,10 +55,11 @@ class CoiniosController < ApplicationController
       flag_err += 1
     end
 
-    if flag_err >0
-      common_new(@coinio.cointype.ticker, false)
-      return
+    if flag_err >0 then
+      @lang_link = true
+      render 'common_new' and return 
     end
+
 
     begin
       #coin address check
@@ -51,7 +67,7 @@ class CoiniosController < ApplicationController
       addr_valid = Coinrpc.validateaddr(@coinio.cointype.ticker, @coinio.addr)
     rescue => e
 
-    ## if you want to add reseve function, please comment in below 
+    ## if you want to add reserve function, please comment in below 
       ## @coinio.flag = :out_reserve
       ## @coinio.txid = ""
       ## if @coinio.save then
@@ -60,19 +76,18 @@ class CoiniosController < ApplicationController
       ## else
 
         @coinio.errors.add(:base, I18n.t('errors.messages.try_later'))
-        common_new(@coinio.cointype.ticker, false) and return
         logger.error('Coinio send cannot access wallet ' + @coinio.cointype.ticker )
-        logger.error( e )
-        return
+        logger.error( e.message )
+        @lang_link = true
+        render 'common_new' and return
       ## end
     end
 
     if !addr_valid["isvalid"] then
       @coinio.errors.add(:addr, I18n.t('errors.messages.address_invalid'))
-      # flash.now[ :alert ] = "Your requested address is invalid."
       # ログに残すこと！
-      common_new(@coinio.cointype.ticker, false)
-      return
+      @lang_link = true
+      render 'common_new' and return
     end
 
     # if addr_valid is true
@@ -83,36 +98,61 @@ class CoiniosController < ApplicationController
       @coinio.tx_category = :tx_send
       @coinio.fee = acnt.cointype.fee_out
       @coinio.flag = :out_sent
-      flash[ :notice ] = I18n.t('coinio.coinout_done')
+      flash[ :notice ] = I18n.t('coinio.coinout_done')  
     else
       coinio.flag = :out_abnormal
       @coinio.errors.add(:base, I18n.t('errors.messages.try_later'))
       # flash[ :alert ] = "Your Coin transfer out was not done. Please contact administratior."
+      @lang_link = true
+      render 'common_new' and return
     end
     @coinio.save
-    common_new(@coinio.cointype.ticker, true)
+    redirect_to @coinio
+  end
+
+  def show
+    begin
+      @coinio = Coinio.find(params[:id])
+    rescue => e  # データが存在しない時の処理
+      logger.warn('Coinio controller show: cannot get order data from DB')
+      logger.warn('class:' + e.class.to_s)
+      logger.warn('msg' + e.message)
+      flash[ :alert ] = I18n.t('order.only_owner_can_see')
+      redirect_to root_path and return
+    end
+
+    # 他人のオーダーを変更できないようにする。チェック！！ 
+    if @coinio.acnt.user.id != current_user.id then
+      flash[ :alert ] = I18n.t('order.only_owner_can_see')
+      redirect_to root_path
+    end
+
+    @coin =  @coinio.cointype
+    @headinfo = "transferIO"
+    action_s = 'coinio_' + @coin.ticker.downcase
+    @path = url_for(locale: I18n.locale, controller: :coinios, action: action_s, only_path: true)
   end
 
   private
-    def common_new(coin_t, new_flag)   
-      # 同じ画面から再度呼び出しの場合、flagに１を入れる。
-      # これにより、@coinio を引き継ぐ。
-      # @coinioには入力時のエラーなどの情報が入っている。
+    def common_new(coin_t)
 	    @coin = Cointype.find_by(ticker: coin_t)
 	    @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @coin.id)
-      if new_flag then
-        @coinio = Coinio.new(cointype_id: @coin.id, acnt_id: @acnt.id)
-      end
+      @coinio = Coinio.new(cointype_id: @coin.id, acnt_id: @acnt.id)
+
+      common_new_set
+      store_location
+      render 'common_new' 
+    end
+
+    def common_new_set
       @coinios = @acnt.coinio.order('created_at DESC').page(params[:page])
       @qr = RQRCode::QRCode.new(@acnt.addr_in, :size => 4, :level => :h )
       @headinfo = "transferIO"
       @tabinfo = @coin.ticker
-
       @path1 = coinios_coinio_btc_path
       @path2 = coinios_coinio_ltc_path
       @path3 = coinios_coinio_mona_path
       @path4 = coinios_coinio_doge_path
-	    render 'new_form' and return
     end
 
     def coinio_params

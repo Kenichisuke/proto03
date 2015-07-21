@@ -79,65 +79,6 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/kanrishapeizi', as: 'rails_admin'
   # 前の方のおかないと、このパスが、localeと勘違いされて、routingのエラーとなる。
 
-  match '/:locale' => 'orders#btc_ltc', via: [ :get ]
-
-  scope "(:locale)", locale: /ja|en/ do 
-
-    root 'orders#btc_ltc'
- 
-    get  'orders/btc_ltc'
-    get  'orders/btc_mona'
-    get  'orders/btc_doge'
-    get  'orders/ltc_mona'
-    get  'orders/ltc_doge'
-    get  'orders/mona_doge'
- 
-    get  'acnts/show'
-
-    get  'static_pages/explanation'
-    get  'static_pages/contact_new'
-    post  'static_pages/contact_create'
-
-    post 'orders/create'
-    patch 'orders/create'
-    devise_scope :user do
-      get  'users/edit', to: 'users/registrations#edit'
-      get  'users/sign_up', to: 'users/registrations#new'
-      get  'users/sign_in', to: 'users/sessions#new'
-
-      post 'users', to: 'users/registrations#create'
-    end
-    devise_for :users, except: [ :destroy ] #どうもうまく消えてないようだ。
-
-
-    get  'orders/index_btc_ltc'
-    get  'orders/index_btc_mona'
-    get  'orders/index_btc_doge'
-    get  'orders/index_ltc_mona'
-    get  'orders/index_ltc_doge'
-    get  'orders/index_mona_doge'
-
-    get  'orders/create', to: 'orders#btc_ltc'  
-    # # order の入力でエラーが起こった後、言語を変更すると、
-    # # 誤って、order#show を呼ぶ。
-    # # それを回避するための、routing
-
-    resources :orders, only: [:show, :edit, :update]
-
-    get  'coinios/coinio_btc'
-    get  'coinios/coinio_ltc'
-    get  'coinios/coinio_mona'
-    get  'coinios/coinio_doge'
-    post 'coinios/create'
-
-    get 'coinios/create', to: 'orders#btc_ltc'  
-    # coinio の入力でエラーが起こった後、言語を変更すると、
-    # coinios/create [get] が見つからない
-    # というroutingのエラーが起こる。
-    # それを回避するための、routing
-  end
-
-
   get  'admins/precheck_service'
   get  'admins/orderbook_exec'
   get  'admins/orderbook_trade2acnt'
@@ -154,6 +95,68 @@ Rails.application.routes.draw do
   get  'admins/index_order_ltc_mona'
   get  'admins/index_order_ltc_doge'
   get  'admins/index_order_mona_doge'
+
+
+
+  match '/:locale' => 'orders#btc_ltc', via: [ :get ]
+
+  scope "(:locale)", locale: /ja|en/ do 
+
+    root 'orders#btc_ltc'
+ 
+    get  'orders/btc_ltc'
+    get  'orders/btc_mona'
+    get  'orders/btc_doge'
+    get  'orders/ltc_mona'
+    get  'orders/ltc_doge'
+    get  'orders/mona_doge'
+ 
+    get  'static_pages/explanation'
+    get  'static_pages/contact_new'
+    post  'static_pages/contact_create'
+
+    # post 'orders/create'
+    # patch 'orders/create'
+    devise_scope :user do
+      get  'users/edit', to: 'users/registrations#edit'
+      get  'users/sign_up', to: 'users/registrations#new'
+      get  'users/sign_in', to: 'users/sessions#new'
+      post 'users', to: 'users/registrations#create'
+    end
+    devise_for :users, except: [ :destroy ] #どうもうまく消えてないようだ。
+
+
+    get  'orders/index_btc_ltc'
+    get  'orders/index_btc_mona'
+    get  'orders/index_btc_doge'
+    get  'orders/index_ltc_mona'
+    get  'orders/index_ltc_doge'
+    get  'orders/index_mona_doge'
+
+    # get  'orders/create', to: 'orders#btc_ltc'  
+    # # order の入力でエラーが起こった後、言語を変更すると、
+    # # 誤って、order#show を呼ぶ。
+    # # それを回避するための、routing
+
+    resources :orders, only: [:create, :show, :edit, :update]
+
+    get  'acnts/show'
+
+    get  'coinios/coinio_btc'
+    get  'coinios/coinio_ltc'
+    get  'coinios/coinio_mona'
+    get  'coinios/coinio_doge'
+    # post 'coinios/create'
+    # get 'coinios/create', to: 'orders#btc_ltc'  
+    # coinio の入力でエラーが起こった後、言語を変更すると、
+    # coinios/create [get] が見つからない
+    # というroutingのエラーが起こる。
+    # それを回避するための、routing
+
+    resources :coinios, only: [:create, :show]
+
+    get '*anything' => 'orders#btc_ltc'
+  end
 
   # get'/en/coinios/create' => 'orders#btc_mona', locale: en 
   # get'/ja/coinios/create' => 'orders#btc_mona', locale: ja

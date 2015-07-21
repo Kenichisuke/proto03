@@ -1,0 +1,30 @@
+
+<%= render 'layouts/error_messages', object: @coinio %>
+
+<h2><%= t('coinio.coin_inout') %></h2>
+
+
+
+<div style="background:white;margin:0px 2px 20px;padding:10px;">
+  <h3> <%= @coin.name %></h3>
+
+   <% if signed_in? then %>
+    <table class="table table-bordered table-condensed" >
+      <tr>
+        <th style="text-align:center;"><%= t('coinio.date') %></th>
+        <th style="text-align:center;"><%= t('coinio.tr_category') %></th>
+        <th style="text-align:center;"><%= t('coinio.amount') %> [<%= @coin.ticker %>]</th>
+        <th style="text-align:center;"><%= t('coinio.fee') %> [<%= @coin.ticker %>]</th>
+        <th style="text-align:center;"><%= t('coinio.status') %></th>
+      </tr>
+      <tr>  
+        <td style="text-align:center;"><%= l(@coinio.created_at, format: :short) %></td>
+        <td style="text-align:center;"><%= coinio_category( @coinio.tx_category) %></td>
+        <td style="text-align:center;"><%= @coinio.amt %></td>
+        <td style="text-align:center;"><%= @coinio.fee %></td>
+        <td style="text-align:center;"><%= coinio_flag( @coinio.flag ) %></td>
+      </tr>
+    </table>
+  <% end %>
+  <%= link_to t('order.back'), @path %>  
+</div>

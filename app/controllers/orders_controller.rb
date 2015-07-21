@@ -4,7 +4,7 @@ class OrdersController < ApplicationController
 
   include CoinUtil
 
-  before_action :authenticate_user!, only: [:create, :show, :update,
+  before_action :authenticate_user!, only: [ :create, :show, :edit, :update,
      :index_btc_ltc,  :index_btc_mona, :index_btc_doge, 
      :index_ltc_mona, :index_ltc_doge, :index_mona_doge] 
 
@@ -48,26 +48,44 @@ class OrdersController < ApplicationController
       # TODO あとでちゃんと書く
     end
 
+    # エラーでrenderするための用意！
     common_new_set
+    action_s = @coin_a.ticker.downcase + '_' + @coin_b.ticker.downcase
+    @lang_link = false
+    @japanese_path = url_for(locale: 'ja', controller: :orders, action: action_s, only_path: true)
+    @english_path = url_for(locale: 'en', controller: :orders, action: action_s, only_path: true)
+
 
     # check inputted amounts on the order
-    # todo 数字であるかチェックするのロジックが必要
+    flag_err = 0
+    unless @order.rate.is_a?(Numeric) then
+      @order.errors.add(:rate, I18n.t('errors.messages.not_a_number'))
+      flag_err += 1
+    end
+    unless @order.amt_a.is_a?(Numeric) then 
+      @order.errors.add(:amt_a, I18n.t('errors.messages.not_a_number'))
+      flag_err += 1
+    end
+    if flag_err >0
+      @lang_link = true
+      render 'common_new'
+      return
+    end
+
     flag_err = 0
     if @order.rate <= 0 then
       @order.errors.add(:rate, I18n.t('errors.messages.order.zero_or_negative'))
-      # flash[ :alert ] = "Rate should be positive. Please input positive amounts"
       flag_err += 1
   	end
     if @order.amt_a <= 0 then 
       @order.errors.add(:amt_a, I18n.t('errors.messages.order.zero_or_negative'))
-      # flash[ :alert ] = "Amount should be positive. Please input positive amounts"
       flag_err += 1
     end
 
     # TODO  自分のopen order と約定が発生しないかチェック。
-
     if flag_err >0
-      render 'new_form'
+      @lang_link = true
+      render 'common_new'
       return
     end
     @order.amt_b     = @order.rate * @order.amt_a    
@@ -77,21 +95,23 @@ class OrdersController < ApplicationController
     @order.flag = Order.flags[:open_new]
 
     # check whether buy or sell
-    if params[:sell] then # sell
+    if @order.buysell then # sell
       @order.buysell = true
       @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
       if @order.amt_a > (@acnt.balance - @acnt.locked_bal) then
         @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
-        render 'new_form'
+        @lang_link = true
+        render 'common_new'
         return
       end
       @acnt.lock_amt(@order.amt_a)
-    elsif params[:buy] then # buy
+    else # buy
       @order.buysell = false
       @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
       if @order.amt_b > (@acnt.balance - @acnt.locked_bal) then
         @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-        render 'new_form'
+        @lang_link = true
+        render 'common_new'
         return
       end
       @acnt.lock_amt(@order.amt_b)
@@ -101,7 +121,8 @@ class OrdersController < ApplicationController
       save_new_order!
     rescue => e
       @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))      
-      render 'new_form'
+      @lang_link = true
+      render 'common_new'
       return
     end
 
@@ -161,10 +182,9 @@ class OrdersController < ApplicationController
       redirect_to root_path
     end
 
-    @coin_a = @order.coin_a
-    @coin_b = @order.coin_b
+    # @coin_a = @order.coin_a
+    # @coin_b = @order.coin_b
     @trades = @order.trade.non_diff.page(params[:page])
-    store_location
   end
 
   def update
@@ -205,10 +225,13 @@ class OrdersController < ApplicationController
     @order.flag = flag
 
     begin
+      # raise StandardError      
       save_order_cancellation!
     rescue => e
-      @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))      
-      render 'new_form'
+
+      flash[ :alert ] = I18n.t('errors.messages.order.try_later')
+      # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
+      redirect_back_or(root_path)
       return
     end
 
@@ -223,9 +246,8 @@ class OrdersController < ApplicationController
       @buysellinfo = "buy"
       common_new_set
       store_location
-      render 'new_form'
+      render 'common_new'      
     end
-
 
     def common_new_set
       @headinfo = "trade"
@@ -263,7 +285,7 @@ class OrdersController < ApplicationController
       @path24 = orders_index_ltc_doge_path
       @path34 = orders_index_mona_doge_path
       store_location
-      render 'index_form'
+      render 'common_index'
     end
 
     def save_new_order!
