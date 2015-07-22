@@ -17,14 +17,14 @@
       <tr>
         <td style="text-align:center;"><%= r.ticker %></td>
         <td style="text-align:center;"><%= r.status %></td>
-        <td style="text-align:center;"><%= number_with_delimiter(r.wallet_bal) %></td>   
-        <td style="text-align:center;"><%= number_with_delimiter(r.init_bal) %></td>
-        <td style="text-align:center;"><%= number_with_delimiter(r.db_bal) %></td>
-        <td style="text-align:center;"><%= number_with_delimiter(r.db_diff_bal) %></td>
-        <td style="text-align:center;"><%= number_with_delimiter(r.db_locked_bal) %></td>
+        <td style="text-align:center;"><%= number_with_precision(r.wallet_bal, precision: 8, delimiter: ',') %></td>   
+        <td style="text-align:center;"><%= number_with_precision(r.init_bal, precision: 8, delimiter: ',') %></td>
+        <td style="text-align:center;"><%= number_with_precision(r.db_bal, precision: 8, delimiter: ',') %></td>
+        <td style="text-align:center;"><%= number_with_precision(r.db_diff_bal, precision: 8, delimiter: ',') %></td>
+        <td style="text-align:center;"><%= number_with_precision(r.db_locked_bal, precision: 8, delimiter: ',') %></td>
         <td style="text-align:center;">
           <% if (r.wallet_bal).is_a?(Numeric) then %>
-            <%= number_with_delimiter( (r.wallet_bal - (r.init_bal + r.db_bal + r.db_diff_bal)).round(8) ) %>
+            <%= number_with_precision( (r.wallet_bal - (r.init_bal + r.db_bal + r.db_diff_bal)), precision: 8, delimiter: ',' ) %>
           <% else %>
             <%= "N/A" %>
           <% end %>
