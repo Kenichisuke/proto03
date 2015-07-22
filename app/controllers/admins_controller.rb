@@ -77,7 +77,7 @@ class AdminsController < ApplicationController
 
       status = Coinrpc.status(t)
       if status != "Dead" then
-        w_bal = Coinrpc.getbal(t)
+        w_bal = Coinrpc.getbal(t).round(8) 
       else
         w_bal = "N/A"
       end

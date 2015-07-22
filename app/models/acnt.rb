@@ -36,8 +36,8 @@ class Acnt < ActiveRecord::Base
       logger.error( e )
       addr = ""
     ensure
-      Acnt.create!(user_id: user_id, cointype_id: coin.id,
-        balance:  0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
+      Acnt.create(user_id: user_id, cointype_id: coin.id,
+        balance: 0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
     end
   end
 
