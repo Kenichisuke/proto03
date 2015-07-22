@@ -56,7 +56,7 @@ class OrdersController < ApplicationController
     @english_path = url_for(locale: 'en', controller: :orders, action: action_s, only_path: true)
 
 
-    # check inputted amounts on the order
+    # check if inputted amounts are numeric or not on the order
     flag_err = 0
     unless @order.rate.is_a?(Numeric) then
       @order.errors.add(:rate, I18n.t('errors.messages.not_a_number'))
@@ -72,6 +72,7 @@ class OrdersController < ApplicationController
       return
     end
 
+    # check if inputted amounts are positive or not
     flag_err = 0
     if @order.rate <= 0 then
       @order.errors.add(:rate, I18n.t('errors.messages.order.zero_or_negative'))
@@ -83,16 +84,19 @@ class OrdersController < ApplicationController
     end
 
     # TODO  自分のopen order と約定が発生しないかチェック。
+
+
     if flag_err >0
       @lang_link = true
       render 'common_new'
       return
     end
+
     @order.amt_b     = @order.rate * @order.amt_a    
     @order.amt_a_org = @order.amt_a
     @order.amt_b_org = @order.amt_b
     @order.user_id = current_user.id
-    @order.flag = Order.flags[:open_new]
+    @order.flag = "open_new"  # defined in order.rb
 
     # check whether buy or sell
     if @order.buysell then # sell
@@ -182,10 +186,9 @@ class OrdersController < ApplicationController
       redirect_to root_path
     end
 
-    # @coin_a = @order.coin_a
-    # @coin_b = @order.coin_b
     @trades = @order.trade.non_diff.page(params[:page])
   end
+
 
   def update
     begin
@@ -204,6 +207,13 @@ class OrdersController < ApplicationController
       redirect_to root_path and return
     end
 
+    # オーダーがOpenで無い場合
+    if (( @order.flag != "open_new") && ( @order.flag != "open_per")) then 
+      flash[ :alert ] = I18n.t('order.not_open')
+      redirect_to root_path and return
+    end
+
+
     if @order.buysell
       @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_a)
       amt = @order.amt_a
@@ -212,23 +222,16 @@ class OrdersController < ApplicationController
       amt = @order.amt_b
     end
     @acnt.unlock_amt(amt)
-
     @trade = Trade.new(order_id: @order.id, amt_a: @order.amt_a, amt_b: @order.amt_b, fee: 0, flag: Trade.flags[:tr_cncl] )
-
-    if (( @order.flag != "open_new") && ( @order.flag != "open_per")) then 
-      flash[ :alert ] = I18n.t('order.not_open')
-      redirect_to root_path and return
-    end
     flag = ( @order.flag == "open_new") ? Order.flags[:noex_cncl] : Order.flags[:exec_cncl]
+
     @order.amt_a = 0
     @order.amt_b = 0
     @order.flag = flag
 
     begin
-      # raise StandardError      
       save_order_cancellation!
     rescue => e
-
       flash[ :alert ] = I18n.t('errors.messages.order.try_later')
       # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
       redirect_back_or(root_path)

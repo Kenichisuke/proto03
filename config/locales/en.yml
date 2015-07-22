@@ -46,6 +46,7 @@ en:
     status: Status
     address: Address
     coinout_done: Transfer out was done
+    coinout_reserve: Transfer-out was reserved
     category:
       tx_receive: Receive
       tx_immature: Immature

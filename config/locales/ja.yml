@@ -46,6 +46,7 @@ ja:
     status: 状態
     address: アドレス
     coinout_done: 出金が行われました
+    coinout_reserve: 出金を予約しました
     category:
       tx_receive: 入金
       tx_immature: 認証待
