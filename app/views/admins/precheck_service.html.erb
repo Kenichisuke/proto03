@@ -24,7 +24,7 @@
         <td style="text-align:center;"><%= number_with_delimiter(r.db_locked_bal) %></td>
         <td style="text-align:center;">
           <% if (r.wallet_bal).is_a?(Numeric) then %>
-            <%= number_with_delimiter(r.wallet_bal - (r.init_bal + r.db_bal + r.db_diff_bal) ) %>
+            <%= number_with_delimiter( (r.wallet_bal - (r.init_bal + r.db_bal + r.db_diff_bal)).round(8) ) %>
           <% else %>
             <%= "N/A" %>
           <% end %>
