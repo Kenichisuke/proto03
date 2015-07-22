@@ -3,7 +3,7 @@ require 'rqrcode'
 class CoiniosController < ApplicationController
 
   before_action :authenticate_user!
-  before_action :admin_user, only: [ :update ]
+  before_action :admin_user, only: [ :index_btc, :index_ltc, :index_mona, :index_doge, :update ]
 
   def coinio_btc
     common_new('BTC')
@@ -91,23 +91,50 @@ class CoiniosController < ApplicationController
     end
 
     # if addr_valid is true
-    acnt.balance -= (@coinio.amt + acnt.cointype.fee_out)
-
-    if acnt.save then
+    begin # 送金する。金額がなければ失敗する。
       @coinio.txid = Coinrpc.sendaddr(@coinio.cointype.ticker, @coinio.addr, @coinio.amt)
+    rescue => e
+      # 予約を入れるロジック
+      @coinio.txid = ""
       @coinio.tx_category = :tx_send
       @coinio.fee = acnt.cointype.fee_out
-      @coinio.flag = :out_sent
-      flash[ :notice ] = I18n.t('coinio.coinout_done')  
-    else
-      coinio.flag = :out_abnormal
-      @coinio.errors.add(:base, I18n.t('errors.messages.try_later'))
-      # flash[ :alert ] = "Your Coin transfer out was not done. Please contact administratior."
-      @lang_link = true
-      render 'common_new' and return
+      @coinio.flag = :out_reserve
+      @coinio.save
+      logger.error('Coinio create reservation: coinio saved as reservation: ' + @coinio.cointype.ticker)
+      logger.error( e.message )
+      flash[ :notice ] = I18n.t('coinio.coinout_reserve')
+      redirect_to @coinio
+      return
     end
-    @coinio.save
+
+    acnt.balance -= (@coinio.amt + acnt.cointype.fee_out)
+    @coinio.tx_category = :tx_send
+    @coinio.fee = acnt.cointype.fee_out
+    @coinio.flag = :out_sent
+
+    begin #出金結果の記録をセーブする。
+      save_coinio!
+    rescue => e
+      #この例外は普通おこらない。
+      flash[ :alert ] = I18n.t('errors.messages.order.try_later')
+      # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
+      logger.error('Cancel order: order, anct and trade NOT saved.')
+      logger.error('class:' + e.class.to_s)
+      logger.error('msg' + e.message)
+      redirect_back_or(root_path)
+      return
+    end  
+
+    flash[ :notice ] = I18n.t('coinio.coinout_done')  
     redirect_to @coinio
+
+    # else
+    #   coinio.flag = :out_abnormal
+    #   @coinio.errors.add(:base, I18n.t('errors.messages.try_later'))
+    #   # flash[ :alert ] = "Your Coin transfer out was not done. Please contact administratior."
+    #   @lang_link = true
+    #   render 'common_new' and return
+    # end
   end
 
   def show
@@ -133,6 +160,26 @@ class CoiniosController < ApplicationController
     @path = url_for(locale: I18n.locale, controller: :coinios, action: action_s, only_path: true)
   end
 
+
+  def index_btc
+    common_new('BTC')
+  end
+
+  def index_ltc
+    common_new('LTC')
+  end
+
+  def index_mona
+    common_new('MONA')
+  end
+
+  def index_doge
+    common_new('DOGE')
+  end
+
+  def update(coin_t)
+  end
+
   private
     def common_new(coin_t)
 	    @coin = Cointype.find_by(ticker: coin_t)
@@ -154,6 +201,26 @@ class CoiniosController < ApplicationController
       @path3 = coinios_coinio_mona_path
       @path4 = coinios_coinio_doge_path
     end
+
+    def save_coinio!
+      ActiveRecord::Base.transaction do
+        @coinio.save!
+        @acnt.save!
+      end
+      logger.info('Coinio create: coinio and anct saved. Coinio_id:' + @coinio.id.to_s + ' acnt_id:' + @acnt.id.to_s + ' trade_id:' + @trade.id.to_s)
+    rescue => e
+      logger.error('Coinio create: coinio and anct NOT saved.')
+      logger.error('class:' + e.class.to_s)
+      logger.error('msg' + e.message)
+      raise
+    end
+
+    def index_new(coin_t)
+      @coin = Cointype.find_by(ticker: coin_t)
+      @coinios = Coinio.where('cointype_id: @coin.id' ,'flag: :out_reserve').order('created_at DESC', 'rate DESC').page(params[:page]).per(20)
+    end
+
+
 
     def coinio_params
       params.require(:coinio).permit(:cointype_id, :amt, :addr, :acnt_id)

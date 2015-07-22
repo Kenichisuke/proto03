@@ -58,7 +58,7 @@ end
 #   0--3--6th bit, txtype,
 #   1110000: send:   007: out_sent     :sent, 正常終了
 #   1100100: (none): 019: out_abnormal :異常終了
-#   1001100: (none): 025: out_reserve  :Walletが動いていない(予約)no execution, canceled&closed
+#   1001100: (none): 025: out_reserve  :予約
 #   1111100: send:   031: out_r_sent   :予約後、sent, 正常終了
 #   1101110: (none): 059: out_r_n_cncl :予約後、本人がキャンセル
 #   1101101: (none): 091: out_r_n_acnt :予約後、残高不足

@@ -23,4 +23,4 @@ doc/
 .idea
 
 # Ignore orderbook tables and candle plots created by cron
-public/plotdata/*
+public/plotdata/
