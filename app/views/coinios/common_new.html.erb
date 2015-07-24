@@ -50,7 +50,8 @@
   <br />
 
   <h4><%= t('coinio.transferin') %></h4>
-  <p><%= t('coinio.receiving_addr') %>: <%= @acnt.addr_in %></P>
+  <p><%= t('coinio.receiving_addr') %>: 
+    <br /><%= @addr_s %></P>
   <div id="qrcode" >
     <%= raw @qr.as_html %> 
   </div>
