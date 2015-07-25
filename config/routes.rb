@@ -96,7 +96,7 @@ Rails.application.routes.draw do
   get  'admins/index_order_ltc_doge'
   get  'admins/index_order_mona_doge'
 
-
+  resources :closed_orders, only: [:new, :create]
 
   match '/:locale' => 'orders#btc_ltc', via: [ :get ]
 
@@ -124,7 +124,6 @@ Rails.application.routes.draw do
       post 'users', to: 'users/registrations#create'
     end
     devise_for :users, except: [ :destroy ] #どうもうまく消えてないようだ。
-
 
     get  'orders/index_btc_ltc'
     get  'orders/index_btc_mona'
