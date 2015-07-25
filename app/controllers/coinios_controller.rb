@@ -194,7 +194,7 @@ class CoiniosController < ApplicationController
     def common_new_set
       @coinios = @acnt.coinio.order('created_at DESC').page(params[:page])
       @addr_s = @coin.name.downcase + ':' + @acnt.addr_in
-      @qr = RQRCode::QRCode.new( @addr_s, :size => 5, :level => :q )
+      @qr = RQRCode::QRCode.new( @addr_s, :size => 5, :level => :h )
       @headinfo = "transferIO"
       @tabinfo = @coin.ticker
       @path1 = coinios_coinio_btc_path
