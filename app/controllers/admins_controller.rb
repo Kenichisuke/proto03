@@ -123,7 +123,11 @@ class AdminsController < ApplicationController
     common_index_order('MONA', 'DOGE')
   end
 
-private
+  def new_closed_order
+    @closed_order = ClosedOrder.new
+  end
+  
+  private
     def common_index_order(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
       @orders = Order.coins(@coin_a.id, @coin_b.id).order('created_at DESC').page(params[:page]) 
