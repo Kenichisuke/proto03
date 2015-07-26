@@ -24,14 +24,13 @@ class ClosedOrdersController < ApplicationController
       flash[ :alert ] = 'Error: Order of coins is opposite'
       render 'new' and return
     end
-    binding.pry
     if @closed_order.tmstr > @closed_order.tmend then
       flash[ :alert ] = 'Error: Time order (from Start to End) is opposite'
       render 'new' and return
     end
 
     make_close_order_coins(@closed_order.user_id, @closed_order.coin1, @closed_order.coin2, 
-      @closed_order.pr, Time.parse( @closed_order.tmstr ), Time.parse( @closed_order.tmend ) , @closed_order.stepmin)
+      @closed_order.pr, @closed_order.tmstr, @closed_order.tmend, @closed_order.stepmin)
     redirect_to root_path
   end  
 
