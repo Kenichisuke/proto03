@@ -51,7 +51,8 @@ class ClosedOrdersController < ApplicationController
           range = 3
         end
 
-        pr = pr + (rand(range * 10) - (range * 10　-　1)/2.0　)/10.0
+        # pr += (rand(range * 10) - (range * 10　-　1) / 2.0) / 10.0
+        pr += (rand(range * 10) - ((range * 10) - 1) / 2.0 ) / 10.0
         if pr < 1.0 then
           pr = 1.0
         end
