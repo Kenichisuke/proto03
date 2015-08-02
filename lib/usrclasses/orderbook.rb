@@ -241,7 +241,7 @@ class Orderbook
 
 
   def self.makeplot(coin1, coin2)  # receive coin_id
-    logger.debug('Orderbook.makeplot start:' + coin1.to_s + ':' + coin2.to_s )
+    logger.info('Orderbook.makeplot start:' + coin1.to_s + ':' + coin2.to_s )
 
     subss = []
     mx = -1
@@ -249,6 +249,8 @@ class Orderbook
     if Order.openor.coins(coin1, coin2).where(buysell: true).count > 0 then
       pr1 = Order.openor.coins(coin1, coin2).where(buysell: true).minimum(:rate)
       pr2 = Order.openor.coins(coin1, coin2).where(buysell: true).maximum(:rate)
+
+      logger.info('1: pr1: ' + pr1.to_s + '  pr2: ' + pr2.to_s )
 
       index = 0
       tmp = ((pr1 * 10).floor/10.0)
@@ -276,6 +278,9 @@ class Orderbook
 
       pr1 = Order.openor.coins(coin1, coin2).where(buysell: false).maximum(:rate)
       pr2 = Order.openor.coins(coin1, coin2).where(buysell: false).minimum(:rate)
+
+      logger.info('2: pr1: ' + pr1.to_s + '  pr2: ' + pr2.to_s )
+
       index = 0
       tmp = ((pr1 * 10).ceil/10.0)
       begin
@@ -328,8 +333,8 @@ class Orderbook
       fl.close
     end
 
-    logger.debug('Orderbook histgram created :' + filename)   
-    logger.debug('Orderbook.makeplot end:' )
+    logger.info('Orderbook histgram created :' + filename)   
+    logger.info('Orderbook.makeplot end:' )
   end
 
   # def self.makeplot(coin1, coin2)  # receive coin_id

@@ -24,7 +24,7 @@ every 11.minutes do
   runner "Pricehistproc.totalprocess"
 end
 
-every 5.minutes do 
+every 7.minutes do 
   # Walletをチェックし、AcntをUpdateする。
   runner "Walletcheck.totalprocess"
 end
