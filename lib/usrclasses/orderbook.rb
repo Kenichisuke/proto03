@@ -287,6 +287,8 @@ class Orderbook
       begin
         rsubs = Order.openor.coins(coin1, coin2).where(buysell: false).where('? < rate AND rate <= ?', tmp - 0.1, tmp)
 
+        logger.info('rsubs ' + rsubs.count.to_s)
+
         if rsubs.count > 0 then
           sum = rsubs.sum(:amt_a)
           subbs << [tmp, sum]
