@@ -14,7 +14,7 @@
 # end
 #
 
-every 2.minutes do 
+every 1.minutes do 
 #   # orderbook を約定させ、trade をacntに書き込み、orderbook の表示を作る。 
   runner "Orderbook.totalprocess"
 end
