@@ -18,7 +18,6 @@ class Orderbook
 
     coincomb.each do | c |
       coin_a, coin_b = coin_order(c[0], c[1])
-      if coin_a.ticker == "BTC" && coin_b.ticker == "DOGE" then break end
       makeplot(coin_a.id, coin_b.id)
     end
 
