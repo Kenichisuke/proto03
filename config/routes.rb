@@ -79,41 +79,44 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/kanrishapeizi', as: 'rails_admin'
   # 前の方のおかないと、このパスが、localeと勘違いされて、routingのエラーとなる。
 
-  get  'admins/precheck_service'
-  get  'admins/orderbook_exec'
-  get  'admins/orderbook_trade2acnt'
-  get  'admins/orderbook_plot'
-  get  'admins/orderbook_total'
-  get  'admins/pricehist_exec'
-  get  'admins/pricehist_plot'
-  get  'admins/pricehist_total'
-  get  'admins/walletcheck_exec'
+  get  'admins/precheck_service', format: false
+  get  'admins/orderbook_exec', format: false
+  get  'admins/orderbook_trade2acnt', format: false
+  get  'admins/orderbook_plot', format: false
+  get  'admins/orderbook_total', format: false
+  get  'admins/pricehist_exec', format: false
+  get  'admins/pricehist_plot', format: false
+  get  'admins/pricehist_total', format: false
+  get  'admins/walletcheck_exec', format: false
 
-  get  'admins/index_order_btc_ltc'
-  get  'admins/index_order_btc_mona'
-  get  'admins/index_order_btc_doge'
-  get  'admins/index_order_ltc_mona'
-  get  'admins/index_order_ltc_doge'
-  get  'admins/index_order_mona_doge'
+  get  'admins/index_order_btc_ltc', format: false
+  get  'admins/index_order_btc_mona', format: false
+  get  'admins/index_order_btc_doge', format: false
+  get  'admins/index_order_ltc_mona', format: false
+  get  'admins/index_order_ltc_doge', format: false
+  get  'admins/index_order_mona_doge', format: false
 
-  resources :closed_orders, only: [:new, :create]
+  resource :closed_orders, only: [:new, :create], format: false
+  get  'closed_orders/delete_new', format: false
+  post 'closed_orders/delete_check', format: false
+  post 'closed_orders/delete_create', format: false
 
-  match '/:locale' => 'orders#btc_ltc', via: [ :get ]
+  match '/:locale' => 'orders#btc_ltc', via: [ :get ], format: false
 
   scope "(:locale)", locale: /ja|en/ do 
 
-    root 'orders#btc_ltc'
+    root 'orders#btc_ltc', format: false
  
-    get  'orders/btc_ltc'
-    get  'orders/btc_mona'
-    get  'orders/btc_doge'
-    get  'orders/ltc_mona'
-    get  'orders/ltc_doge'
-    get  'orders/mona_doge'
+    get  'orders/btc_ltc', format: false
+    get  'orders/btc_mona', format: false
+    get  'orders/btc_doge', format: false
+    get  'orders/ltc_mona', format: false
+    get  'orders/ltc_doge', format: false
+    get  'orders/mona_doge', format: false
  
-    get  'static_pages/explanation'
-    get  'static_pages/contact_new'
-    post  'static_pages/contact_create'
+    get  'static_pages/explanation', format: false
+    get  'static_pages/contact_new', format: false
+    post  'static_pages/contact_create', format: false
 
     # post 'orders/create'
     # patch 'orders/create'
@@ -125,26 +128,26 @@ Rails.application.routes.draw do
     end
     devise_for :users, except: [ :destroy ] #どうもうまく消えてないようだ。
 
-    get  'orders/index_btc_ltc'
-    get  'orders/index_btc_mona'
-    get  'orders/index_btc_doge'
-    get  'orders/index_ltc_mona'
-    get  'orders/index_ltc_doge'
-    get  'orders/index_mona_doge'
+    get  'orders/index_btc_ltc', format: false
+    get  'orders/index_btc_mona', format: false
+    get  'orders/index_btc_doge', format: false
+    get  'orders/index_ltc_mona', format: false
+    get  'orders/index_ltc_doge', format: false
+    get  'orders/index_mona_doge', format: false
 
     # get  'orders/create', to: 'orders#btc_ltc'  
     # # order の入力でエラーが起こった後、言語を変更すると、
     # # 誤って、order#show を呼ぶ。
     # # それを回避するための、routing
 
-    resources :orders, only: [:create, :show, :edit, :update]
+    resources :orders, only: [:create, :show, :edit, :update], format: false
 
-    get  'acnts/show'
+    get  'acnts/show', format: false
 
-    get  'coinios/coinio_btc'
-    get  'coinios/coinio_ltc'
-    get  'coinios/coinio_mona'
-    get  'coinios/coinio_doge'
+    get  'coinios/coinio_btc', format: false
+    get  'coinios/coinio_ltc', format: false
+    get  'coinios/coinio_mona', format: false
+    get  'coinios/coinio_doge', format: false
     # post 'coinios/create'
     # get 'coinios/create', to: 'orders#btc_ltc'  
     # coinio の入力でエラーが起こった後、言語を変更すると、
@@ -152,7 +155,7 @@ Rails.application.routes.draw do
     # というroutingのエラーが起こる。
     # それを回避するための、routing
 
-    resources :coinios, only: [:create, :show]
+    resources :coinios, only: [:create, :show], format: false
 
     get '*anything' => 'orders#btc_ltc'
   end

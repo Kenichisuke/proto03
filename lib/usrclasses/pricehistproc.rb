@@ -28,12 +28,15 @@ class Pricehistproc
     logger.debug('Pricehistproc.execute start: ' + coin1.to_s + ':' + coin2.to_s )
 
     last_time = 0
-    if PriceHist.coins(coin1, coin2).where(ty: PriceHist.ties[:hr_1]).count > 0 then
+
+    pricehistcount = PriceHist.coins(coin1, coin2).where(ty: PriceHist.ties[:hr_1]).count
+    tradecount = Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).count
+    if pricehistcount > 0 then
       pricehist_last = PriceHist.coins(coin1, coin2).where(ty: PriceHist.ties[:hr_1]).order('dattim DESC').first
       pricehist_id = pricehist_last.id
       time_e = pricehist_last.dattim.to_i
       last_time = Time.at(time_e)
-    elsif Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).count > 0 then
+    elsif tradecount > 0 then
       time_e = Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).order('updated_at ASC').first.updated_at.to_i      
     else
 
@@ -92,6 +95,8 @@ class Pricehistproc
     from = Time.at(from_e)
 
     prmonas = PriceHist.coins(coin1, coin2).where(ty: PriceHist.ties[:hr_1]).where("dattim >= ? AND dattim <= ?", from, tnow).order(dattim: :asc)
+    # 本当は、重複がないかチェックが必要！
+    # 後で修正
     plotdata = []
     prmonas.each do | pl |
       plotdata << [ pl.dattim.strftime("%Y-%m-%d %H:%M"), pl.st.round(3), pl.mx.round(3), pl.mn.round(3), pl.en.round(3) ]
@@ -102,8 +107,10 @@ class Pricehistproc
     min = from.strftime("%m/%d-%H:00")
     max = (tnow + (60*59)).strftime("%m/%d-%H:00")
     plottitle = min + ' ~ '+ max
-    plotmin = (from - (60 * 60)).strftime("%Y-%m-%d %H:00")
-    plotmax = (tnow + (60 * 59)).strftime("%Y-%m-%d %H:00")
+    binding.pry
+    plotmin = Time.at(((( hr - 47)/ 4 ) * 4 - 1) * 60 * 60).strftime("%Y-%m-%d %H:00")
+    plotmax = Time.at(((( hr + 5)/ 4 ) * 4 - 1) * 60 * 60).strftime("%Y-%m-%d %H:00")
+    plotylabel = ticker1 + '-' + ticker2 + ' Rate'
     filecont = <<EOF
       (function() {
         var plot1;
@@ -117,25 +124,30 @@ class Pricehistproc
             seriesDefaults: {
               renderer: jQuery . jqplot . OHLCRenderer,
               rendererOptions: {
-                  candleStick: true,
-                  fillUpBody: true,
-                  fillDownBody: true,
-                  upBodyColor: 'blue',
-                  downBodyColor: 'red'
+                candleStick: true,
+                fillUpBody: true,
+                fillDownBody: true,
+                upBodyColor: 'blue',
+                downBodyColor: 'red'
               }
             },
             axes:{
               xaxis:{
-                  renderer: jQuery . jqplot . DateAxisRenderer,
-                  min: '#{plotmin}',
-                  max: '#{plotmax}',
-                  tickInterval: '2 hours',
-                  tickOptions:{
-                      formatString: '%H'
-                  }
+                renderer: jQuery . jqplot . DateAxisRenderer,
+                min: '#{plotmin}',
+                max: '#{plotmax}',
+                tickRenderer: jQuery . jqplot . CanvasAxisTickRenderer,
+                tickInterval: '4 hours',
+                tickOptions:{
+                  formatString: '%d-%H:00',
+                  angle: -60,
+                  fontSize: '8pt'
+                },
+                label: "Date - Time"
               },
-              yaxis: {
-                  tickOptions:{formatString:'$%d'}
+              yaxis:{
+                labelRenderer: jQuery . jqplot . CanvasAxisLabelRenderer,
+                label: '#{plotylabel}'
               }
             }
           }

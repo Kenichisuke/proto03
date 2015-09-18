@@ -8,8 +8,12 @@ class ClosedOrdersController < ApplicationController
   def new
     tmnow = Time.now
     tmstr = tmnow - (2 * 24 * 60 * 60) #2日前
-    @closed_order = ClosedOrder.new(user_id: 3, coin1: 1, coin2: 2, pr: 10, tmstr: tmstr, tmend: tmnow)
-    @cointypes = Cointype.all
+    @admins = User.where(admin: true).order(id: :asc)
+    @cointypes = Cointype.all.order(rank: :desc)
+    usrid = @admins.first.id
+    coin1id = @cointypes.first.id
+    coin2id = @cointypes.second.id
+    @closed_order = ClosedOrder.new(user_id: usrid, coin1: coin1id, coin2: coin2id, pr: 10, tmstr: tmstr, tmend: tmnow)
   end
   
   def create
@@ -29,10 +33,42 @@ class ClosedOrdersController < ApplicationController
       render 'new' and return
     end
 
+    # make_close_order_coins(@closed_order.user_id, @closed_order.coin1, @closed_order.coin2, 
+    #   @closed_order.pr, Time.parse( @closed_order.tmstr ), Time.parse( @closed_order.tmend ) , @closed_order.stepmin)
     make_close_order_coins(@closed_order.user_id, @closed_order.coin1, @closed_order.coin2, 
       @closed_order.pr, @closed_order.tmstr, @closed_order.tmend, @closed_order.stepmin)
     redirect_to root_path
-  end  
+  end
+
+  def delete_new
+    tmnow = Time.now
+    tmstr = tmnow - (2 * 24 * 60 * 60) #2日前
+    @admins = User.where(admin: true).order(id: :asc)
+    @cointypes = Cointype.all.order(rank: :desc)
+    usrid = @admins.first.id
+    coin1id = @cointypes.first.id
+    coin2id = @cointypes.second.id
+    @closed_order = ClosedOrder.new(user_id: usrid, coin1: coin1id, coin2: coin2id, tmstr: tmstr, tmend: tmnow)
+  end
+
+  def delete_check
+
+    listup_orders_trades_price_hists
+    binding.pry
+    @coin_a = Cointype.find( @closed_order.coin1 )
+    @coin_b = Cointype.find( @closed_order.coin2 )
+  end
+
+  def delete_create
+      listup_orders_trades_price_hists
+      binding.pry
+      @closed_orders.delete_all
+      @closed_trades.delete_all
+      @price_hists.delete_all
+      flash[ :notice ] = 'deleted'
+      redirect_to root_path and return
+  end
+
 
   private
   
@@ -109,8 +145,44 @@ class ClosedOrdersController < ApplicationController
                   updated_at: tm)
     end
 
+    def listup_orders_trades_price_hists
+      @closed_order = ClosedOrder.new( closed_order_params2.symbolize_keys )
+
+      if @closed_order.coin1 == @closed_order.coin2 then
+        flash[ :alert ] = 'Error: same coins'
+        render 'delete_new' and return
+      end
+      if Cointype.find(@closed_order.coin1).rank <= Cointype.find(@closed_order.coin2).rank then
+        flash[ :alert ] = 'Error: Order of coins is opposite'
+        render 'delete_new' and return
+      end
+      if @closed_order.tmstr > @closed_order.tmend then
+        flash[ :alert ] = 'Error: Time order (from Start to End) is opposite'
+        render 'delete_new' and return
+      end
+
+      @closed_orders = Order.where(user_id: @closed_order.user_id).coins( @closed_order.coin1, @closed_order.coin2 )
+        .where("? <= updated_at AND updated_at <= ?", @closed_order.tmstr, @closed_order.tmend )
+        .where(flag: Order.flags[ :exec_exec ] ).order('updated_at ASC')
+
+      @closed_trades = Trade.coins( @closed_order.coin1, @closed_order.coin2 )
+        .where("? <= updated_at AND updated_at <= ?", @closed_order.tmstr, @closed_order.tmend )
+        .where(flag: Trade.flags[ :tr_close ] ).order('updated_at ASC')
+
+      @price_hists = PriceHist.coins( @closed_order.coin1, @closed_order.coin2 )
+        .where("? <= dattim AND dattim <= ?", @closed_order.tmstr, @closed_order.tmend )
+        .order('dattim ASC')
+
+      binding.pry
+      puts 'here'
+    end
+
     def closed_order_params
       params.require(:closed_order).permit(:user_id, :coin1, :coin2, :pr, :tmstr, :tmend, :stepmin)
+    end
+
+    def closed_order_params2
+      params.require(:closed_order).permit(:user_id, :coin1, :coin2, :tmstr, :tmend)
     end
 
   end
