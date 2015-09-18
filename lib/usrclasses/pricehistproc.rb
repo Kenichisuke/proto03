@@ -107,7 +107,6 @@ class Pricehistproc
     min = from.strftime("%m/%d-%H:00")
     max = (tnow + (60*59)).strftime("%m/%d-%H:00")
     plottitle = min + ' ~ '+ max
-    binding.pry
     plotmin = Time.at(((( hr - 47)/ 4 ) * 4 - 1) * 60 * 60).strftime("%Y-%m-%d %H:00")
     plotmax = Time.at(((( hr + 5)/ 4 ) * 4 - 1) * 60 * 60).strftime("%Y-%m-%d %H:00")
     plotylabel = ticker1 + '-' + ticker2 + ' Rate'

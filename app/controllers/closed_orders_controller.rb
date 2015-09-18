@@ -54,14 +54,12 @@ class ClosedOrdersController < ApplicationController
   def delete_check
 
     listup_orders_trades_price_hists
-    binding.pry
     @coin_a = Cointype.find( @closed_order.coin1 )
     @coin_b = Cointype.find( @closed_order.coin2 )
   end
 
   def delete_create
       listup_orders_trades_price_hists
-      binding.pry
       @closed_orders.delete_all
       @closed_trades.delete_all
       @price_hists.delete_all
@@ -173,8 +171,6 @@ class ClosedOrdersController < ApplicationController
         .where("? <= dattim AND dattim <= ?", @closed_order.tmstr, @closed_order.tmend )
         .order('dattim ASC')
 
-      binding.pry
-      puts 'here'
     end
 
     def closed_order_params
