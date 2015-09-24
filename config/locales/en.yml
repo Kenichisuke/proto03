@@ -220,7 +220,7 @@ en:
         one: 1 error prohibited this %{model} from being saved
         other: "%{count} errors prohibited this %{model} from being saved"
   header:
-    topline: "Bitchange - Simple and Convenient Crypto-currecy Exchange"
+    topline: "BitChange - Simple and Convenient Crypto-currecy Exchange"
     trade: Trade
     explanation: Explanation
     order_list: Order list
