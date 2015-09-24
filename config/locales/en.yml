@@ -25,6 +25,10 @@ en:
       coinio:
         amt: Amount
         fee: Fee
+  app_html:
+    title: "BitChange - simple & convenient Crypto-currency Exchange - bitcoin, litecoin, monacoin, dogecoin" 
+    content: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+    keywords: "Crypto-currency Exchange,bitcoin,litecoin,monacoin,dogecoin"
   coinio:
     coin_inout: "Coin Transfer In/Out"
     item: Items
@@ -216,6 +220,7 @@ en:
         one: 1 error prohibited this %{model} from being saved
         other: "%{count} errors prohibited this %{model} from being saved"
   header:
+    topline: "Bitchange - Simple and Convenient Crypto-currecy Exchange"
     trade: Trade
     explanation: Explanation
     order_list: Order list
@@ -295,7 +300,7 @@ en:
       two_words_connector: " and "
       words_connector: ", "
   order:
-    chart_and_time: "CHART,  japan time(+9:00)"
+    chart_and_time: "CHART, Japan Standard Time(+9:00)"
     trade: Trade
     buy: Buy
     sell: Sell
