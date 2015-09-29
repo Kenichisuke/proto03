@@ -43,6 +43,7 @@ gem 'active_decorator' # 使っていない
 gem 'kaminari'
 gem 'rails-i18n'
 gem 'rails_admin'
+gem 'activeadmin', github: 'activeadmin'
 
 gem 'rqrcode'  # QR code を作る。
 

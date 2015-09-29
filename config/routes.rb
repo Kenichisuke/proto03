@@ -76,6 +76,7 @@
 Rails.application.routes.draw do
 
 
+  ActiveAdmin.routes(self)
   mount RailsAdmin::Engine => '/kanrishapeizi', as: 'rails_admin'
   # 前の方のおかないと、このパスが、localeと勘違いされて、routingのエラーとなる。
 

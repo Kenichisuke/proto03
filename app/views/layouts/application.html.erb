@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= t('app_html.title') %></title>
+
+ <title><%= full_seo('title', yield( :cont )) %></title>
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,8 +17,8 @@
     <script language="javascript" type="text/javascript" src="excanvas.js"></script>
   <![endif]-->
 
-<meta name="description" content="<%= t('app_html.content') %>">
-<meta name="keywords" content="<%= t('app_html.keywords') %>">
+<meta name="description" content="<%= full_seo('desc', yield( :cont )) %>">
+<meta name="keywords" content="<%= full_seo('keywords', yield( :cont )) %>">
 
 </head>
 <body>

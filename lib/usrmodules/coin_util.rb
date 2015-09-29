@@ -21,4 +21,13 @@ module CoinUtil
     Cointype.find_by(ticker: coin_t).id
     # return nil when it does not exists.
   end
+
+  def coin_list_i
+    allist = Cointype.all.order(rank: :desc)
+    ret = []
+    allist.each do | a |
+      ret << a.id
+    end
+  end
+
 end
