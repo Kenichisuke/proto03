@@ -26,9 +26,42 @@ en:
         amt: Amount
         fee: Fee
   app_html:
-    title: "BitChange - simple & convenient Crypto-currency Exchange - bitcoin, litecoin, monacoin, dogecoin" 
-    content: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
-    keywords: "Crypto-currency Exchange,bitcoin,litecoin,monacoin,dogecoin"
+    title:
+      BTC-LTC: "BitChange - simple & convenient Crypto-currency Exchange - bitcoin, litecoin, monacoin, dogecoin" 
+      BTC-MONA: "BitChange - simple & convenient Crypto-currency Exchange - bitcoin, monacoin"
+      BTC-DOGE: "BitChange - simple & convenient Crypto-currency Exchange - bitcoin, dogecoin"
+      LTC-MONA: "BitChange - simple & convenient Crypto-currency Exchange - litecoin, monacoin"
+      LTC-DOGE: "BitChange - simple & convenient Crypto-currency Exchange - litecoin, dogecoin"
+      MONA-DOGE: "BitChange - simple & convenient Crypto-currency Exchange - monacoin, dogecoin"
+      default: "BitChange - simple & convenient Crypto-currency Exchange - bitcoin, litecoin, monacoin, dogecoin" 
+      explanation: "BitChange - Explanation - General explanation, How to use the site, fee and terms of service"
+      contact: "BitChange - Contact"
+      signup: "BitChange - Sign-up"
+      login: "BitChange - Login"
+    desc:
+      BTC-LTC: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      BTC-MONA: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      BTC-DOGE: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      LTC-MONA: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      LTC-DOGE: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      MONA-DOGE: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      default: "BitChange is simple and convenient Crypto-currency Exchange. Its user interface is easy to understand. You can easily sign-up and start trades in 10 minutes."
+      explanation: "Explanation - General explanation, How to use the site, fee and terms of service"
+      contact: "Contact"
+      signup: "Sign-up"
+      login: "Login"
+    keywords:
+      BTC-LTC: "Crypto-currency Exchange,bitcoin,litecoin,monacoin,dogecoin" 
+      BTC-MONA: "Crypto-currency Exchange,bitcoin,monacoin"
+      BTC-DOGE: "Crypto-currency Exchange,bitcoin,dogecoin"
+      LTC-MONA: "Crypto-currency Exchange,litecoin,monacoin"
+      LTC-DOGE: "Crypto-currency Exchange,litecoin,dogecoin"
+      MONA-DOGE: "Crypto-currency Exchange,monacoin,dogecoin"
+      default: "Crypto-currency Exchange,bitcoin,litecoin,monacoin,dogecoin"
+      explanation: "Explanation, How to use the site, fee and terms of service"
+      contact: "Contact,questions,suggestions,troubles"
+      signup: "Sign-up"
+      login: "Login"
   coinio:
     coin_inout: "Coin Transfer In/Out"
     item: Items
