@@ -19,6 +19,8 @@ class Cointype < ActiveRecord::Base
   has_many :order, foreign_key: "coin_b_id"
   has_many :acnt
   has_many :coinio  
+  has_many :coin_relations, foreign_key: "coin_a_id"
+  has_many :coin_relations, foreign_key: "coin_b_id"
 
   validates :name, presence: true, uniqueness: true
   validates :ticker, presence: true, uniqueness: true

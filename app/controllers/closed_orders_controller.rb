@@ -19,6 +19,7 @@ class ClosedOrdersController < ApplicationController
   def create
     @closed_order = ClosedOrder.new( closed_order_params.symbolize_keys )
     @cointypes = Cointype.all
+    @admins = User.where(admin: true).order(id: :asc) # in case of render 'new'
 
     if @closed_order.coin1 == @closed_order.coin2 then
       flash[ :alert ] = 'Error: same coins'
@@ -37,6 +38,8 @@ class ClosedOrdersController < ApplicationController
     #   @closed_order.pr, Time.parse( @closed_order.tmstr ), Time.parse( @closed_order.tmend ) , @closed_order.stepmin)
     make_close_order_coins(@closed_order.user_id, @closed_order.coin1, @closed_order.coin2, 
       @closed_order.pr, @closed_order.tmstr, @closed_order.tmend, @closed_order.stepmin)
+
+    flash[ :notice ] = 'Notice: histrical trade data (candle) created.'
     redirect_to root_path
   end
 

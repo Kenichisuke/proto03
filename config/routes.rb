@@ -102,6 +102,8 @@ Rails.application.routes.draw do
   post 'closed_orders/delete_check', format: false
   post 'closed_orders/delete_create', format: false
 
+  resource :open_orders, only: [:new, :create], format: false
+
   match '/:locale' => 'orders#btc_ltc', via: [ :get ], format: false
 
   scope "(:locale)", locale: /ja|en/ do 

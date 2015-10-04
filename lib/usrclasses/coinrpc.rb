@@ -14,6 +14,14 @@ class Coinrpc
   }
   @@cointype = @@coinuri.keys
 
+  @@coinpassphrase = {
+    'BTC' => Rails.application.secrets.coin_btc_passphrase,
+    'LTC' => Rails.application.secrets.coin_ltc_passphrase,
+    'MONA' => Rails.application.secrets.coin_mona_passphrase,
+    'DOGE' => Rails.application.secrets.coin_doge_passphrase,
+  }
+
+
   #   アドレスを作る　getaccountaddress
   def self.getnewaddr(coin_t, accnt)
     com_mthds(coin_t, 'getnewaddress', accnt)
@@ -32,30 +40,28 @@ class Coinrpc
   # addr が有効なものかどうかチェックする。
   def self.validateaddr(coin_t, addr)  # validateaddress
     com_mthds(coin_t, 'validateaddress', addr)
-    # binding.pry
   end
 
   # 出金 sendtoaddress
   def self.sendaddr(coin_t, addr, amt )
+    if @@coinpassphrase[ coin_t ] then
+      params = [@@coinpassphrase[ coin_t ], 60]
+      com_mthds(coin_t, 'walletpassphrase', params)
+    end
     params = [addr, Float( amt )]
-    #    params = [method: addr, params: amt]
-    # binding.pry
     com_mthds(coin_t, 'sendtoaddress', params)
     # fee が発生する場合の処理が必要
   end
   
   def self.gettx(coin_t, txid)
-    # binding.pry
     com_mthds(coin_t, 'gettransaction', txid)
   end
 
   def self.getbal(coin_t)
-    # binding.pry
     com_mthds(coin_t, 'getbalance', nil)
   end
 
   def self.getinfo(coin_t)
-    # binding.pry
     com_mthds(coin_t, 'getinfo', nil)
   end
 
@@ -74,13 +80,13 @@ class Coinrpc
     end
   end
 
-
-
   # for debug
-  def check_keys
-    puts @@cointype
-    puts @@coinuri 
-  end
+  # def self.check_keys
+  #   puts @@cointype
+  #   puts @@coinuri
+  #   puts @@coinpassphrase
+  #   puts @@coinpassphrase[ 'BTC' ]
+  # end
 
 private
 
@@ -89,9 +95,6 @@ private
        # ticker のチェック。登録外であれば、例外を発生させる
       raise StandardError, "wrong coin ticker" if !( @@cointype.include?(coin_t) )
  
-      # binding.pry
-      # puts params
-      # puts "in coinrpc"
       #Params は配列, 可変長でないので*をつけない。
       if params.nil? then
         params = []  # これで、引数を与えていないことになる。
@@ -100,12 +103,14 @@ private
         params = []
         params << temp  # 要素一つの配列になる。引数を一つ与えたことになる。
       end
+
       post_body = { 'method' => method, 'params' => params, 'id' => 'jsonrpc' }.to_json
       resp = JSON.parse( http_post_request(coin_t, post_body) )
 
+      logger.info('response from wallet rpc' + resp)
 
-      raise JSONRPCError, resp['error'] if resp['error']   # ほかの部分のdebugするので、とりあえず外す。4/6
-      resp['result']
+      raise JSONRPCError, resp if resp['error']
+      return resp['result']
     end
 
     def self.http_post_request(coin_t, post_body)

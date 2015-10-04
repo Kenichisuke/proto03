@@ -7,7 +7,7 @@ class Contactmailer < ApplicationMailer
 
   def received_email(inquiry)
     @inquiry = inquiry
-    mail to: "webtestsrvs@gmail.com", subject: "webサイトからお問い合わせがありました。"
+    mail to: "bchange.sup@gmail.com", subject: "webサイトからお問い合わせがありました。"
   end
 
   def thanks_email(inquiry)

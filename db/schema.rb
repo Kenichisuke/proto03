@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150924072827) do
+ActiveRecord::Schema.define(version: 20151001082957) do
 
   create_table "acnts", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -42,6 +42,20 @@ ActiveRecord::Schema.define(version: 20150924072827) do
   add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
+
+  create_table "coin_relations", force: :cascade do |t|
+    t.integer  "coin_a_id",  limit: 4
+    t.integer  "coin_b_id",  limit: 4
+    t.decimal  "step_min",             precision: 32, scale: 8, default: 0.0, null: false
+    t.decimal  "rate_act",             precision: 32, scale: 8, default: 0.0, null: false
+    t.decimal  "rate_ref",             precision: 32, scale: 8, default: 0.0, null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+  end
+
+  add_index "coin_relations", ["coin_a_id", "coin_b_id"], name: "index_coin_relations_on_coin_a_id_and_coin_b_id", unique: true, using: :btree
+  add_index "coin_relations", ["coin_a_id"], name: "index_coin_relations_on_coin_a_id", using: :btree
+  add_index "coin_relations", ["coin_b_id"], name: "index_coin_relations_on_coin_b_id", using: :btree
 
   create_table "coinios", force: :cascade do |t|
     t.integer  "cointype_id", limit: 4,                             default: 1,   null: false

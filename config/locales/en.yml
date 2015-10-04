@@ -84,6 +84,7 @@ en:
     address: Address
     coinout_done: Transfer out was done
     coinout_reserve: Transfer-out was reserved
+    coinout_acnt_not:  Partial abnormal termination
     category:
       tx_receive: Receive
       tx_immature: Immature

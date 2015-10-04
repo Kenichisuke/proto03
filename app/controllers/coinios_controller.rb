@@ -28,10 +28,12 @@ class CoiniosController < ApplicationController
 
     # エラーでrenderするための用意！
     common_new_set
+
+    # 画面を戻った時に、言語のリックがおかしくなるのを修正
     action_s = 'coinio_' + @coin.ticker.downcase
-    @lang_link = false
     @japanese_path = url_for(locale: 'ja', controller: :coinios, action: action_s, only_path: true)
     @english_path = url_for(locale: 'en', controller: :coinios, action: action_s, only_path: true)
+    @lang_link = false  # 言語リンクの修正の時は「true」にする。
 
     # 数字であるかチェックするのロジック
     unless @coinio.amt.is_a?(Numeric) then
@@ -43,14 +45,13 @@ class CoiniosController < ApplicationController
     flag_err = 0
 
     # inputted amount check
-     if @coinio.amt <= 0 then
+    if @coinio.amt <= 0 then
       @coinio.errors.add(:amt, I18n.t('errors.messages.greater_than', count: 0))
       flag_err += 1
     end
 
     # acount amount check
-    acnt = @coinio.acnt
-  	if (@coinio.amt + @coinio.cointype.fee_out) > (acnt.balance - acnt.locked_bal) then
+  	if (@coinio.amt + @coinio.cointype.fee_out) > (@acnt.balance - @acnt.locked_bal) then
       @coinio.errors.add(:amt, I18n.t('errors.messages.amount_bigger_than_balance'))
       flag_err += 1
     end
@@ -60,9 +61,8 @@ class CoiniosController < ApplicationController
       render 'common_new' and return 
     end
 
-
     begin
-      #coin address check
+      # coin address check
       # when wallet dead, exception occurs.
       addr_valid = Coinrpc.validateaddr(@coinio.cointype.ticker, @coinio.addr)
     rescue => e
@@ -83,58 +83,65 @@ class CoiniosController < ApplicationController
       ## end
     end
 
-    if !addr_valid["isvalid"] then
+    unless addr_valid["isvalid"] then
       @coinio.errors.add(:addr, I18n.t('errors.messages.address_invalid'))
-      # ログに残すこと！
       @lang_link = true
       render 'common_new' and return
     end
 
     # if addr_valid is true
+
+    @acnt.locked_bal += @coinio.amt + @acnt.cointype.fee_out
+    unless @acnt.save then
+      # TODO 数回トライするロジックを足しても良い
+      # @coinio.errors.add(:base, I18n.t('errors.messages.order.try_later'))      
+      flash[ :alert ] = I18n.t('errors.messages.order.try_later')
+      logger.error('Cancel coinio: acnt(locked_bal) NOT saved')
+      @lang_link = true
+      render 'common_new' and return
+    end
+
     begin # 送金する。金額がなければ失敗する。
       @coinio.txid = Coinrpc.sendaddr(@coinio.cointype.ticker, @coinio.addr, @coinio.amt)
     rescue => e
       # 予約を入れるロジック
       @coinio.txid = ""
       @coinio.tx_category = :tx_send
-      @coinio.fee = acnt.cointype.fee_out
+      @coinio.fee = @acnt.cointype.fee_out
       @coinio.flag = :out_reserve
-      @coinio.save
+      @coinio.save   # 新規なので失敗しないはず。
       logger.error('Coinio create reservation: coinio saved as reservation: ' + @coinio.cointype.ticker)
       logger.error( e.message )
       flash[ :notice ] = I18n.t('coinio.coinout_reserve')
-      redirect_to @coinio
-      return
+      redirect_to @coinio and return
     end
 
-    acnt.balance -= (@coinio.amt + acnt.cointype.fee_out)
+    @acnt.balance -= (@coinio.amt + @acnt.cointype.fee_out)
+    @acnt.locked_bal -= (@coinio.amt + @acnt.cointype.fee_out)
+
     @coinio.tx_category = :tx_send
-    @coinio.fee = acnt.cointype.fee_out
-    @coinio.flag = :out_sent
+    @coinio.fee = @acnt.cointype.fee_out
 
-    begin #出金結果の記録をセーブする。
-      save_coinio!
-    rescue => e
-      #この例外は普通おこらない。
-      flash[ :alert ] = I18n.t('errors.messages.order.try_later')
-      # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
-      logger.error('Cancel order: order, anct and trade NOT saved.')
-      logger.error('class:' + e.class.to_s)
-      logger.error('msg' + e.message)
+    if @acnt.save then
+      @coinio.flag = :out_sent
+    else
+      @coinio.flag = :out_acnt_not
+    end
+
+    # 新規のcoinioだから失敗しないはず。
+    if @coinio.save then
+      flash[ :notice ] = I18n.t('coinio.coinout_done') 
+      redirect_to @coinio and return
+    else
+      # ここにくると、データは正しくなく、ユーザに戻るのでよくない。
+      flash[ :alert ] = I18n.t('coinio.coinout_acnt_not') 
+      logger.error('Coinio create: coinio not saved at last (abnormal):' + @coinio.cointype.ticker)
       redirect_back_or(root_path)
-      return
-    end  
 
-    flash[ :notice ] = I18n.t('coinio.coinout_done')  
-    redirect_to @coinio
+      # @lang_link = true
+      # render 'new' and return
 
-    # else
-    #   coinio.flag = :out_abnormal
-    #   @coinio.errors.add(:base, I18n.t('errors.messages.try_later'))
-    #   # flash[ :alert ] = "Your Coin transfer out was not done. Please contact administratior."
-    #   @lang_link = true
-    #   render 'common_new' and return
-    # end
+    end
   end
 
   def show
@@ -177,8 +184,8 @@ class CoiniosController < ApplicationController
     common_new('DOGE')
   end
 
-  def update(coin_t)
-  end
+  # def update(coin_t)
+  # end
 
   private
     def common_new(coin_t)
@@ -203,25 +210,23 @@ class CoiniosController < ApplicationController
       @path4 = coinios_coinio_doge_path
     end
 
-    def save_coinio!
-      ActiveRecord::Base.transaction do
-        @coinio.save!
-        @acnt.save!
-      end
-      logger.info('Coinio create: coinio and anct saved. Coinio_id:' + @coinio.id.to_s + ' acnt_id:' + @acnt.id.to_s + ' trade_id:' + @trade.id.to_s)
-    rescue => e
-      logger.error('Coinio create: coinio and anct NOT saved.')
-      logger.error('class:' + e.class.to_s)
-      logger.error('msg' + e.message)
-      raise
-    end
+    # def save_coinio
+    #   ActiveRecord::Base.transaction do
+    #     @coinio.save!
+    #     @acnt.save!
+    #   end
+    #     logger.info('Coinio create: coinio and acnt saved. Coinio_id:' + @coinio.id.to_s + ' acnt_id:' + @acnt.id.to_s)
+    #   rescue => e
+    #     logger.error('Coinio create: coinio and acnt NOT saved.')
+    #     logger.error('class:' + e.class.to_s)
+    #     logger.error('msg:' + e.message)
+    #     raise
+    # end
 
-    def index_new(coin_t)
-      @coin = Cointype.find_by(ticker: coin_t)
-      @coinios = Coinio.where('cointype_id: @coin.id' ,'flag: :out_reserve').order('created_at DESC', 'rate DESC').page(params[:page]).per(20)
-    end
-
-
+    # def index_new(coin_t)
+    #   @coin = Cointype.find_by(ticker: coin_t)
+    #   @coinios = Coinio.where('cointype_id: @coin.id' ,'flag: :out_reserve').order('created_at DESC', 'rate DESC').page(params[:page]).per(20)
+    # end
 
     def coinio_params
       params.require(:coinio).permit(:cointype_id, :amt, :addr, :acnt_id)
