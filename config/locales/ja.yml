@@ -84,6 +84,7 @@ ja:
     address: アドレス
     coinout_done: 出金が行われました
     coinout_reserve: 出金を予約しました
+    coinout_acnt_not: 一部異常終了
     category:
       tx_receive: 入金
       tx_immature: 認証待
@@ -93,6 +94,7 @@ ja:
       in_done: 入金
       in_yet: 未入金
       out_sent: 出金済
+      out_acnt_not: アカウント情報異常
       out_abnormal: 異常終了
       out_reserve: 出金予約
       out_r_sent: 予約後、出金済

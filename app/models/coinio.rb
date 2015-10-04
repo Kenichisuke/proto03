@@ -21,7 +21,7 @@ class Coinio < ActiveRecord::Base
 
   enum tx_category: [ :tx_receive, :tx_immature, :tx_generate, :tx_send, :tx_orphan ]
   enum flag: { in_yet: 0, in_done: 6,
-            out_sent: 7, out_abnormal: 19, out_reserve: 25,
+            out_sent: 7, out_acnt_not: 17, out_abnormal: 19, out_reserve: 25,
             out_r_sent: 31, out_r_n_cncl: 59, out_r_n_acnt: 91, out_r_n_addr: 123 }
 
 
@@ -57,6 +57,7 @@ end
 #
 #   0--3--6th bit, txtype,
 #   1110000: send:   007: out_sent     :sent, 正常終了
+#   1000100: send:   017: out_acnt_not :最後のacntのセーブが失敗、異常終了
 #   1100100: (none): 019: out_abnormal :異常終了
 #   1001100: (none): 025: out_reserve  :予約
 #   1111100: send:   031: out_r_sent   :予約後、sent, 正常終了

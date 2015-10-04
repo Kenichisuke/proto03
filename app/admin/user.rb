@@ -27,6 +27,8 @@ ActiveAdmin.register User do
   	  end
   	end
 
+    # Cointype.tickerconb が使えるかも。
+    
     tick1 = [ "BTC", "BTC", "BTC", "LTC", "LTC", "MONA"]
     tick2 = [ "LTC", "MONA", "DOGE", "MONA", "DOGE", "DOGE"]
     6.times do | i |      

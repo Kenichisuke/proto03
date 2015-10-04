@@ -1,0 +1,25 @@
+<h2>Delete closed orders</h2>
+
+  <%= form_for( @closed_order, :url => { action: :delete_check}) do |f| %>
+    <div class="form-group">
+      <%= f.label :user_id %>
+      <%= f.collection_select(:user_id, @admins,  :id, :email) %>
+    </div>
+    <div class="form-group">
+      <%= f.label :coin1 %>
+      <%= f.collection_select(:coin1, @cointypes,  :id, :ticker) %>
+    </div>
+    <div class="form-group">
+      <%= f.label :coin2 %>
+      <%= f.collection_select(:coin2, @cointypes,  :id, :ticker) %>
+    </div>
+    <div class="form-group">
+      <%= f.label :tmstr %>
+      <%= f.datetime_local_field :tmstr %>
+    </div>
+    <div class="form-group">
+      <%= f.label :tmend %>
+      <%= f.datetime_local_field :tmend %>
+    </div>
+    <%= f.submit 'Submit' %>
+  <% end %>
