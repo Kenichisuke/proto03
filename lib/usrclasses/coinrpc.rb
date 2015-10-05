@@ -107,8 +107,6 @@ private
       post_body = { 'method' => method, 'params' => params, 'id' => 'jsonrpc' }.to_json
       resp = JSON.parse( http_post_request(coin_t, post_body) )
 
-      logger.info('response from wallet rpc' + resp)
-
       raise JSONRPCError, resp if resp['error']
       return resp['result']
     end
