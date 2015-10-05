@@ -86,7 +86,6 @@ class AdminsController < ApplicationController
       db_bal = Acnt.where(cointype: coin_id).sum(:balance)        
       db_locked_bal = Acnt.where(cointype: coin_id).sum(:locked_bal)
       db_diff_bal = Trade.where(coin_a_id: coin_id).where(flag: :tr_diffdone).sum(:amt_a)
-    
       @results << CoinStatus.new(t, status, init_bal, db_bal, db_diff_bal, db_locked_bal, w_bal)
     end
 
