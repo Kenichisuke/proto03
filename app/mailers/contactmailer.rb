@@ -14,4 +14,10 @@ class Contactmailer < ApplicationMailer
     @inquiry = inquiry
     mail to: inquiry['email'], subject: I18n.t('contact.inquiry_accepted')   
   end
+
+  def error_email(inquiry)
+    @inquiry = inquiry
+    mail to: "bchange.sup@gmail.com", subject: "Walletの異常です。"
+  end
+
 end

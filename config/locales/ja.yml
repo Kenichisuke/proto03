@@ -245,7 +245,7 @@ ja:
         one: "%{model}にエラーが発生しました。"
         other: "%{model}に%{count}個のエラーが発生しました。"
   header:
-    topline: "BitChange - 簡単便利な暗号通貨取引所 - ビットチェンジ"
+    topline: "- 簡単便利な暗号通貨取引所 - ビットチェンジ"
     trade: 取引
     explanation: 説明
     order_list: 注文一覧

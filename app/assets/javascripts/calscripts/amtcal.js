@@ -3,7 +3,6 @@ function update_amt() {
     var amt_a = parseFloat($('#order_amt_a').val());
     var rate_s = parseFloat($('#order_rate_s').val());
     var amt_a_s = parseFloat($('#order_amt_a_s').val());
-    console.log('here');
 
     if (rate > 0 && amt_a > 0) {
         var amt_b = rate * amt_a;
