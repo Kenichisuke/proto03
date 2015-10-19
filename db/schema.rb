@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151001082957) do
+ActiveRecord::Schema.define(version: 20151018043309) do
 
   create_table "acnts", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -84,6 +84,7 @@ ActiveRecord::Schema.define(version: 20151001082957) do
     t.datetime "created_at",                                                     null: false
     t.datetime "updated_at",                                                     null: false
     t.decimal  "init_amt",               precision: 32, scale: 10, default: 0.0, null: false
+    t.string   "daemon",     limit: 255
   end
 
   add_index "cointypes", ["ticker"], name: "index_cointypes_on_ticker", unique: true, using: :btree

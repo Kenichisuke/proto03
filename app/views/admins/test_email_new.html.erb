@@ -1,0 +1,24 @@
+  <div style="padding:10px">
+    <h1>Test email</h1>
+    
+    <%= form_tag(action: :test_email_create) do  %>
+
+      <div class="form-group" >
+        <%= label_tag :email, 'destination email', class: "control-label" %>
+        <%= email_field_tag :email, '', class: "form-control" %>
+      </div>
+
+      <div class="form-group" >
+        <%= label_tag :title, t('contact.title'), class: "control-label" %>
+        <%= text_field_tag :title, '', class: "form-control" %>
+      </div>
+
+      <div class="form-group" >
+        <%= label_tag :content, t('contact.content'), class: "control-label" %>
+        <%= text_area_tag :content, '' , :size => "80x15", class: "form-control" %>
+      </div>
+
+      <%= submit_tag t('contact.send'), class: "btn btn-primary" %>
+    <% end %>
+  </div>
+

@@ -64,12 +64,12 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  config.action_mailer.default_url_options = { :host => 'www.bitchange.jp' }
+  config.action_mailer.default_url_options = { :host => Rails.application.secrets.host_url }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     :address => "smtp.gmail.com",
     :port => 587,
-    :domain => 'smtp.gmail.com',
+    :domain => Rails.application.secrets.smtp_domain,
     :user_name => Rails.application.secrets.smtp_username,
     :password => Rails.application.secrets.smtp_password,
     :authentication => 'plain',

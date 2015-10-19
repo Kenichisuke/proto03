@@ -98,6 +98,22 @@ class AdminsController < ApplicationController
 
   end
 
+  def test_email_new
+  end
+
+  def test_email_create
+    mailcont = test_email_create_params
+    begin
+      Contactmailer.test_email(mailcont).deliver
+    rescue => e
+      flash[ :alert ] = 'email failed: ' + e.message
+    else
+      flash[ :notice ] = 'email sent'
+    ensure
+      redirect_to('/' + I18n.locale.to_s)
+    end
+  end
+
   def index_order_btc_ltc
     common_index_order('BTC', 'LTC')
   end
@@ -139,6 +155,10 @@ class AdminsController < ApplicationController
       @path34 = admins_index_order_mona_doge_path
       store_location
       render 'index_order_form'
+    end
+
+    def test_email_create_params
+      params.permit(:email, :title, :content)
     end
 
 end
