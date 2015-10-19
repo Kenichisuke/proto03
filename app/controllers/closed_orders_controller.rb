@@ -34,8 +34,11 @@ class ClosedOrdersController < ApplicationController
       render 'new' and return
     end
 
-    # make_close_order_coins(@closed_order.user_id, @closed_order.coin1, @closed_order.coin2, 
-    #   @closed_order.pr, Time.parse( @closed_order.tmstr ), Time.parse( @closed_order.tmend ) , @closed_order.stepmin)
+    # to write latest traded price on database
+    a = CoinRelation.find_by(coin_a_id:  @closed_order.coin1, coin_b_id:  @closed_order.coin2)
+    a.rate_act = @closed_order.pr
+    a.save
+
     make_close_order_coins(@closed_order.user_id, @closed_order.coin1, @closed_order.coin2, 
       @closed_order.pr, @closed_order.tmstr, @closed_order.tmend, @closed_order.stepmin)
 

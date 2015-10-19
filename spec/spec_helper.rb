@@ -16,6 +16,18 @@
 # users commonly want.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+ENV["RAILS_ENV"] ||= 'test'
+require File.expand_path("../../config/environment", __FILE__)
+require 'rspec/rails'
+# require 'rspec/autorun'
+require 'capybara/rails'
+require 'capybara/rspec'
+
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+
+ActiveRecord::Migration.check_pending! if defined?(ActiveRecord::Migration)
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -31,6 +43,9 @@ RSpec.configure do |config|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
 
+  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  config.infer_base_class_for_anonymous_controllers = false
+
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
   config.mock_with :rspec do |mocks|
@@ -39,6 +54,9 @@ RSpec.configure do |config|
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
+
+  config.include Capybara::DSL
+  config.order = "random"
 
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.

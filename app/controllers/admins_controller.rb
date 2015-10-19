@@ -138,8 +138,14 @@ class AdminsController < ApplicationController
     common_index_order('MONA', 'DOGE')
   end
 
-  def new_closed_order
-    @closed_order = ClosedOrder.new
+  # def new_closed_order
+  #   @closed_order = ClosedOrder.new
+  # end
+
+  def autotrade_checkweb  # Tradeを元に、acntの情報を更新する。
+    Autotrade.checkweb
+    flash[:notice] = "check done"
+    redirect_back_or(root_path)
   end
   
   private

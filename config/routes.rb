@@ -106,6 +106,8 @@ Rails.application.routes.draw do
 
   resource :open_orders, only: [:new, :create], format: false
 
+  get  'admins/autotrade_checkweb', format: false
+
   match '/:locale' => 'orders#btc_ltc', via: [ :get ], format: false
 
   scope "(:locale)", locale: /ja|en/ do 

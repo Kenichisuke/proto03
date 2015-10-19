@@ -8,7 +8,7 @@ gem 'rails', '4.2.4'
 # gem 'sqlite3'
 
 # Use mysql as the database for Active Record
-gem 'mysql2'
+gem 'mysql2', '~> 0.3.20'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
@@ -47,9 +47,12 @@ gem 'activeadmin', github: 'activeadmin'
 
 gem 'rqrcode'  # QR code を作る。
 
-gem 'data-confirm-modal', github: 'ifad/data-confirm-modal'
+gem 'data-confirm-modal', github: 'ifad/data-confirm-modal' # 格好がいい確認のウィンドウを表示
 
+gem 'zaif'   # zaif にアクセスするAPIライブラリー
 
+gem 'hirb'          #active record の出力を整形
+# gem 'hirb-unicode'  #hirab で日本語などを出力できるようにする
 
 group :development, :test do
   # # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -72,9 +75,6 @@ group :development, :test do
   gem 'pry-doc'    # methodを表示
   gem 'pry-byebug' # デバッグを実施(Ruby 2.0以降で動作する)
   gem 'pry-stack_explorer' # スタックをたどれる
-
-  gem 'hirb'          #active record の出力を整形
-  # gem 'hirb-unicode'  #hirab で日本語などを出力できるようにする
   
   gem 'better_errors' # errorの時に多くの情報が表示される
   gem 'binding_of_caller' # エラー時のコマンド操作ができる
@@ -85,6 +85,10 @@ end
 
 group :test do
   gem 'factory_girl_rails'
+  gem 'selenium-webdriver'
+  gem 'capybara'
+  gem 'cucumber-rails', :require => false
+  gem 'database_cleaner', github: 'bmabey/database_cleaner'
 end
 
 # bundle exec rake doc:rails generates the API under doc/api.
