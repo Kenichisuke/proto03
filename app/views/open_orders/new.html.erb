@@ -1,7 +1,6 @@
 <h2>Make Multipule Open Orders</h2>
 
-
-
+<div class="col-sm-6">
 
   <%= form_for( @open_order ) do |f| %>
     <div class="form-group">
@@ -29,13 +28,41 @@
       <%= f.number_field :num, min: 1, step: 1, max: 20 %>
     </div>
     <div class="form-group">
-      <%= f.label :eachamt %>
-      <%= f.number_field :eachamt, min: 0 %>
-    </div>
-    <div class="form-group">
       <%= f.label :updown %>
       <%= f.number_field :updown, min: 0, step: 1, max: 2 %>
+      <P> 0: Sell/Buy, 1: Sell only, 2: Buy only</p>
+    </div>
+    <div class="form-group">
+      <%= f.label :eachamt %>
+      <%= f.number_field :eachamt, min: 0, step: 0.0000001 %>
     </div>
 
     <%= f.submit 'Submit' %>
   <% end %>
+</div>
+
+<div class="col-sm-6">
+  <% if @acnts.any? then %>
+    <table class="table table-bordered table-condensed" >
+      <tr>
+        <th style="text-align:center;">User id</th>
+        <th style="text-align:center;">Ticker</th>
+        <th style="text-align:center;">Total amt</th>
+        <th style="text-align:center;">Free amt</th>
+      </tr>
+
+      <% @acnts.each do | ac | %>
+        <tr>
+          <td style="text-align:center;"><%= ac.user_id %></td>
+          <td style="text-align:center;"><%= coin_i2t( ac.cointype_id ) %></td>   
+          <td style="text-align:right;"><%= ac.balance %></td>
+          <td style="text-align:right;"><%= ac.balance - ac.locked_bal %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% else %>
+    <h3>Something Wrong! No account data</h3>
+  <% end %>
+</div>
+
+</div>

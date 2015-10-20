@@ -1,4 +1,4 @@
-<h2>Delete closed orders</h2>
+<h2>Delete Admins Open orders</h2>
 
   <%= form_for( @closed_order, :url => { action: :delete_check}) do |f| %>
     <div class="form-group">
@@ -14,12 +14,10 @@
       <%= f.collection_select(:coin2, @cointypes,  :id, :ticker) %>
     </div>
     <div class="form-group">
-      <%= f.label :tmstr %>
-      <%= f.datetime_local_field :tmstr %>
-    </div>
-    <div class="form-group">
-      <%= f.label :tmend %>
-      <%= f.datetime_local_field :tmend %>
+      <%= f.label :updown %>
+      <%= f.number_field :updown, min: 0, step: 1, max: 2 %>
+      <P> 0: Sell/Buy, 1: Sell only, 2: Buy only</p>
     </div>
     <%= f.submit 'Submit' %>
   <% end %>
+

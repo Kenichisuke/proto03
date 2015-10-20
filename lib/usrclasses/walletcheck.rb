@@ -51,8 +51,30 @@ class Walletcheck
           list = Coinrpc.listtrxs(coin.ticker, n_pickup)
         rescue => e
           logger.error('Walletcheck.execute cannot access wallet ' + coin.ticker )
-          logger.error( e )          
-          return
+          logger.error( e )
+
+          cw = `ps ax | grep #{coin.daemon} | wc -l`
+          logger.error('output from command: ' + cw.to_s )
+
+          if cw.to_s.chomp.to_i >= 3 then # shell を通じて呼び出すので、自分自身が２行表示される。
+            mailcont = { 'coin' => coin.name, 'restart' => 'seems running but failed to list txs. Strange! Need to check!' }
+            Contactmailer.error_email(mailcont).deliver_now
+            return
+          end
+
+          ret = system(coin.daemon)
+          sleep(3)
+          cw = `ps ax | grep #{coin.daemon} | wc -l`
+          logger.error('output from command: ' + cw.to_s )
+
+          if cw.chomp.to_i < 3 or ret == nil then # shell を通じて呼び出すので、自分自身が２行表示される。
+            mailcont = { 'coin' => coin.name, 'restart' => 'fail' }
+            Contactmailer.error_email(mailcont).deliver_later
+            return
+          else
+            mailcont = { 'coin' => coin.name, 'restart' => 'ok' }
+            Contactmailer.error_email(mailcont).deliver_later
+          end
         end
 
         list.each do | l | 
@@ -106,7 +128,7 @@ class Walletcheck
       end
     end
 
-    logger.debug('check transactions (list) from ' + indx.to_s + ' to ' + list.count.to_s)
+    logger.debug('check transactions (list) from ' + indx.to_s + ' to ' + (list.count - 1).to_s)
     logger.info( n_save.to_s + ' CoinIO transactions saved: ' + coin.ticker)
 
       # immature として記録されているCoinioのデータの処理

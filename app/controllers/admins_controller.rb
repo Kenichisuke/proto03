@@ -98,6 +98,22 @@ class AdminsController < ApplicationController
 
   end
 
+  def test_email_new
+  end
+
+  def test_email_create
+    mailcont = test_email_create_params
+    begin
+      Contactmailer.test_email(mailcont).deliver
+    rescue => e
+      flash[ :alert ] = 'email failed: ' + e.message
+    else
+      flash[ :notice ] = 'email sent'
+    ensure
+      redirect_to('/' + I18n.locale.to_s)
+    end
+  end
+
   def index_order_btc_ltc
     common_index_order('BTC', 'LTC')
   end
@@ -122,8 +138,14 @@ class AdminsController < ApplicationController
     common_index_order('MONA', 'DOGE')
   end
 
-  def new_closed_order
-    @closed_order = ClosedOrder.new
+  # def new_closed_order
+  #   @closed_order = ClosedOrder.new
+  # end
+
+  def autotrade_checkweb  # Tradeを元に、acntの情報を更新する。
+    Autotrade.checkweb
+    flash[:notice] = "check done"
+    redirect_back_or(root_path)
   end
   
   private
@@ -139,6 +161,10 @@ class AdminsController < ApplicationController
       @path34 = admins_index_order_mona_doge_path
       store_location
       render 'index_order_form'
+    end
+
+    def test_email_create_params
+      params.permit(:email, :title, :content)
     end
 
 end

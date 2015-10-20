@@ -26,7 +26,7 @@ class Acnt < ActiveRecord::Base
   validates :balance, numericality: {greater_than_or_equal_to: 0.0}
   validates :locked_bal, numericality: {greater_than_or_equal_to: 0.0}
   validate :balance_tobe_bigger_than_locked_bal
- 
+
   def self.registration(user_id, coin_t, user_num)
     begin
       coin = Cointype.find_by(ticker: coin_t)
@@ -46,6 +46,10 @@ class Acnt < ActiveRecord::Base
     coin = Cointype.find_by(ticker: coin_t)
     Acnt.create!(user_id: user_id, cointype_id: coin.id,
       balance:  0, locked_bal: 0, addr_in: addr, acnt_num: user_num)
+  end
+
+  def free_bal
+    self.balance - self.locked_bal
   end
 
   def lock_amt(amt)

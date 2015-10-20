@@ -89,6 +89,8 @@ Rails.application.routes.draw do
   get  'admins/pricehist_plot', format: false
   get  'admins/pricehist_total', format: false
   get  'admins/walletcheck_exec', format: false
+  get  'admins/test_email_new', format: false
+  post 'admins/test_email_create', format: false
 
   get  'admins/index_order_btc_ltc', format: false
   get  'admins/index_order_btc_mona', format: false
@@ -103,6 +105,8 @@ Rails.application.routes.draw do
   post 'closed_orders/delete_create', format: false
 
   resource :open_orders, only: [:new, :create], format: false
+
+  get  'admins/autotrade_checkweb', format: false
 
   match '/:locale' => 'orders#btc_ltc', via: [ :get ], format: false
 
@@ -119,7 +123,7 @@ Rails.application.routes.draw do
  
     get  'static_pages/explanation', format: false
     get  'static_pages/contact_new', format: false
-    post  'static_pages/contact_create', format: false
+    post 'static_pages/contact_create', format: false
 
     # post 'orders/create'
     # patch 'orders/create'

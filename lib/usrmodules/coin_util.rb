@@ -22,12 +22,18 @@ module CoinUtil
     # return nil when it does not exists.
   end
 
+  def coin_i2t(coin_i)
+    Cointype.find( coin_i ).ticker
+    # return nil when it does not exists.
+  end
+
   def coin_list_i
     allist = Cointype.all.order(rank: :desc)
     ret = []
     allist.each do | a |
       ret << a.id
     end
+    return ret
   end
 
 end

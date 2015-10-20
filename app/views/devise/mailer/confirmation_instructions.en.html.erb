@@ -1,6 +1,9 @@
-<p>Welcome <%= @email %>!</p>
+<p>Dear <%= @email %>!</p>
+
+<h2>Welcome to BitChange</h2>
 
 <p>You can confirm your account email through the link below:</p>
 
 <p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+<h3>Please enjoy trades of crypto-currencies!</h3>
 <p>BitChange.jp<p>

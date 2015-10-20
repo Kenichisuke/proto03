@@ -190,7 +190,7 @@ class OrdersController < ApplicationController
   end
 
 
-  def update
+  def update  # cancellation
     begin
       @order = Order.find(params[:id])
     rescue => e  # データが存在しない時の処理
@@ -213,8 +213,41 @@ class OrdersController < ApplicationController
       redirect_to root_path and return
     end
 
+    update_cancel
+#####
+    # if @order.buysell
+    #   @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_a)
+    #   amt = @order.amt_a
+    # else
+    #   @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_b)
+    #   amt = @order.amt_b
+    # end
+    # @acnt.unlock_amt(amt)
+    # @trade = Trade.new(order_id: @order.id, amt_a: @order.amt_a, amt_b: @order.amt_b, fee: 0, flag: Trade.flags[:tr_cncl] )
+    # flag = ( @order.flag == "open_new") ? Order.flags[:noex_cncl] : Order.flags[:exec_cncl]
 
-    if @order.buysell
+    # @order.amt_a = 0
+    # @order.amt_b = 0
+    # @order.flag = flag
+#####
+
+    begin
+      save_order_cancellation!
+    rescue => e
+      flash[ :alert ] = I18n.t('errors.messages.order.try_later')
+      # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
+      redirect_back_or(root_path)
+      return
+    end
+
+    flash[ :notice ] = I18n.t('order.canceled')
+    redirect_back_or(root_path)
+  end
+
+  def update_cancel( myorder = nil )
+    @order ||= myorder
+
+    if @order.buysell then
       @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_a)
       amt = @order.amt_a
     else
@@ -228,18 +261,20 @@ class OrdersController < ApplicationController
     @order.amt_a = 0
     @order.amt_b = 0
     @order.flag = flag
+  end
 
-    begin
-      save_order_cancellation!
-    rescue => e
-      flash[ :alert ] = I18n.t('errors.messages.order.try_later')
-      # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
-      redirect_back_or(root_path)
-      return
+  def save_order_cancellation!
+    ActiveRecord::Base.transaction do
+      @order.save!
+      @acnt.save!
+      @trade.save!
     end
-
-    flash[ :notice ] = I18n.t('order.canceled')
-    redirect_back_or(root_path)
+    logger.info('Cancel order: order, anct and trade saved. Order_id:' + @order.id.to_s + ' acnt_id:' + @acnt.id.to_s + ' trade_id:' + @trade.id.to_s)
+  rescue => e
+    logger.error('Cancel order: order, anct and trade NOT saved.')
+    logger.error('class:' + e.class.to_s)
+    logger.error('msg' + e.message)
+    raise
   end
 
   private
@@ -257,7 +292,7 @@ class OrdersController < ApplicationController
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
       @candleplot = "\'" + @tabinfo + '_candle' + "\'"
       @histplot = "\'" + @tabinfo + "_hist_" + I18n.locale.to_s + "\'"
-
+      @step_min = CoinRelation.find_by(coin_a_id: @coin_a.id, coin_b_id: @coin_b.id).step_min
       if current_user then
         a = Acnt.find_by(user_id: current_user.id, cointype_id: @coin_a.id)
         b = Acnt.find_by(user_id: current_user.id, cointype_id: @coin_b.id)
@@ -304,19 +339,6 @@ class OrdersController < ApplicationController
       raise
     end
 
-    def save_order_cancellation!
-      ActiveRecord::Base.transaction do
-        @order.save!
-        @acnt.save!
-        @trade.save!
-      end
-      logger.info('Cancel order: order, anct and trade saved. Order_id:' + @order.id.to_s + ' acnt_id:' + @acnt.id.to_s + ' trade_id:' + @trade.id.to_s)
-    rescue => e
-      logger.error('Cancel order: order, anct and trade NOT saved.')
-      logger.error('class:' + e.class.to_s)
-      logger.error('msg' + e.message)
-      raise
-    end
 
     def order_params
       params.require(:order).permit(:coin_a_id, :coin_b_id, :rate, :amt_a)
