@@ -54,9 +54,9 @@ class Walletcheck
           logger.error( e )
 
           cw = `ps ax | grep #{coin.daemon} | wc -l`
-          logger.error('output from command: ' + cw.to_s )
+          logger.error("line cound of #{coin.daemon} before re-run: " + cw.chomp )
 
-          if cw.to_s.chomp.to_i >= 3 then # shell を通じて呼び出すので、自分自身が２行表示される。
+          if cw.chomp.to_i >= 3 then # shell を通じて呼び出すので、自分自身が２行表示される。
             mailcont = { 'coin' => coin.name, 'restart' => 'seems running but failed to list txs. Strange! Need to check!' }
             Contactmailer.error_email(mailcont).deliver_now
             return
@@ -65,7 +65,7 @@ class Walletcheck
           ret = system(coin.daemon)
           sleep(3)
           cw = `ps ax | grep #{coin.daemon} | wc -l`
-          logger.error('output from command: ' + cw.to_s )
+          logger.error("line cound of #{coin.daemon} after re-run: " + cw.chomp )
 
           if cw.chomp.to_i < 3 or ret == nil then # shell を通じて呼び出すので、自分自身が２行表示される。
             mailcont = { 'coin' => coin.name, 'restart' => 'fail' }
