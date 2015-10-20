@@ -6,6 +6,9 @@ require 'json'
  
 class Coinrpc
 
+  mattr_accessor :logger
+  self.logger ||= Rails.logger
+
   @@coinuri = {
     'BTC' => URI.parse( Rails.application.secrets.coin_btc_wallet_key ),
     'LTC' => URI.parse( Rails.application.secrets.coin_ltc_wallet_key ),
@@ -106,6 +109,9 @@ private
 
       post_body = { 'method' => method, 'params' => params, 'id' => 'jsonrpc' }.to_json
       resp = JSON.parse( http_post_request(coin_t, post_body) )
+
+      # post_body は出力しなこと。パスフレーズがバレる。
+      logger.info('Coinrpc, com_mthds, resp: ' + resp.to_s)
 
       raise JSONRPCError, resp if resp['error']
       return resp['result']

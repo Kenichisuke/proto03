@@ -35,11 +35,11 @@ class Autotrade
 
       # サービスクラスに切り出す！！！！
 
+    end
+
 =end
 
-  end
-
-  coinrel = CoinRelation.find_by(coin_a_id: coin_a.id, coin_b_id: coin_b.id)
+    coinrel = CoinRelation.find_by(coin_a_id: coin_a.id, coin_b_id: coin_b.id)
 
     avrg = 2580
     lowerlim = avrg - 50
@@ -59,9 +59,6 @@ class Autotrade
     # puts 'avg:' + avrg.to_s
     
     # check order in this site
-
-
-
   end
 
   def self.clearorder
