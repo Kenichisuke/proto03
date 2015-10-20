@@ -8,7 +8,7 @@ gem 'rails', '4.2.4'
 # gem 'sqlite3'
 
 # Use mysql as the database for Active Record
-gem 'mysql2', '~> 0.3.20'
+gem 'mysql2', '~> 0.3.20'  # errorが出たため、その回避とためバージョンを入れた。
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
