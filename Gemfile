@@ -70,7 +70,8 @@ group :development, :test do
   # CLIENT: 1.3.4, SERVER: 1.3.3
   # というメッセージが出たので、指定なしから　1.3.3　に変更した。 
   gem 'rspec-rails'
-  
+  gem 'factory_girl_rails'
+
   gem 'pry-rails'  # rails console(もしくは、rails c)でirbの代わりにpryを使われる
   gem 'pry-doc'    # methodを表示
   gem 'pry-byebug' # デバッグを実施(Ruby 2.0以降で動作する)
@@ -84,11 +85,12 @@ group :development, :test do
 end
 
 group :test do
-  gem 'factory_girl_rails'
-  gem 'selenium-webdriver'
+  gem 'faker'
   gem 'capybara'
   gem 'cucumber-rails', :require => false
-  gem 'database_cleaner', github: 'bmabey/database_cleaner'
+  gem 'database_cleaner' #, github: 'bmabey/database_cleaner'
+  gem 'launchy'
+  gem 'selenium-webdriver'
 end
 
 # bundle exec rake doc:rails generates the API under doc/api.

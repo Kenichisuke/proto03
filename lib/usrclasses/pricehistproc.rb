@@ -39,7 +39,6 @@ class Pricehistproc
     elsif tradecount > 0 then
       time_e = Trade.coins(coin1, coin2).where(flag: Trade.flags[:tr_close] ).order('updated_at ASC').first.updated_at.to_i      
     else
-
       logger.info('No transction yet: ' + coin1.to_s + ':' + coin2.to_s )
       return
     end
@@ -110,6 +109,7 @@ class Pricehistproc
     plotmin = Time.at(((( hr - 47)/ 4 ) * 4 - 1) * 60 * 60).strftime("%Y-%m-%d %H:00")
     plotmax = Time.at(((( hr + 5)/ 4 ) * 4 - 1) * 60 * 60).strftime("%Y-%m-%d %H:00")
     plotylabel = ticker1 + '-' + ticker2 + ' Rate'
+
     filecont = <<EOF
       (function() {
         var plot1;

@@ -14,6 +14,7 @@ class ClosedOrdersController < ApplicationController
     coin1id = @cointypes.first.id
     coin2id = @cointypes.second.id
     @closed_order = ClosedOrder.new(user_id: usrid, coin1: coin1id, coin2: coin2id, pr: 10, tmstr: tmstr, tmend: tmnow)
+#    @step_min = CoinRelation.find_by(coin_a_id: coin1id, coin_b_id: coin2id).step_min
   end
   
   def create
@@ -31,6 +32,11 @@ class ClosedOrdersController < ApplicationController
     end
     if @closed_order.tmstr > @closed_order.tmend then
       flash[ :alert ] = 'Error: Time order (from Start to End) is opposite'
+      render 'new' and return
+    end
+    time_e = Trade.coins(@closed_order.coin1, @closed_order.coin2).where(flag: Trade.flags[:tr_close] ).order('updated_at DESC').first.updated_at
+    if @closed_order.tmstr < time_e then
+      flash[ :alert ] = 'Error: Time start is later than last recored trade'
       render 'new' and return
     end
 

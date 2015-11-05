@@ -17,12 +17,6 @@ GIT
       sass-rails
 
 GIT
-  remote: git://github.com/bmabey/database_cleaner.git
-  revision: b87f00320f8aa0f7e499d183128f05ce29cedc33
-  specs:
-    database_cleaner (1.5.1)
-
-GIT
   remote: git://github.com/ifad/data-confirm-modal.git
   revision: 931cab3b269c6dab301245be2b2d738b243ba169
   specs:
@@ -68,6 +62,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    addressable (2.3.8)
     annotate (2.6.10)
       activerecord (>= 3.2, <= 4.3)
       rake (~> 10.4)
@@ -124,6 +119,7 @@ GEM
       mime-types (>= 1.16, < 3)
       nokogiri (~> 1.5)
       rails (>= 3, < 5)
+    database_cleaner (1.5.1)
     debug_inspector (0.0.2)
     devise (3.5.2)
       bcrypt (~> 3.0)
@@ -140,6 +136,8 @@ GEM
     factory_girl_rails (4.5.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
+    faker (1.5.0)
+      i18n (~> 0.5)
     ffi (1.9.10)
     font-awesome-rails (4.4.0.0)
       railties (>= 3.2, < 5.0)
@@ -175,6 +173,8 @@ GEM
     kaminari (0.16.3)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
+    launchy (2.4.3)
+      addressable (~> 2.3)
     libv8 (3.16.14.11)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
@@ -354,13 +354,15 @@ DEPENDENCIES
   coffee-rails (~> 4.1.0)
   cucumber-rails
   data-confirm-modal!
-  database_cleaner!
+  database_cleaner
   devise
   factory_girl_rails
+  faker
   hirb
   jbuilder (~> 2.0)
   jquery-rails
   kaminari
+  launchy
   mysql2 (~> 0.3.20)
   pry-byebug
   pry-doc
