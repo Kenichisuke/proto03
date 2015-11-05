@@ -320,7 +320,14 @@ class Orderbook
       end
     end
 
-    lang = ['en', 'ja']  
+    lang = ['en', 'ja']
+    step_min = CoinRelation.find_by(coin_a_id: coin1, coin_b_id: coin2).step_min
+    if step_min >= 1 then
+      round_d = 0 
+    else
+      round_d = 1
+    end
+    puts "here", coin1, coin2, step_min, round_d
     for la in lang
       filename = Cointype.find(coin1).ticker + '-' + Cointype.find(coin2).ticker + '_hist_' + la + '.html'
       fl = File.open("./public/plotdata/#{filename}", "w+")
@@ -334,18 +341,26 @@ class Orderbook
         if subss.any? then
           subss.reverse_each do |x|
             fl.puts %Q[<tr>
-              <td><div class="graph"><div class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
-              <td>#{ x[0].round(1) }</td>
-              <td></td>
+              <td><div class="graph"><div class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>]
+            if round_d == 0 then
+              fl.puts %Q[<td>#{ sprintf("%d", x[0].round(0)) }</td>]
+            else
+              fl.puts %Q[<td>#{ sprintf("%.1f", x[0].round(1)) }</td>]
+            end
+            fl.puts %Q[<td></td>
               </tr>]
           end
         end
         if subbs.any? then
           subbs.each do |x|
             fl.puts %Q[<tr>
-              <td></td>
-              <td>#{ x[0].round(1) }</td>            
-              <td><div class="graph"><div class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
+              <td></td>]
+            if round_d == 0 then
+              fl.puts %Q[<td>#{ sprintf("%d", x[0].round(0)) }</td>]
+            else
+              fl.puts %Q[<td>#{ sprintf("%.1f", x[0].round(1)) }</td>]
+            end
+            fl.puts %Q[<td><div class="graph"><div class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
               </tr>]
           end
         end
