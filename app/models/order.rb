@@ -39,16 +39,42 @@ class Order < ActiveRecord::Base
   # scope :coin2ways, -> (coin1, coin2) { where("(coin_a_id = ? AND coin_b_id = ?) OR (coin_a_id = ? AND coin_b_id = ?)",
   #        coin1, coin2, coin2, coin1) }
 
-  validates :user_id, presence:  true
-  validates :coin_a_id, presence:  true
-  validates :coin_b_id, presence:  true  
+  validates :user_id, presence: true
+  validates :coin_a_id, presence: true
+  validates :coin_b_id, presence: true
+  validates :rate, numericality: { greater_than: 0.0 } 
   validates :amt_a, numericality: { greater_than_or_equal_to: 0.0 }
   validates :amt_b, numericality: { greater_than_or_equal_to: 0.0 } 
-  validates :amt_a_org, numericality: { greater_than_or_equal_to: 0.0 }
-  validates :amt_b_org, numericality: { greater_than_or_equal_to: 0.0 } 
-  validates :rate, numericality: { greater_than_or_equal_to: 0.0 } 
+  validates :amt_a_org, numericality: { greater_than: 0.0 }
+  validates :amt_b_org, numericality: { greater_than: 0.0 } 
   validates :flag, presence:  true
+
+
+  # check if inputted amounts are numeric or not on the order
+  # check if inputted amounts are positive or not
+  def valid_prep?
+    flag = true
+    unless self.rate.is_a?(Numeric) then
+      self.errors.add(:rate, I18n.t('errors.messages.not_a_number'))
+      flag = false
+    end
+    unless self.amt_a.is_a?(Numeric) then 
+      self.errors.add(:amt_a, I18n.t('errors.messages.not_a_number'))
+      flag = false
+    end
+    return unless flag
+    if self.rate <= 0.0 then
+      self.errors.add(:rate, I18n.t('errors.messages.order.zero_or_negative'))
+      flag = false
+    end
+    if self.amt_a <= 0.0 then 
+      self.errors.add(:amt_a, I18n.t('errors.messages.order.zero_or_negative'))
+      flag = false
+    end
+    return flag
+  end
 end
+
 
 # 0th bit  0: not finishted, 1: finished
 # 1th bit  0: no execution, 1: 1 or more execution(s)

@@ -33,10 +33,13 @@ class OrdersController < ApplicationController
   end
 
   def create
+
+    # 入力コラムが、レート、数量ともに２つづつあり、セキュリティー上問題がありそう。修正する必要あり。
+
     @order = Order.new(order_params)
     @coin_a = @order.coin_a
     @coin_b = @order.coin_b
-
+    # binding.pry
     if params[:sell] then # sell
       @buysellinfo = "sell"
       @order.buysell = true
@@ -57,69 +60,64 @@ class OrdersController < ApplicationController
 
 
     # check if inputted amounts are numeric or not on the order
-    flag_err = 0
-    unless @order.rate.is_a?(Numeric) then
-      @order.errors.add(:rate, I18n.t('errors.messages.not_a_number'))
-      flag_err += 1
-    end
-    unless @order.amt_a.is_a?(Numeric) then 
-      @order.errors.add(:amt_a, I18n.t('errors.messages.not_a_number'))
-      flag_err += 1
-    end
-    if flag_err >0
-      @lang_link = true
-      render 'common_new'
-      return
-    end
-
     # check if inputted amounts are positive or not
-    flag_err = 0
-    if @order.rate <= 0 then
-      @order.errors.add(:rate, I18n.t('errors.messages.order.zero_or_negative'))
-      flag_err += 1
-  	end
-    if @order.amt_a <= 0 then 
-      @order.errors.add(:amt_a, I18n.t('errors.messages.order.zero_or_negative'))
-      flag_err += 1
-    end
-
-    # TODO  自分のopen order と約定が発生しないかチェック。
-
-
-    if flag_err >0
+    unless @order.valid_prep?
       @lang_link = true
       render 'common_new'
       return
     end
 
+    @order.user_id = current_user.id
     @order.amt_b     = @order.rate * @order.amt_a    
     @order.amt_a_org = @order.amt_a
     @order.amt_b_org = @order.amt_b
-    @order.user_id = current_user.id
     @order.flag = "open_new"  # defined in order.rb
 
-    # check whether buy or sell
-    if @order.buysell then # sell
-      @order.buysell = true
-      @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
-      if @order.amt_a > (@acnt.balance - @acnt.locked_bal) then
-        @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
-        @lang_link = true
-        render 'common_new'
-        return
-      end
-      @acnt.lock_amt(@order.amt_a)
-    else # buy
-      @order.buysell = false
-      @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
-      if @order.amt_b > (@acnt.balance - @acnt.locked_bal) then
-        @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-        @lang_link = true
-        render 'common_new'
-        return
-      end
-      @acnt.lock_amt(@order.amt_b)
+    # check if acccount free balance is bigger than order amount
+    unless valid_acnt_with_order?
+      @lang_link = true
+      render 'common_new'
+      return
     end
+
+    # if @order.buysell then # sell
+    #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
+    #   @acnt.lock_amt(@order.amt_a)
+    #   unless @acnt.valid?
+    #     @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
+    #     @lang_link = true
+    #     render 'common_new'
+    #     return
+    #   end
+    # else # sell
+    #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
+    #   @acnt.lock_amt(@order.amt_b)
+    #   unless @acnt.valid?      
+    #     @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
+    #     @lang_link = true
+    #     render 'common_new'
+    #     return
+    #   end
+    # end
+
+      # if @order.amt_a > (@acnt.balance - @acnt.locked_bal) then
+      #   @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
+      #   @lang_link = true
+      #   render 'common_new'
+      #   return
+      # end
+      # @acnt.lock_amt(@order.amt_a)
+    # else # buy
+    #   # @order.buysell = false
+    #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
+    #   if @order.amt_b > (@acnt.balance - @acnt.locked_bal) then
+    #     @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
+    #     @lang_link = true
+    #     render 'common_new'
+    #     return
+    #   end
+    #   @acnt.lock_amt(@order.amt_b)
+    # end
 
     begin
       save_new_order!
@@ -309,6 +307,47 @@ class OrdersController < ApplicationController
       @path23 = orders_ltc_mona_path
       @path24 = orders_ltc_doge_path
       @path34 = orders_mona_doge_path
+    end
+
+    def valid_acnt_with_order?
+      if @order.buysell
+        @order_coin_id = @order.coin_a_id
+        @acnt_amt = :amt_a
+      else
+        @order_coin_id = @order.coin_b_id
+        @acnt_amt = :amt_b
+      end
+      valid_acnt_with_order_sub?
+      # if @order.buysell then # sell
+      #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
+      #   @acnt.lock_amt(@order.amt_a)
+      #   if @acnt.valid? then
+      #     return true
+      #   else
+      #     @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
+      #     return false
+      #   end
+      # else # sell
+      #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
+      #   @acnt.lock_amt(@order.amt_b)
+      #   if @acnt.valid? then
+      #     return true
+      #   else     
+      #     @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
+      #     return false
+      #   end
+      # end
+    end
+
+    def valid_acnt_with_order_sub?
+      @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order_coin_id)
+      @acnt.lock_amt(@order.send(@acnt_amt))
+      if @acnt.valid? then
+        return true
+      else
+        @order.errors.add(@acnt_amt, I18n.t('errors.messages.order.free_bal_not_enough'))      
+        return false
+      end
     end
 
     def common_index(coin1, coin2)
