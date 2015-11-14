@@ -35,11 +35,10 @@ class OrdersController < ApplicationController
   def create
 
     # 入力コラムが、レート、数量ともに２つづつあり、セキュリティー上問題がありそう。修正する必要あり。
-
+ 
     @order = Order.new(order_params)
     @coin_a = @order.coin_a
     @coin_b = @order.coin_b
-    # binding.pry
     if params[:sell] then # sell
       @buysellinfo = "sell"
       @order.buysell = true
@@ -58,7 +57,6 @@ class OrdersController < ApplicationController
     @japanese_path = url_for(locale: 'ja', controller: :orders, action: action_s, only_path: true)
     @english_path = url_for(locale: 'en', controller: :orders, action: action_s, only_path: true)
 
-
     # check if inputted amounts are numeric or not on the order
     # check if inputted amounts are positive or not
     unless @order.valid_prep?
@@ -74,55 +72,17 @@ class OrdersController < ApplicationController
     @order.flag = "open_new"  # defined in order.rb
 
     # check if acccount free balance is bigger than order amount
-    unless valid_acnt_with_order?
+    order_create = OrderCreate.new(@order)
+    unless order_create.prep_acnt_with_order?
       @lang_link = true
       render 'common_new'
       return
     end
 
-    # if @order.buysell then # sell
-    #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
-    #   @acnt.lock_amt(@order.amt_a)
-    #   unless @acnt.valid?
-    #     @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
-    #     @lang_link = true
-    #     render 'common_new'
-    #     return
-    #   end
-    # else # sell
-    #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
-    #   @acnt.lock_amt(@order.amt_b)
-    #   unless @acnt.valid?      
-    #     @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-    #     @lang_link = true
-    #     render 'common_new'
-    #     return
-    #   end
-    # end
-
-      # if @order.amt_a > (@acnt.balance - @acnt.locked_bal) then
-      #   @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
-      #   @lang_link = true
-      #   render 'common_new'
-      #   return
-      # end
-      # @acnt.lock_amt(@order.amt_a)
-    # else # buy
-    #   # @order.buysell = false
-    #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
-    #   if @order.amt_b > (@acnt.balance - @acnt.locked_bal) then
-    #     @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-    #     @lang_link = true
-    #     render 'common_new'
-    #     return
-    #   end
-    #   @acnt.lock_amt(@order.amt_b)
-    # end
-
     begin
-      save_new_order!
+      order_create.save_new_order_with_acnt!
     rescue => e
-      @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))      
+      @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))    
       @lang_link = true
       render 'common_new'
       return
@@ -211,26 +171,13 @@ class OrdersController < ApplicationController
       redirect_to root_path and return
     end
 
-    update_cancel
-#####
-    # if @order.buysell
-    #   @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_a)
-    #   amt = @order.amt_a
-    # else
-    #   @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_b)
-    #   amt = @order.amt_b
-    # end
-    # @acnt.unlock_amt(amt)
-    # @trade = Trade.new(order_id: @order.id, amt_a: @order.amt_a, amt_b: @order.amt_b, fee: 0, flag: Trade.flags[:tr_cncl] )
-    # flag = ( @order.flag == "open_new") ? Order.flags[:noex_cncl] : Order.flags[:exec_cncl]
-
-    # @order.amt_a = 0
-    # @order.amt_b = 0
-    # @order.flag = flag
-#####
+    order_cancel = OrderCancel.new( @order )
+    unless order_cancel.prep_cancel?
+      # TODO ただし、画面から操作すればここに来ないはず。
+    end
 
     begin
-      save_order_cancellation!
+      order_cancel.save_cancel!
     rescue => e
       flash[ :alert ] = I18n.t('errors.messages.order.try_later')
       # @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))
@@ -240,39 +187,6 @@ class OrdersController < ApplicationController
 
     flash[ :notice ] = I18n.t('order.canceled')
     redirect_back_or(root_path)
-  end
-
-  def update_cancel( myorder = nil )
-    @order ||= myorder
-
-    if @order.buysell then
-      @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_a)
-      amt = @order.amt_a
-    else
-      @acnt = Acnt.find_by(user_id: @order.user.id, cointype_id: @order.coin_b)
-      amt = @order.amt_b
-    end
-    @acnt.unlock_amt(amt)
-    @trade = Trade.new(order_id: @order.id, amt_a: @order.amt_a, amt_b: @order.amt_b, fee: 0, flag: Trade.flags[:tr_cncl] )
-    flag = ( @order.flag == "open_new") ? Order.flags[:noex_cncl] : Order.flags[:exec_cncl]
-
-    @order.amt_a = 0
-    @order.amt_b = 0
-    @order.flag = flag
-  end
-
-  def save_order_cancellation!
-    ActiveRecord::Base.transaction do
-      @order.save!
-      @acnt.save!
-      @trade.save!
-    end
-    logger.info('Cancel order: order, anct and trade saved. Order_id:' + @order.id.to_s + ' acnt_id:' + @acnt.id.to_s + ' trade_id:' + @trade.id.to_s)
-  rescue => e
-    logger.error('Cancel order: order, anct and trade NOT saved.')
-    logger.error('class:' + e.class.to_s)
-    logger.error('msg' + e.message)
-    raise
   end
 
   private
@@ -309,47 +223,6 @@ class OrdersController < ApplicationController
       @path34 = orders_mona_doge_path
     end
 
-    def valid_acnt_with_order?
-      if @order.buysell
-        @order_coin_id = @order.coin_a_id
-        @acnt_amt = :amt_a
-      else
-        @order_coin_id = @order.coin_b_id
-        @acnt_amt = :amt_b
-      end
-      valid_acnt_with_order_sub?
-      # if @order.buysell then # sell
-      #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_a_id)
-      #   @acnt.lock_amt(@order.amt_a)
-      #   if @acnt.valid? then
-      #     return true
-      #   else
-      #     @order.errors.add(:amt_a, I18n.t('errors.messages.order.free_bal_not_enough'))
-      #     return false
-      #   end
-      # else # sell
-      #   @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order.coin_b_id)
-      #   @acnt.lock_amt(@order.amt_b)
-      #   if @acnt.valid? then
-      #     return true
-      #   else     
-      #     @order.errors.add(:amt_b, I18n.t('errors.messages.order.free_bal_not_enough'))      
-      #     return false
-      #   end
-      # end
-    end
-
-    def valid_acnt_with_order_sub?
-      @acnt = Acnt.find_by(user_id: current_user.id, cointype_id: @order_coin_id)
-      @acnt.lock_amt(@order.send(@acnt_amt))
-      if @acnt.valid? then
-        return true
-      else
-        @order.errors.add(@acnt_amt, I18n.t('errors.messages.order.free_bal_not_enough'))      
-        return false
-      end
-    end
-
     def common_index(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
       @orders = current_user.order.coins(@coin_a.id, @coin_b.id).order('created_at DESC', 'rate DESC').page(params[:page]) 
@@ -364,20 +237,6 @@ class OrdersController < ApplicationController
       store_location
       render 'common_index'
     end
-
-    def save_new_order!
-      ActiveRecord::Base.transaction do
-        @order.save!
-        @acnt.save!
-      end
-      logger.info('New order: order and anct saved. Order_id:' + @order.id.to_s + ' acnt_id:' + @acnt.id.to_s)
-    rescue => e
-      logger.error('New order: order and anct NOT saved.')
-      logger.error('class:' + e.class.to_s)
-      logger.error('msg' + e.message)
-      raise
-    end
-
 
     def order_params
       params.require(:order).permit(:coin_a_id, :coin_b_id, :rate, :amt_a)

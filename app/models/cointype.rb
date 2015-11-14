@@ -12,6 +12,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  init_amt   :decimal(32, 10)  default(0.0), not null
+#  daemon     :string(255)
 #
 
 class Cointype < ActiveRecord::Base

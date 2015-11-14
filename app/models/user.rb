@@ -22,7 +22,7 @@
 #  locked_at              :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  user_num               :string(255)
+#  user_num               :string(255)      default("0")
 #  admin                  :boolean          default(FALSE)
 #
 
@@ -34,5 +34,9 @@ class User < ActiveRecord::Base
          :timeoutable, :lockable, :confirmable
   has_many :order
   has_many :acnt
+
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates(:email, presence: true, format: { with: VALID_EMAIL_REGEX}, 
+    	uniqueness: {case_senstive: false} )
 
 end
