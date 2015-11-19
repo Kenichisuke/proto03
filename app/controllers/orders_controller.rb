@@ -154,7 +154,7 @@ class OrdersController < ApplicationController
     rescue => e  # データが存在しない時の処理
       logger.warn('Order controller Update: cannot get order data from DB')
       logger.warn('class:' + e.class.to_s)
-      logger.warn('msg' + e.message)
+      logger.warn('msg:' + e.message)
       flash[ :alert ] = I18n.t('order.only_owner_can_see')
       redirect_to root_path and return
     end

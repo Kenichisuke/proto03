@@ -44,6 +44,8 @@ describe OrderCreate do
             order_create.save_new_order_with_acnt!
           rescue
             expect( Order.count - cnt ).to eq(0)
+          else
+            expect(true).to be false
           end
         end
 
@@ -51,7 +53,10 @@ describe OrderCreate do
           begin
             order_create.save_new_order_with_acnt!
           rescue
+            acnt1.reload
             expect( acnt1.locked_bal ).to eq( 0 )
+          else
+            expect(true).to be false
           end
         end
       end

@@ -63,6 +63,8 @@ describe OrderCancel do
         rescue
           order.reload
           expect(order.flag).to eq("open_new")
+        else
+          expect(true).to be false
         end
       end
 
@@ -70,7 +72,9 @@ describe OrderCancel do
         begin
           order_cancel.save_cancel!
         rescue
-          expect{ acnt1.reload}.not_to change(acnt1, :locked_bal)
+          expect{ acnt1.reload }.not_to change(acnt1, :locked_bal)
+        else
+          expect(true).to be false
         end
       end
 
@@ -80,6 +84,8 @@ describe OrderCancel do
           order_cancel.save_cancel!
         rescue
           expect( Trade.count - cnt ).to eq(0)
+        else
+          expect(true).to be false
         end
       end
     end

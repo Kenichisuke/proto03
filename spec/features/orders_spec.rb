@@ -1,18 +1,20 @@
 require 'rails_helper'
 
+
+
 describe OrdersController do
 
-  coin1 = FactoryGirl.create(:bitcoin)
-  coin2 = FactoryGirl.create(:litecoin)
-  coin3 = FactoryGirl.create(:monacoin)
-  coin4 = FactoryGirl.create(:dogecoin)
+    coin1 = FactoryGirl.create(:bitcoin)
+    coin2 = FactoryGirl.create(:litecoin)
+    coin3 = FactoryGirl.create(:monacoin)
+    coin4 = FactoryGirl.create(:dogecoin)
 
-  FactoryGirl.create(:coin_relation, coin_a: coin1, coin_b: coin2)
-  FactoryGirl.create(:coin_relation, coin_a: coin1, coin_b: coin3)
-  FactoryGirl.create(:coin_relation, coin_a: coin1, coin_b: coin4)
-  FactoryGirl.create(:coin_relation, coin_a: coin2, coin_b: coin3)
-  FactoryGirl.create(:coin_relation, coin_a: coin2, coin_b: coin4)
-  FactoryGirl.create(:coin_relation, coin_a: coin3, coin_b: coin4)
+    FactoryGirl.create(:coin_relation, coin_a: coin1, coin_b: coin2)
+    FactoryGirl.create(:coin_relation, coin_a: coin1, coin_b: coin3)
+    FactoryGirl.create(:coin_relation, coin_a: coin1, coin_b: coin4)
+    FactoryGirl.create(:coin_relation, coin_a: coin2, coin_b: coin3)
+    FactoryGirl.create(:coin_relation, coin_a: coin2, coin_b: coin4)
+    FactoryGirl.create(:coin_relation, coin_a: coin3, coin_b: coin4)
 
   # user = FactoryGirl.create(:user)
   # user2 = FactoryGirl.create(:user)
@@ -37,10 +39,8 @@ describe OrdersController do
 
   describe "visit root_path" do
     before{ visit root_path }
-    it "check page to have <h1>trade</h1> on root page" do
+    it "<h1>trade</h1>, contact on root page" do
       expect(page).to have_selector('h1', text: I18n.t('order.trade')) 
-    end
-    it "check page if link available" do
       expect(page).to have_link( I18n.t('header.contact') ) 
     end
   end

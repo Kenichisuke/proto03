@@ -173,6 +173,7 @@ class Orderbook
     logger.debug('Orderbook.trade2acnt start:')
 
     count = Trade.where(flag: Trade.flags[:tr_new]).count
+    puts "trade new count: #{count}"
     if count > 0 then
       trades = Trade.where(flag: Trade.flags[:tr_new])
 
@@ -186,7 +187,8 @@ class Orderbook
         ActiveRecord::Base.transaction do
 
           # binding.pry
-
+          puts "here"
+          puts tr.flag
           acntA = Acnt.lock.find_by(user_id: usrid, cointype_id: coin1)
           acntB = Acnt.lock.find_by(user_id: usrid, cointype_id: coin2)
           if tr.order.buysell then
@@ -204,11 +206,15 @@ class Orderbook
           acntA.save!
           acntB.save!
           tr.save!
+          # puts 'Order controller Update: cannot get order data from DB'
+          # puts "class:#{e.class}"
+          # puts "msg:#{e.message}"
         end
       end
     end
 
     count = Trade.where(flag: Trade.flags[:tr_diffwip]).count
+    puts "trade diffwip count: #{count}"
     if count > 0 then
 
       trades = Trade.where(flag: Trade.flags[:tr_diffwip])
