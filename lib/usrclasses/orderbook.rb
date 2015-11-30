@@ -18,7 +18,7 @@ class Orderbook
 
     coincomb.each do | c |
       coin_a, coin_b = coin_order(c[0], c[1])
-      makeplot(coin_a.id, coin_b.id)
+      makeplot(coin_a, coin_b)
     end
 
     logger.info('coin-combination: ' + coincomb.to_s)
@@ -32,10 +32,10 @@ class Orderbook
     #check if there are overlaps or not between sell and buy
     sellcount = Order.openor.coins(coin1, coin2).where(buysell: true).count
     buycount = Order.openor.coins(coin1, coin2).where(buysell: false).count
+    if ( sellcount == 0 || buycount == 0 ) then return false end
 
     # binding.pry
 
-    if ( sellcount == 0 || buycount == 0 ) then return false end
     minval = Order.openor.coins(coin1, coin2).where(buysell: true).minimum(:rate)
     maxval = Order.openor.coins(coin1, coin2).where(buysell: false).maximum(:rate)
     if minval > maxval then return false end
@@ -43,7 +43,7 @@ class Orderbook
 
     sells = Order.openor.coins(coin1, coin2).match_order_sell(maxval)
     buys = Order.openor.coins(coin1, coin2).match_order_buy(minval)
-    nsells = sells.count     
+    nsells = sells.count
     nbuys  = buys.count
 
 #    binding.pry
@@ -51,6 +51,8 @@ class Orderbook
     # 付き合わせ
     i = 0
     j = 0
+    last_executed_value = nil
+
     while (i < nsells && j < nbuys)
       if sells[i].rate > buys[j].rate then break end
   
@@ -59,7 +61,6 @@ class Orderbook
       if sells[i].amt_a > buys[j].amt_a then
         
         coinamt_a = buys[j].amt_a
-
         begin
           ActiveRecord::Base.transaction do
             create_trade(sells[i].id, buys[j].id, coin1, coin2, coinamt_a, coinamt_a * sells[i].rate, Trade.flags[:tr_new])
@@ -81,6 +82,7 @@ class Orderbook
           logger.error('cannot save Trades and Orders properly Orders id: ' + sells[i].id.to_s + ':' + buys[j].id.to_s )
           return
         end
+        last_executed_value = buys[j].rate
         j += 1
 
         # binding.pry
@@ -88,7 +90,6 @@ class Orderbook
       elsif sells[i].amt_a < buys[j].amt_a then
 
         coinamt_a = sells[i].amt_a
-
         begin
           ActiveRecord::Base.transaction do
             create_trade(sells[i].id, buys[j].id, coin1, coin2, coinamt_a, sells[i].amt_b, Trade.flags[:tr_new])
@@ -112,6 +113,7 @@ class Orderbook
           return
         end
 
+        last_executed_value = sells[i].rate
         i += 1
         # binding.pry
       else   # sells[i].amt_a == buys[j].amt_a
@@ -136,12 +138,16 @@ class Orderbook
         rescue => e
           # log に書き出すロジック
         end
+
+        last_executed_value = sells[i].rate
         i +=1
         j +=1
         # binding.pry
       end
     end
-
+    coin_r = CoinRelation.find_by(coin_a_id: coin1, coin_b_id: coin2)
+    coin_r.rate_act = last_executed_value
+    coin_r.save
     logger.debug('Orderbook.execute end:' )
   end
 
@@ -173,7 +179,7 @@ class Orderbook
     logger.debug('Orderbook.trade2acnt start:')
 
     count = Trade.where(flag: Trade.flags[:tr_new]).count
-    puts "trade new count: #{count}"
+    # puts "trade new count: #{count}"
     if count > 0 then
       trades = Trade.where(flag: Trade.flags[:tr_new])
 
@@ -187,8 +193,8 @@ class Orderbook
         ActiveRecord::Base.transaction do
 
           # binding.pry
-          puts "here"
-          puts tr.flag
+          # puts "here"
+          # puts tr.flag
           acntA = Acnt.lock.find_by(user_id: usrid, cointype_id: coin1)
           acntB = Acnt.lock.find_by(user_id: usrid, cointype_id: coin2)
           if tr.order.buysell then
@@ -214,7 +220,8 @@ class Orderbook
     end
 
     count = Trade.where(flag: Trade.flags[:tr_diffwip]).count
-    puts "trade diffwip count: #{count}"
+    # puts "trade diffwip count: #{count}"
+
     if count > 0 then
 
       trades = Trade.where(flag: Trade.flags[:tr_diffwip])
@@ -246,128 +253,92 @@ class Orderbook
   end
 
 
-  def self.makeplot(coin1, coin2)  # receive coin_id
+
+
+  def self.makeplot(coin1, coin2)  # receive Cointype objects
     logger.info('Orderbook.makeplot start:' + coin1.to_s + ':' + coin2.to_s )
 
-    subss = []
+
+    coin_r = CoinRelation.find_by(coin_a: coin1, coin_b: coin2)
+    step_min = coin_r.step_min
+    step_half = step_min / 2.0
+    mid = coin_r.rate_act
+
+    return if ( !mid || mid == 0 )
+
+    borders = Order.openor.coins(coin1.id, coin2.id)
+            .where('? <= rate AND rate < ?', mid - step_half, mid + step_half)
+    borders_sell = borders.where(buysell: true).sum(:amt_a)
+    borders_buy  = borders.where(buysell: false).sum(:amt_a)
+
+    if(borders_sell < borders_buy) then
+      arr = Array.new(20) { |idx| (10 - idx) * step_min + mid}
+      border = mid + step_half
+    else
+      arr = Array.new(20) { |idx| ( 9 - idx) * step_min + mid}
+      border = mid - step_half       
+    end
+
     mx = -1
-    ncount = Order.openor.coins(coin1, coin2).where(buysell: true).count
-
-    if ncount > 30 then
-      pr1 = Order.openor.coins(coin1, coin2).where(buysell: true).minimum(:rate)
-      pr2 = Order.openor.coins(coin1, coin2).where(buysell: true).maximum(:rate)
-
-      logger.info('1: pr1: ' + pr1.to_s + '  pr2: ' + pr2.to_s )
-
-      index = 0
-      tmp = ((pr1 * 10).floor/10.0)
-      begin
-        rsubs = Order.openor.coins(coin1, coin2).where(buysell: true).where('? <= rate AND rate < ?', tmp, tmp + 0.1)
-        # binding.pry
-        if rsubs.count > 0 then
-          sum = rsubs.sum(:amt_a)
-          subss << [tmp, sum]
-          index += 1
-          if sum > mx then
-            mx = sum
-          end
-        end
-        tmp += 0.1
-        tmp = tmp.round(1)
-
-      end while (index < 10) && (tmp <= pr2)
-    elsif ncount > 0 then
-      rsubs = Order.openor.coins(coin1, coin2).where(buysell: true).order('rate ASC')
-      if ncount > 10 then ncount = 10 end
-      ncount.times do | i |
-        subss << [ rsubs[i].rate, rsubs[i].amt_a]
-        if rsubs[i].amt_a > mx then
-          mx = rsubs[i].amt_a
+    plotdata = arr.each_with_object([]) do | base, result |
+      buysell = base > border ? true : false
+      sum = Order.openor.coins(coin1, coin2).where(buysell: buysell).
+        where('? <= rate AND rate < ?', base - step_half, base + step_half).sum(:amt_a)
+      if sum > 0 then
+        result << [base, sum, buysell]
+        if sum > mx then
+          mx = sum
         end
       end
     end
 
-    subbs = []
-    ncount = Order.openor.coins(coin1, coin2).where(buysell: false).count
-
-    if ncount > 30 then
-
-      pr1 = Order.openor.coins(coin1, coin2).where(buysell: false).maximum(:rate)
-      pr2 = Order.openor.coins(coin1, coin2).where(buysell: false).minimum(:rate)
-
-      logger.info('2: pr1: ' + pr1.to_s + '  pr2: ' + pr2.to_s )
-
-      index = 0
-      tmp = ((pr1 * 10).ceil/10.0)
-      begin
-        rsubs = Order.openor.coins(coin1, coin2).where(buysell: false).where('? < rate AND rate <= ?', tmp - 0.1, tmp)
-
-        logger.info('rsubs ' + rsubs.count.to_s)
-
-        if rsubs.count > 0 then
-          sum = rsubs.sum(:amt_a)
-          subbs << [tmp, sum]
-          index += 1
-          if sum > mx then
-            mx = sum
-          end
-        end
-        tmp -= 0.1
-        tmp = tmp.round(1)
-      end while (index < 10) && (tmp >= pr2)
-    elsif ncount > 0 then
-      rsubs = Order.openor.coins(coin1, coin2).where(buysell: false).order('rate DESC')
-      if ncount > 10 then ncount = 10 end
-      ncount.times do | i |
-        subbs << [rsubs[i].rate, rsubs[i].amt_a]
-        if rsubs[i].amt_a > mx then
-          mx = rsubs[i].amt_a
-        end
-      end
-    end
+    return if ( mx == -1 )
 
     lang = ['en', 'ja']
-    step_min = CoinRelation.find_by(coin_a_id: coin1, coin_b_id: coin2).step_min
     if step_min >= 1 then
       round_d = 0 
     else
       round_d = 1
     end
-    puts "here", coin1, coin2, step_min, round_d
+    # puts "here", coin1, coin2, step_min, round_d
     for la in lang
       filename = Cointype.find(coin1).ticker + '-' + Cointype.find(coin2).ticker + '_hist_' + la + '.html'
       fl = File.open("./public/plotdata/#{filename}", "w+")
-      if (subss.any? || subbs.any?) then
+      if (plotdata.any?) then
         fl.puts %Q[<table>]
         if la == 'ja' then
           fl.puts %Q[<tr><th width="35%">売注文数量</th><th width="30%">レート</th><th width="35%">買注文数量</th></tr>]
         elsif la == 'en' then
           fl.puts %Q[<tr><th width="35%">Ask size</th><th width="30%">Rate</th><th width="35%">Bit size</th></tr>]
         end
-        if subss.any? then
-          subss.reverse_each do |x|
-            fl.puts %Q[<tr>
-              <td><div class="graph"><div class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>]
-            if round_d == 0 then
-              fl.puts %Q[<td>#{ sprintf("%d", x[0].round(0)) }</td>]
-            else
-              fl.puts %Q[<td>#{ sprintf("%.1f", x[0].round(1)) }</td>]
+        if plotdata.any? {|x| x[2] == true } then
+          plotdata.each do |x|
+            if x[2] then
+              fl.puts %Q[<tr>
+                <td><div class="graph"><div class ="bar1" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>]
+              if round_d == 0 then
+                fl.puts %Q[<td>#{ sprintf("%d", x[0].round(0)) }</td>]
+              else
+                fl.puts %Q[<td>#{ sprintf("%.1f", x[0].round(1)) }</td>]
+              end
+              fl.puts %Q[<td></td>
+                </tr>]
             end
-            fl.puts %Q[<td></td>
-              </tr>]
           end
         end
-        if subbs.any? then
-          subbs.each do |x|
-            fl.puts %Q[<tr>
-              <td></td>]
-            if round_d == 0 then
-              fl.puts %Q[<td>#{ sprintf("%d", x[0].round(0)) }</td>]
-            else
-              fl.puts %Q[<td>#{ sprintf("%.1f", x[0].round(1)) }</td>]
+        if plotdata.any? {|x| x[2] == false } then
+          plotdata.each do |x|
+            if !(x[2]) then
+              fl.puts %Q[<tr>
+                <td></td>]
+              if round_d == 0 then
+                fl.puts %Q[<td>#{ sprintf("%d", x[0].round(0)) }</td>]
+              else
+                fl.puts %Q[<td>#{ sprintf("%.1f", x[0].round(1)) }</td>]
+              end
+              fl.puts %Q[<td><div class="graph"><div class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
+                </tr>]
             end
-            fl.puts %Q[<td><div class="graph"><div class ="bar2" style="width:#{(x[1] * 100 / mx).floor}%"></div><p>#{x[1]}</p></div></td>
-              </tr>]
           end
         end
         fl.puts %Q[</table>]

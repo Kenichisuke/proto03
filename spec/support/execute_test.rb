@@ -7,19 +7,36 @@ class ExecuteTest
     @fileindex = File.open("spec/factories/orderbook_data.txt", "r")
   end
 
+  def find_no( no )
+    @fileindex.each_line do | line |
+      com = line.strip.downcase
+      if com[0..1] == "no" then
+        puts line
+        dummy, data_no = com.split
+        if data_no == no.to_s then
+          return true
+        end
+      end
+    end
+    # @fileindex.close
+    return false
+  end
+
   def read_data_create_orders
     @fileindex.each_line do | line |
     	com = line.strip.downcase
+      # binding.pry
       if com.include?("acnts_init") or com.include?("orders_init") then
         @mode = com
         # puts @mode
       elsif com == "end" then
+        @mode = com        
         @fileindex.close
         # puts "User:#{User.count}, Acnt: #{Acnt.count}, Order: #{Order.count}, Trade:#{Trade.count}"
-        return 
-      elsif com.chr == "#" || com == '¥n' then
+        return
+      elsif com.chr == "#" || com == '¥n'  || com[0..1] == "no" then
         # do nothing
-      elsif com == "acnts_results" || com == "orders_results" || com == "next" then
+      elsif com == "acnts_results" || com == "orders_results" then
         @mode = com        
         return
       else
@@ -37,8 +54,6 @@ class ExecuteTest
             amt_a: amt_a, amt_a_org: amt_a_org,
             amt_b: amt_b, amt_b_org: amt_b_org, rate: rate, 
             buysell: buysell, flag: flag.to_sym)
-        when "next" then
-          return
         end
       end
     end
@@ -48,15 +63,20 @@ class ExecuteTest
     check = true
     @fileindex.each_line do | line |
       com = line.strip.downcase
+      # puts line
+      # puts com
+      # binding.pry
       if com.include?("acnts_results") or com.include?("orders_results") then
         @mode = com
       elsif com == "end" then
+        @mode = com
         @fileindex.close
         return check
-      elsif com.chr == "#" || com == '¥n' then
+      elsif com.chr == "#" || com == '¥n' || com[0..1] == "no" then
         # do nothing
-      elsif com == "acnts_init" || com == "orders_init" || com == "next" then
+      elsif com == "acnts_init" || com == "orders_init" then
         @mode = com
+        # puts "I am #{@mode}"
         return check
       else
         case @mode
@@ -65,6 +85,7 @@ class ExecuteTest
           acnts = Acnt.where(user: user_return(user_tmp), cointype: coin_return(coin_tmp), 
             balance: bal, locked_bal: locked_bal)
           if acnts.count != 1 then
+            # binding.pry
             check = false
             p line
             p "acnts",  acnts.count
@@ -81,6 +102,7 @@ class ExecuteTest
             rate: rate, 
             buysell: tf, flag: flag)
           if ords.count == 0 then
+            # binding.pry
             check = false
             p line.strip
             p "orders: " + ords.count.to_s
@@ -90,13 +112,20 @@ class ExecuteTest
             p "amt_a: " + amt_a
             p "amt_a_org: " + amt_a_org
           end
-        when "next" then
-          return
         end
       end
     end
     return check
   end
+
+  # def continue?
+  #   puts "continue called. mode #{@mode}"
+  #   if @mode == "end" then
+  #     return false
+  #   else
+  #     return true
+  #   end
+  # end
 
   def show_data
     lst = User.all
@@ -118,7 +147,7 @@ class ExecuteTest
     lst = Order.where(coin_a: @coin1, coin_b: @coin2).openor.order(rate: :DESC)
     lst.reload
     lst.each do | ord |
-      puts "id:#{ord.id} user:#{ord.user_id} buysell:#{ord.buysell} rate:#{ord.rate} amt_a:#{ord.amt_a} amt_b:#{ord.amt_b} amt_a_org:#{ord.amt_a_org} amt_b_org:#{ord.amt_b_org} flag:#{ord.flag}"
+      puts "id:#{ord.id} user:#{ord.user_id} buysell:#{ord.buysell} rate:#{ord.rate} amt_a_org:#{ord.amt_a_org}  amt_a:#{ord.amt_a} amt_b_org:#{ord.amt_b_org} amt_b:#{ord.amt_b} flag:#{ord.flag}"
     end
 
     puts "closed"
@@ -126,7 +155,7 @@ class ExecuteTest
     lst = Order.where(coin_a: @coin1, coin_b: @coin2).where('flag > 8').order(rate: :DESC)
     lst.reload
     lst.each do | ord |
-      puts "id:#{ord.id} user:#{ord.user_id} buysell:#{ord.buysell} rate:#{ord.rate} amt_a:#{ord.amt_a} amt_b:#{ord.amt_b} amt_a_org:#{ord.amt_a_org} amt_b_org:#{ord.amt_b_org} flag:#{ord.flag}"
+      puts "id:#{ord.id} user:#{ord.user_id} buysell:#{ord.buysell} rate:#{ord.rate} amt_a_org:#{ord.amt_a_org}  amt_a:#{ord.amt_a} amt_b_org:#{ord.amt_b_org} amt_b:#{ord.amt_b} flag:#{ord.flag}"
     end
 
     puts "Trade: #{Trade.count}"
@@ -146,6 +175,8 @@ class ExecuteTest
         return User.second
       elsif user == "3" then
         return User.third
+      elsif user == "4" then
+        return User.fourth
       else
         p user
         raise "invalid user alias number! #{user}"
