@@ -1,5 +1,6 @@
 require 'spec_helper'
 # require 'net/http'
+# moved to spec/features/orders_spec.rb
 
 describe OrdersController do
 
@@ -16,6 +17,10 @@ describe OrdersController do
   FactoryGirl.create(:coin_relation, coin_a: coin3, coin_b: coin4)
 
   user = FactoryGirl.create(:user)
+  user2 = FactoryGirl.create(:user)
+  acnt2 = user2.acnt.find_by(cointype_id: coin2.id)
+  acnt2.locked_bal = 50
+  acnt2.save
 
   describe "check setting" do
     it "No. of cointype" do
@@ -125,5 +130,33 @@ describe OrdersController do
       end 
     end
   end
-end
 
+  describe "login with user2 (locked_bal=50, free_bal=50)" do 
+    before {
+      visit new_user_session_path
+      fill_in "メールアドレス", with: user2.email
+      fill_in "パスワード", with: user2.password
+      click_button "ログイン"
+    }
+    describe "create order which exceed free_bal" do
+      before {
+        fill_in "レート", with: 10
+        fill_in "数量", with: 6
+      }
+      it "check order count not change" do
+        expect{ click_button "「BTC買い/LTC売り」を注文する" }
+          .not_to change(Order, :count)
+      end
+    end
+    describe "create order which exceed free_bal" do
+      before{
+        fill_in "レート", with: 10
+        fill_in "数量", with: 6
+        click_button "「BTC買い/LTC売り」を注文する"
+      }
+      it "check pageto  have error message on order" do
+        expect(page).to have_content(I18n.t('errors.messages.order.free_bal_not_enough'))
+      end
+    end
+  end
+end

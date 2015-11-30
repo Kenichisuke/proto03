@@ -60,6 +60,10 @@ class Acnt < ActiveRecord::Base
     self.locked_bal -= amt
   end
 
+  def self.find_user_coint(user_id, coin_t)
+    Acnt.find_by(user: user_id, cointype: coin_t2i(coin_t))
+  end
+
   private
     def balance_tobe_bigger_than_locked_bal
       if locked_bal > balance then

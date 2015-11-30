@@ -25,7 +25,7 @@ class AdminsController < ApplicationController
     coincomb = Cointype.tickercomb
     coincomb.each do | c |
       coin_a, coin_b = coin_order(c[0], c[1])
-      Orderbook.makeplot(coin_a.id, coin_b.id)
+      Orderbook.makeplot(coin_a, coin_b)
     end
     flash[:notice] = "orderbok_plot done"    
     redirect_back_or(root_path)

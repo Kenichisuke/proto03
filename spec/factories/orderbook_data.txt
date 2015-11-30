@@ -1,0 +1,329 @@
+# user
+# 1:admin
+# 2:user1
+# 3:user2
+# 4:user3
+#
+# acnts
+# user, coin(1,2), balance, locked_bal
+#
+# books
+# user, buysell, rate, amt_a_org, amt_a, flag
+#
+# trades
+# user, amt_a, amt_b
+#
+# 注意
+# true/false を文字列として渡していると、
+# 真偽値とみなされないことがある。
+# flag を文字列で渡すと、動かないことがある。
+
+No 10
+# 10th data (11/20)
+acnts_init
+1 1    10   0
+1  2  100   0
+2 1    10   5
+2  2  100   0
+3 1    10   0
+3  2  100  38
+orders_init
+2 true  12  1    1  open_new
+2 true  11  1    1  open_new
+2 true  10  1    1  open_new
+2 true   9  2    2  open_new
+3 false 11  1    1  open_new
+3 false 10  1    1  open_new
+3 false  9  1    1  open_new
+3 false  8  1    1  open_new
+acnts_results
+1 1    10.002   0
+1  2  100.018   0
+2 1     8       3
+2  2  117.982   0
+3 1    11.998   0
+3  2   79      17
+orders_results
+2 true  12  1    1   0
+2 true  11  1    1   0
+2 true  10  1    1   0
+2 true   9  2    0  15
+3 false 11  1    0  15
+3 false 10  1    0  15
+3 false  9  1    1   0
+3 false  8  1    1   0
+end
+
+
+No 9
+# 9th data (11/20)
+acnts_init
+1 1    10   0
+1  2  100   0
+2 1    10   4
+2  2  100   0
+3 1    10   0
+3  2  100  38
+orders_init
+2 true  12  1    1  open_new
+2 true  11  1    1  open_new
+2 true  10  1    1  open_new
+2 true   9  1    1  open_new
+3 false 11  1    1  open_new
+3 false 10  1    1  open_new
+3 false  9  1    1  open_new
+3 false  8  1    1  open_new
+acnts_results
+1 1    10.002   0
+1  2  100.019   0
+2 1     8       2
+2  2  118.981   0
+3 1    11.998   0
+3  2   79      17
+orders_results
+2 true  12  1    1   0
+2 true  11  1    1   0
+2 true  10  1    0  15
+2 true   9  1    0  15
+3 false 11  1    0  15
+3 false 10  1    0  15
+3 false  9  1    1   0
+3 false  8  1    1   0
+end
+
+No 8
+# 8th data (11/20)
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  4
+2  2  100  0
+3 1    10  0
+3  2  100 42
+orders_init
+2 true  13  1    1  open_new
+2 true  12  1    1  open_new
+2 true  11  1    1  open_new
+2 true  10  1    1  open_new
+3 false 12  1    1  open_new
+3 false 11  1    1  open_new
+3 false 10  1    1  open_new
+3 false  9  1    1  open_new
+acnts_results
+1 1    10.002   0
+1  2  100.021   0
+2 1     8       2
+2  2  120.979   0
+3 1    11.998   0
+3  2   77      19
+orders_results
+2 true  13  1    1   0
+2 true  12  1    1   0
+2 true  11  1    0  15
+2 true  10  1    0  15
+3 false 12  1    0  15
+3 false 11  1    0  15
+3 false 10  1    1   0
+3 false  9  1    1   0
+end
+
+No 7
+# 7th data (11/20)
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  3
+2  2  100  0
+3 1    10  0
+3  2  100 16.5
+orders_init
+2 true  12  1    1  open_new
+2 true  11  1    1  open_new
+2 true  10  1    1  open_new
+3 false 11  1.5  1.5  open_new
+acnts_results
+1 1    10.0015  0
+1  2  100.0155  0
+2 1     8.5     1.5
+2  2  115.4845  0
+3 1    11.4985  0
+3  2   83.5     0
+orders_results
+2 true  12  1    1    0
+2 true  11  1    0.5  2
+2 true  10  1    0   15
+3 false 11  1.5  0   15
+end
+
+No 6
+# 6th data (11/20)
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  3
+2  2  100  0
+3 1    10  0
+3  2  100 22
+orders_init
+2 true  12  1  1  open_new
+2 true  11  1  1  open_new
+2 true  10  1  1  open_new
+3 false 11  2  2  open_new
+acnts_results
+1 1    10.002  0
+1  2  100.021  0
+2 1     8      1
+2  2  120.979  0
+3 1    11.998  0
+3  2   78      0
+orders_results
+2 true  12  1  1   0
+2 true  11  1  0  15
+2 true  10  1  0  15
+3 false 11  2  0  15
+end
+
+No 5
+# 5th data (11/20)
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  4
+2  2  100  0
+3 1    10  0
+3  2  100 10
+orders_init
+2 true  12  1  1  open_new
+2 true  11  1  1  open_new
+2 true  10  2  2  open_new
+3 false 10  1  1  open_new
+acnts_results
+1 1    10.001  0
+1  2  100.01   0
+2 1     9      3
+2  2  109.99   0
+3 1    10.999  0
+3  2   90      0
+orders_results
+2 true  12  1  1   0
+2 true  11  1  1   0
+2 true  10  2  1   2
+3 false 10  1  0  15
+end
+
+No 4
+# 4th (11/19)  ちょっと変だが、この様になる。
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  3
+2  2  100  0
+3 1    10  0
+3  2  100 10
+orders_init
+2 true  12  1  1  open_new
+2 true  11  1  1  open_new
+2 true  10  2  1  open_per
+3 false 10  1  1  open_new
+acnts_results
+1 1    10.001  0
+1  2  100.01   0
+2 1     9      2
+2  2  109.99   0
+3 1    10.999  0
+3  2   90      0
+orders_results
+2 true  12  1  1   0
+2 true  11  1  1   0
+2 true  10  2  0  15
+3 false 10  1  0  15
+end
+
+No 3
+# 3rd (11/19)  ちょっと変だが、この様になる。
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  3
+2  2  100  0
+3 1    10  0
+3  2  100 21
+orders_init
+2 true  12  1  1  open_new
+2 true  11  1  1  open_new
+2 true  10  1  1  open_new
+3 false 11  1  1  open_new
+3 false 10  1  1  open_new
+acnts_results
+1 1    10.001  0
+1  2  100.01   0
+2 1     9      2
+2  2  109.99   0
+3 1    10.999  0
+3  2   89     10
+orders_results
+2 true  12  1  1   0
+2 true  11  1  1   0
+2 true  10  1  0  15
+3 false 11  1  0  15
+3 false 10  1  1   0
+end
+
+
+No 2
+# 2nd (11/19)  この様にはならない。
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  3
+2  2  100  0
+3 1    10  0
+3  2  100 21
+orders_init
+2 true  12  1  1  open_new
+2 true  11  1  1  open_new
+2 true  10  1  1  open_new
+3 false 11  1  1  open_new
+3 false 10  1  1  open_new
+acnts_results
+1 1    10.002  0
+1  2  100.021  0
+2 1     8      1
+2  2  120.979  0
+3 1    11.998  0
+3  2   79      0
+orders_results
+2 true  12  1  1  0
+2 true  11  1  0  15
+2 true  10  1  0  15
+3 false 11  1  0  15
+3 false 10  1  0  15
+end
+
+No 1
+# 1st data (11/19)
+acnts_init
+1 1    10  0
+1  2  100  0
+2 1    10  3
+2  2  100  0
+3 1    10  0
+3  2  100 10
+orders_init
+2 true  12  1  1  open_new
+2 true  11  1  1  open_new
+2 true  10  1  1  open_new
+3 false 10  1  1  open_new
+acnts_results
+1 1    10.001  0
+1  2  100.01   0
+2 1     9      2
+2  2  109.99   0
+3 1    10.999  0
+3  2   90      0
+orders_results
+2 true  12  1  1  0
+2 true  11  1  1  0
+2 true  10  1  0  15
+3 false 10  1  0  15
+end
