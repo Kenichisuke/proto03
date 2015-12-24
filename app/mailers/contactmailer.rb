@@ -29,6 +29,11 @@ class Contactmailer < ApplicationMailer
     mail to: "bchange.sup@gmail.com", subject: "Walletの異常です。"
   end
 
+  # depth のデータがおかしい。自分へ。
+  def error_depth_email(inquiry)
+    @inquiry = inquiry
+    mail to: "bchange.sup@gmail.com", subject: "depth dataの異常です。"
+  end
 
 
 end

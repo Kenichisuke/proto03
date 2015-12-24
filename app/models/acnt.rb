@@ -19,7 +19,7 @@ class Acnt < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :cointype
-  has_many :coinio
+  has_many :coinios
 
   validates :user_id, presence: true, uniqueness: { scope: :cointype_id }
   validates :cointype_id, presence: true  
@@ -56,12 +56,24 @@ class Acnt < ActiveRecord::Base
     self.locked_bal += amt
   end
 
+  def lock_amt?(amt)
+    ((self.locked_bal + amt) <= self.balance) ? true : false 
+  end
+
   def unlock_amt(amt)
     self.locked_bal -= amt
   end
 
+  def unlock_amt?(amt)
+    ((self.locked_bal - amt) > 0) ? true : false 
+  end
+
   def self.find_user_coint(user_id, coin_t)
     Acnt.find_by(user: user_id, cointype: coin_t2i(coin_t))
+  end
+
+  def self.find_user_cr_buysell(user_id, cr, buysell)
+    Acnt.find_by(user: user_id, cointype: (buysell ? cr.coin_a : cr.coin_b) )
   end
 
   private

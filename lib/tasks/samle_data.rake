@@ -3,10 +3,99 @@ namespace :db do
   task populate: :environment do
 #    make_cointypes
 #    make_users
-    make_open_orders
-    make_close_orders
+    # make_open_orders
+    # make_close_orders
     # make_coinios
+    make_autotrade
+    # delete_order_trade_prhist_depth
   end
+end
+
+def delete_order_trade_prhist_depth
+  Depth.all.delete_all
+  PriceHist.all.delete_all
+  Trade.all.delete_all
+  Order.all.delete_all
+  acnts = Acnt.all
+  acnts.each do | ac |
+    ac.update(locked_bal: 0)
+  end
+end
+
+def make_autotrade
+  Autotrade.create(user_id: 6,
+                   coin_relation_id: 1,
+                   portion: 0.2,
+                   trig: 1,
+                   range: 3,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 6,
+                   coin_relation_id: 2,
+                   portion: 0.2,
+                   trig: 40,
+                   range: 120,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 6,
+                   coin_relation_id: 3,
+                   portion: 0.2,
+                   trig: 20_000,
+                   range: 60_000,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 6,
+                   coin_relation_id: 4,
+                   portion: 0.2,
+                   trig: 0.4,
+                   range: 1.2,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 6,
+                   coin_relation_id: 5,
+                   portion: 0.2,
+                   trig: 200,
+                   range: 600,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 6,
+                   coin_relation_id: 6,
+                   portion: 0.2,
+                   trig: 4,
+                   range: 12,
+                   rate_ref: 0)
+
+  Autotrade.create(user_id: 7,
+                   coin_relation_id: 1,
+                   portion: 0.25,
+                   trig: 1.5,
+                   range: 4,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 7,
+                   coin_relation_id: 2,
+                   portion: 0.25,
+                   trig: 60,
+                   range: 160,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 7,
+                   coin_relation_id: 3,
+                   portion: 0.25,
+                   trig: 30_000,
+                   range: 80_000,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 7,
+                   coin_relation_id: 4,
+                   portion: 0.25,
+                   trig: 0.6,
+                   range: 1.6,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 7,
+                   coin_relation_id: 5,
+                   portion: 0.25,
+                   trig: 300,
+                   range: 800,
+                   rate_ref: 0)
+  Autotrade.create(user_id: 7,
+                   coin_relation_id: 6,
+                   portion: 0.25,
+                   trig: 6,
+                   range: 16,
+                   rate_ref: 0)
 end
 
 def make_cointypes

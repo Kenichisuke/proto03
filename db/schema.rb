@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151018043309) do
+ActiveRecord::Schema.define(version: 20151224004731) do
 
   create_table "acnts", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -43,14 +43,33 @@ ActiveRecord::Schema.define(version: 20151018043309) do
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
+  create_table "autotrades", force: :cascade do |t|
+    t.integer  "user_id",          limit: 4
+    t.integer  "coin_relation_id", limit: 4
+    t.float    "portion",          limit: 24
+    t.float    "trig",             limit: 24
+    t.float    "range",            limit: 24
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.float    "rate_ref",         limit: 24
+  end
+
+  add_index "autotrades", ["coin_relation_id"], name: "index_autotrades_on_coin_relation_id", using: :btree
+  add_index "autotrades", ["user_id", "coin_relation_id"], name: "index_autotrades_on_user_id_and_coin_relation_id", unique: true, using: :btree
+  add_index "autotrades", ["user_id"], name: "index_autotrades_on_user_id", using: :btree
+
   create_table "coin_relations", force: :cascade do |t|
-    t.integer  "coin_a_id",  limit: 4
-    t.integer  "coin_b_id",  limit: 4
-    t.decimal  "step_min",             precision: 32, scale: 8, default: 0.0, null: false
-    t.decimal  "rate_act",             precision: 32, scale: 8, default: 0.0, null: false
-    t.decimal  "rate_ref",             precision: 32, scale: 8, default: 0.0, null: false
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.integer  "coin_a_id",        limit: 4
+    t.integer  "coin_b_id",        limit: 4
+    t.decimal  "step_min",                   precision: 32, scale: 8, default: 0.0, null: false
+    t.decimal  "rate_act",                   precision: 32, scale: 8, default: 0.0, null: false
+    t.datetime "created_at",                                                        null: false
+    t.datetime "updated_at",                                                        null: false
+    t.date     "depth_at"
+    t.datetime "depth_fullupdate"
+    t.decimal  "depth_upper",                precision: 32, scale: 8, default: 0.0
+    t.decimal  "depth_lower",                precision: 32, scale: 8, default: 0.0
+    t.decimal  "lot_min",                    precision: 32, scale: 8, default: 0.0
   end
 
   add_index "coin_relations", ["coin_a_id", "coin_b_id"], name: "index_coin_relations_on_coin_a_id_and_coin_b_id", unique: true, using: :btree
@@ -88,6 +107,15 @@ ActiveRecord::Schema.define(version: 20151018043309) do
   end
 
   add_index "cointypes", ["ticker"], name: "index_cointypes_on_ticker", unique: true, using: :btree
+
+  create_table "depths", force: :cascade do |t|
+    t.integer  "coin_relation_id", limit: 4
+    t.float    "rate",             limit: 24
+    t.float    "amt",              limit: 24
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "buysell"
+  end
 
   create_table "orders", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
@@ -163,6 +191,7 @@ ActiveRecord::Schema.define(version: 20151018043309) do
     t.datetime "updated_at",                                         null: false
     t.string   "user_num",               limit: 255, default: "0"
     t.boolean  "admin",                              default: false
+    t.boolean  "autotrader",                         default: false
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -170,4 +199,6 @@ ActiveRecord::Schema.define(version: 20151018043309) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["unlock_token"], name: "index_users_on_unlock_token", unique: true, using: :btree
 
+  add_foreign_key "autotrades", "coin_relations"
+  add_foreign_key "autotrades", "users"
 end

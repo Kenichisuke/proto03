@@ -1,0 +1,51 @@
+# user
+# 1:admin
+# 2:user1
+# 3:user2
+# 4:user3
+#
+# acnts
+# user, coin(1,2), balance, locked_bal
+#
+# books
+# user, buysell, rate, amt_a_org, amt_a, flag
+#
+# trades
+# user, amt_a, amt_b
+#
+# 注意
+# true/false を文字列として渡していると、
+# 真偽値とみなされないことがある。
+# flag を文字列で渡すと、動かないことがある。
+
+
+
+No 2
+# 2st data (12/3)
+acnts_init
+1 1      10    0
+1  2   1000    0
+orders_init
+acnts_results
+orders_results
+end
+
+No 1
+# 1st data (12/2)
+acnts_init
+1 1      10    5
+1  2   1000  485
+orders_init
+1 true  104  1  1  open_new
+1 true  103  1  1  open_new
+1 true  102  1  1  open_new
+1 true  101  1  1  open_new
+1 true  100  1  1  open_new
+1 false  99  1  1  open_new
+1 false  98  1  1  open_new
+1 false  97  1  1  open_new
+1 false  96  1  1  open_new
+1 false  95  1  1  open_new
+acnts_results
+orders_results
+end

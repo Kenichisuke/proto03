@@ -32,8 +32,9 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
          :timeoutable, :lockable, :confirmable
-  has_many :order
-  has_many :acnt
+  has_many :orders
+  has_many :acnts
+  has_many :autotrades
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates(:email, presence: true, format: { with: VALID_EMAIL_REGEX},

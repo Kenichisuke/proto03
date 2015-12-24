@@ -121,6 +121,7 @@ Rails.application.routes.draw do
   get  'admins/precheck_service', format: false
   get  'admins/orderbook_exec', format: false
   get  'admins/orderbook_trade2acnt', format: false
+  get  'admins/orderbook_depth', format: false  
   get  'admins/orderbook_plot', format: false
   get  'admins/orderbook_total', format: false
   get  'admins/pricehist_exec', format: false
@@ -144,7 +145,7 @@ Rails.application.routes.draw do
 
   resource :open_orders, only: [:new, :create], format: false
 
-  get  'admins/autotrade_checkweb', format: false
+  get  'admins/book_make_control', format: false
 
   match '/:locale' => 'orders#btc_ltc', via: [ :get ], format: false
 
