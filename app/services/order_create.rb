@@ -23,7 +23,6 @@ class OrderCreate
 
   def check_order?
     flag = true
-    puts "check lot_min: #{@cr.lot_check?(@order.amt_a)}"
     unless @cr.lot_check?(@order.amt_a) then
       @order.errors.add(:amt_a, I18n.t('errors.messages.order.lot_min', lot_min: @cr.lot_min))
       flag = false
