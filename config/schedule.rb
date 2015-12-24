@@ -14,7 +14,7 @@
 # end
 #
 
-every 2.minutes do 
+every 1.minutes do 
 #   # orderbook を約定させ、trade をacntに書き込み、orderbook の表示を作る。 
 #   runner "Orderbook.totalprocess"
   runner "BookControl.totalprocess"
@@ -25,10 +25,10 @@ every 11.minutes do
   runner "Pricehistproc.totalprocess"
 end
 
-# every 7.minutes do 
+every 7.minutes do 
 #   # Walletをチェックし、AcntをUpdateする。
-#   runner "Walletcheck.totalprocess"
-# end
+  runner "Walletcheck.totalprocess"
+end
 
 # every 3.minutes do 
 #   # Zaif 　Monacoin の価格をチェックし、追いかける。
