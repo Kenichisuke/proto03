@@ -41,13 +41,20 @@ class OrdersController < ApplicationController
     @coin_b = @order.coin_b
     if params[:sell] then # sell
       @buysellinfo = "sell"
-      @order.buysell = true
+      buysell = true
+      # @order.buysell = true
     elsif params[:buy] then # buy
       @buysellinfo = "buy"
-      @order.buysell = false
+      buysell = false
+      # @order.buysell = false
     else
-      raise StandardError, 'neither buy nor sell !'
-      # TODO あとでちゃんと書く
+      # raise StandardError, 'neither buy nor sell !'
+      # 起こらないはず。
+      # もう少し良く考える必要があるだろう。
+      @order.errors.add(:base, I18n.t('errors.messages.order.try_later'))    
+      @lang_link = true
+      render 'common_new'
+      return
     end
 
     # エラーでrenderするための用意！
@@ -57,23 +64,16 @@ class OrdersController < ApplicationController
     @japanese_path = url_for(locale: 'ja', controller: :orders, action: action_s, only_path: true)
     @english_path = url_for(locale: 'en', controller: :orders, action: action_s, only_path: true)
 
-    # check if inputted amounts are numeric or not on the order
-    # check if inputted amounts are positive or not
-    unless @order.valid_prep?
-      @lang_link = true
-      render 'common_new'
-      return
-    end
+    # orderを作る
+    amt = ( buysell ? @order.amt_a : @order.rate * @order.amt_a) 
+    cr = CoinRelation.find_by(coin_a:  @order.coin_a, coin_b: @order.coin_b)
+    order_create = OrderCreate.new(user: current_user, coin_relation: cr, 
+      rate: @order.rate, buysell: buysell, amt: amt)
 
-    @order.user_id = current_user.id
-    @order.amt_b     = @order.rate * @order.amt_a    
-    @order.amt_a_org = @order.amt_a
-    @order.amt_b_org = @order.amt_b
-    @order.flag = "open_new"  # defined in order.rb
-
+    # check order foramt is or not
     # check if acccount free balance is bigger than order amount
-    order_create = OrderCreate.new(@order)
-    unless order_create.prep_acnt_with_order?
+    unless order_create.check_order? then
+      @order = order_create.get_order # エラーメッセージのために @order を取ってくる。
       @lang_link = true
       render 'common_new'
       return
@@ -144,9 +144,8 @@ class OrdersController < ApplicationController
       redirect_to root_path
     end
 
-    @trades = @order.trade.non_diff.page(params[:page])
+    @trades = @order.trades.non_diff.page(params[:page])
   end
-
 
   def update  # cancellation
     begin
@@ -212,7 +211,7 @@ class OrdersController < ApplicationController
         @coin_a_freebal = a.balance - a.locked_bal
         @coin_b_bal = b.balance
         @coin_b_freebal = b.balance - b.locked_bal
-        @op_orders = current_user.order.openor.coins(@coin_a.id, @coin_b.id)
+        @op_orders = current_user.orders.openor.coins(@coin_a.id, @coin_b.id)
                     .order('created_at DESC', 'rate DESC').page(params[:page]).per(5)
       end
       @path12 = orders_btc_ltc_path
@@ -225,7 +224,7 @@ class OrdersController < ApplicationController
 
     def common_index(coin1, coin2)
       @coin_a, @coin_b = coin_order(coin1, coin2)
-      @orders = current_user.order.coins(@coin_a.id, @coin_b.id).order('created_at DESC', 'rate DESC').page(params[:page]) 
+      @orders = current_user.orders.coins(@coin_a.id, @coin_b.id).order('created_at DESC', 'rate DESC').page(params[:page]) 
       @headinfo = "order_list"
       @tabinfo = @coin_a.ticker + '-' + @coin_b.ticker
       @path12 = orders_index_btc_ltc_path

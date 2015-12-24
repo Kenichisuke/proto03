@@ -248,6 +248,8 @@ en:
         zero_or_negative: must be positive
         free_bal_not_enough: of free balance is not enough
         try_later: The request failed. Please try it later.
+        step_min: is not proper. Unit of rate is %{step_min}.
+        lot_min: is not proper. Plese input a number more than or equal to %{lot_min}.
     template:
       body: 'There were problems with the following fields:'
       header:

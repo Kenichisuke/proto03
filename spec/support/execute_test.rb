@@ -4,7 +4,8 @@ class ExecuteTest
     @coin1 = coin1
     @coin2 = coin2
     @mode = "acnt_init"
-    @fileindex = File.open("spec/factories/orderbook_data.txt", "r")
+    # @fileindex = File.open("spec/factories/orderbook_data.txt", "r")
+    @fileindex = File.open("spec/factories/book_make_data.txt", "r")
   end
 
   def find_no( no )
@@ -164,8 +165,12 @@ class ExecuteTest
     lst.each do | trd |
       puts "order_id:#{trd.order_id} amt_a:#{trd.amt_a} amt_b:#{trd.amt_b} flag:#{trd.flag}"
     end
-
   end
+
+  def file_close
+      @fileindex.close
+  end
+
 
   private
     def user_return(user)

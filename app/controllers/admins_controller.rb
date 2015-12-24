@@ -6,10 +6,9 @@ class AdminsController < ApplicationController
   before_action :admin_user
 
   def orderbook_exec  # orderを付き合わせて約定し、Tradeを作る。
-    coincomb = Cointype.tickercomb
-    coincomb.each do | c |
-      coin_a, coin_b = coin_order(c[0], c[1])
-      Orderbook.execute(coin_a.id, coin_b.id)
+    coin_relations = CoinRelation.all
+    coin_relations.each do | cr |
+      Orderbook.execute(cr)
     end
     flash[:notice] = "orderbok_exec done"
     redirect_back_or(root_path)
@@ -21,11 +20,19 @@ class AdminsController < ApplicationController
     redirect_back_or(root_path)
   end
 
+  def orderbook_depth  # open order の情報を元に気配ねの横ヒストグラムを作る。
+    coin_relations = CoinRelation.all
+    coin_relations.each do | cr |
+      Orderbook.makedepth(cr)
+    end
+    flash[:notice] = "orderbok_depth done"    
+    redirect_back_or(root_path)
+  end
+
   def orderbook_plot  # open order の情報を元に気配ねの横ヒストグラムを作る。
-    coincomb = Cointype.tickercomb
-    coincomb.each do | c |
-      coin_a, coin_b = coin_order(c[0], c[1])
-      Orderbook.makeplot(coin_a, coin_b)
+    coin_relations = CoinRelation.all
+    coin_relations.each do | cr |
+      Orderbook.makeplot(cr)
     end
     flash[:notice] = "orderbok_plot done"    
     redirect_back_or(root_path)
@@ -68,7 +75,8 @@ class AdminsController < ApplicationController
     flash[:notice] = "Walletcheck total done"
     redirect_back_or(root_path)
   end
- 
+
+
   def precheck_service
     tickers = Cointype.tickers
     @results = []
@@ -142,8 +150,9 @@ class AdminsController < ApplicationController
   #   @closed_order = ClosedOrder.new
   # end
 
-  def autotrade_checkweb  # Tradeを元に、acntの情報を更新する。
-    Autotrade.checkweb
+  def book_make_control  # Tradeを元に、acntの情報を更新する。
+    BookMake.control
+    # Autotrade.checkweb
     flash[:notice] = "check done"
     redirect_back_or(root_path)
   end

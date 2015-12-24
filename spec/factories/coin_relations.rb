@@ -16,9 +16,11 @@ FactoryGirl.define do
   factory :coin_relation do
     association :coin_a
     association :coin_b
-    step_min 0.1
-    rate_act 10
-    rate_ref 3
+    step_min 10
+    rate_act 5000
+    rate_ref 4990
+    book_trig 30
+    book_range 60
   end
 end
 

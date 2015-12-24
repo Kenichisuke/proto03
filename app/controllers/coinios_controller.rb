@@ -199,7 +199,7 @@ class CoiniosController < ApplicationController
     end
 
     def common_new_set
-      @coinios = @acnt.coinio.order('created_at DESC').page(params[:page])
+      @coinios = @acnt.coinios.order('created_at DESC').page(params[:page])
       @addr_s = @coin.name.downcase + ':' + @acnt.addr_in
       @qr = RQRCode::QRCode.new( @addr_s, :size => 5, :level => :h )
       @headinfo = "transferIO"

@@ -239,6 +239,8 @@ ja:
         zero_or_negative: はプラスの数字で入力してください
         free_bal_not_enough: の取引余力が足りません
         try_later: 失敗しました。しばらくしてから再度行ってください。
+        step_min: が正しくありません。レートの最小単位は%{step_min}です。
+        lot_min: が正しくありません。%{lot_min}以上の数字を入れてください。
     template:
       body: 次の項目を確認してください。
       header:

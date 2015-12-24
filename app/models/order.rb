@@ -21,7 +21,7 @@ class Order < ActiveRecord::Base
   belongs_to :user
   belongs_to :coin_a, class_name: "Cointype"
   belongs_to :coin_b, class_name: "Cointype"
-  has_many :trade
+  has_many :trades
 
   enum flag: {open_new: 0, open_per: 2, noex_cncl: 5, exec_cncl: 7, noex_expr: 9, exec_expr: 11, exec_exec: 15,
               b_fnsh: 1, b_onee: 2, b_cncl: 4, b_expr: 8, b_exec: 12 }
@@ -38,6 +38,7 @@ class Order < ActiveRecord::Base
   scope :coins, -> (coin1, coin2) { where("(coin_a_id = ? AND coin_b_id = ?)",coin1, coin2) }
   # scope :coin2ways, -> (coin1, coin2) { where("(coin_a_id = ? AND coin_b_id = ?) OR (coin_a_id = ? AND coin_b_id = ?)",
   #        coin1, coin2, coin2, coin1) }
+  scope :coin_rel, -> (rel) { where("(coin_a_id = ? AND coin_b_id = ?)",rel.coin_a, rel.coin_b) }
 
   validates :user_id, presence: true
   validates :coin_a_id, presence: true
@@ -48,10 +49,12 @@ class Order < ActiveRecord::Base
   validates :amt_a_org, numericality: { greater_than: 0.0 }
   validates :amt_b_org, numericality: { greater_than: 0.0 } 
   validates :flag, presence:  true
+  # validate :flag_with_zero_amount
 
 
   # check if inputted amounts are numeric or not on the order
   # check if inputted amounts are positive or not
+  # 一部のvalidationだけをさせたいために、わざわさこのメソッドを定義している。
   def valid_prep?
     flag = true
     unless self.rate.is_a?(Numeric) then
@@ -67,14 +70,24 @@ class Order < ActiveRecord::Base
       self.errors.add(:rate, I18n.t('errors.messages.order.zero_or_negative'))
       flag = false
     end
-    if self.amt_a <= 0.0 then 
+    if self.amt_a_org <= 0.0 then 
       self.errors.add(:amt_a, I18n.t('errors.messages.order.zero_or_negative'))
       flag = false
     end
     return flag
   end
-end
 
+  # flag は文字列として処理されるため、ビット演算子「＆」でエラーが起こる
+  # private
+  #   def flag_with_zero_amount
+  #     if (self.amt_a == 0.0 || self.amt_b == 0) then
+  #       if (flag & 0b1) != 0b1 then
+  #         self.errors.add(:flag, "flag with 0 amount(s) should be closed ones")
+  #       end
+  #     end
+  #   end
+
+end
 
 # 0th bit  0: not finishted, 1: finished
 # 1th bit  0: no execution, 1: 1 or more execution(s)

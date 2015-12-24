@@ -27,17 +27,14 @@ ActiveAdmin.register User do
   	  end
   	end
 
-    # Cointype.tickerconb が使えるかも。
-    
-    tick1 = [ "BTC", "BTC", "BTC", "LTC", "LTC", "MONA"]
-    tick2 = [ "LTC", "MONA", "DOGE", "MONA", "DOGE", "DOGE"]
-    6.times do | i |      
-      column tick1[i] + '-' + tick2[i], :sortable => :id do |f|
-        coin1id = Cointype.find_by( ticker: tick1[i]).id
-        coin2id = Cointype.find_by( ticker: tick2[i]).id
-        f.order.openor.coins(coin1id, coin2id).count
-        # orders = f.order.openor.coins(coin1id, coin2id)
-        # link_to orders.count, admin_orders_path(orders)
+    crs = CoinRelation.all
+    crs.each do | cr |
+      column cr.coin_a.ticker + '-' + cr.coin_b.ticker, :sortable => :id do |f|
+        if f.orders then
+          f.orders.openor.coin_rel(cr).count
+        else
+          0
+        end
       end
     end
   end
